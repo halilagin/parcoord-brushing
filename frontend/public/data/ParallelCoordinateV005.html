@@ -812,7 +812,7 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
 
     newCorrBrushPanel.clusterbrushPanel.datum({"dimName":key_});
 
-    $.getJSON( "http://localhost:5000/parcoord/iriskmeans/oftwovars?var1=petal_len&var2=petal_w&K=3", function( data_ ) {
+    $.getJSON( "http://ec2-34-207-115-100.compute-1.amazonaws.com:5000/parcoord/iriskmeans/oftwovars?var1=petal_len&var2=petal_w&K=3", function( data_ ) {
       new VarClusterBrush(newCorrBrushPanel.clusterbrushPanel).start(data_, markBrushedLinesCB);
     });
   }
@@ -849,7 +849,7 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
       .attr("height", boxWidth)
       .attr("fill", "#dedede");
 
-    $.getJSON( "http://localhost:5000/parcoord/spatialsign/oftwovars?var1=petal_w&var2=petal_len", function( data_ ) {
+    $.getJSON( "http://ec2-34-207-115-100.compute-1.amazonaws.com:5000/parcoord/spatialsign/oftwovars?var1=petal_w&var2=petal_len", function( data_ ) {
       new VarRadialBrush(newRadialBrushPanel.radialbrushPanel).start(data_, "petal_w___petal_len", markBrushedLinesCB);
     });
   }
@@ -895,7 +895,7 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
 //      .attr("transform", function(){return "translate(" + [(x(dimensions[dimIdx])),height+corrBrushPanelMargin+10] + ")"; })
 //    ;
 //
-//    $.getJSON( "http://localhost:5000/parcoord/iriskmeans/oftwovars?var1=petal_len&var2=petal_w&K=3", function( data_ ) {
+//    $.getJSON( "http://ec2-34-207-115-100.compute-1.amazonaws.com:5000/parcoord/iriskmeans/oftwovars?var1=petal_len&var2=petal_w&K=3", function( data_ ) {
 //      new VarClusterBrush(newCorrBrushPanel.clusterbrushPanel).start(data_);
 //    });
   }
@@ -1168,11 +1168,11 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
 
   $().ready(function(){
 
-    $.getJSON( "http://localhost:5000/proghist/parallelcoord/iriscorr/fetchData", function( data_ ) {
+    $.getJSON( "http://ec2-34-207-115-100.compute-1.amazonaws.com:5000/proghist/parallelcoord/iriscorr/fetchData", function( data_ ) {
       start(data_);
     });
 
-    $.getJSON( "http://localhost:5000/parcoord/iriskmeans/oftwovars?var1=petal_len&var2=petal_w&K=3", function( data_ ) {
+    $.getJSON( "http://ec2-34-207-115-100.compute-1.amazonaws.com:5000/parcoord/iriskmeans/oftwovars?var1=petal_len&var2=petal_w&K=3", function( data_ ) {
       new VarClusterBrush(clusterBrushContainer).start(data_);
     });
 

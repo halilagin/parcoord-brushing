@@ -31,6 +31,7 @@ from matplotlib.patches import Ellipse
 
 
 import pylab
+from parcoordapp.apps import ParCoordDataFiles
 
 
 
@@ -38,7 +39,10 @@ class IrisDataEigens(object):
     pass
 
     def __init__(self):
-        csvFile = "/Users/halil/Yandex.Disk.localized/root/academic/myphd/phd/0070-coding/parallel-coord/frontend/public/data/iris.data.csv"
+        
+        csvFile = ParCoordDataFiles().getIrisCSV() 
+        print ("IrisDataEigens.csv", csvFile)
+        #"/Users/halil/Yandex.Disk.localized/root/academic/myphd/phd/0070-coding/parallel-coord/frontend/public/data/iris.data.csv"
         csvDictReader = csv.DictReader(open(csvFile))
         self.df = pd.read_csv(csvFile)
         

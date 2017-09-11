@@ -49,7 +49,7 @@ const path = require('path');
 
 module.exports = {
   entry: [
-    'webpack-dev-server/client?http://localhost:5002',
+    'webpack-dev-server/client?http://0.0.0.0:5002',
     'webpack/hot/dev-server',
     './scripts/index'
   ],
@@ -78,5 +78,11 @@ module.exports = {
         loader: 'style-loader!css-loader'
       },
     ]
+  },
+
+  devServer:{
+	compress:true,
+	disableHostCheck: true, 
+	public: 'ec2-34-207-115-100.compute-1.amazonaws.com'
   }
 };

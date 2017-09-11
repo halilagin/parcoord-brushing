@@ -28,6 +28,8 @@ import timeit
 import csv
 import pandas as pd
 from matplotlib.patches import Ellipse
+from parcoordapp.apps import ParCoordDataFiles
+
 
 
 import pylab
@@ -38,7 +40,8 @@ class IrisDataSpatialSign(object):
     pass
 
     def __init__(self):
-        csvFile = "/Users/halil/Yandex.Disk.localized/root/academic/myphd/phd/0070-coding/parallel-coord/frontend/public/data/iris.data.csv"
+        csvFile = ParCoordDataFiles().getIrisCSV()
+        #"/Users/halil/Yandex.Disk.localized/root/academic/myphd/phd/0070-coding/parallel-coord/frontend/public/data/iris.data.csv"
         csvDictReader = csv.DictReader(open(csvFile))
         self.cols =['petal_len','petal_w','sepal_len','sepal_w','t_set_ver_vir']
 

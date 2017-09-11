@@ -34,6 +34,8 @@ import requests
 from matplotlib.pyplot import ylabel
 import csv
 import pandas as pd
+from parcoordapp.apps import ParCoordDataFiles
+
 
 class IrisDataKmeans(object):
     
@@ -41,7 +43,8 @@ class IrisDataKmeans(object):
     
     def __init__(self):
         pass
-        csvFile = "/Users/halil/Yandex.Disk.localized/root/academic/myphd/phd/0070-coding/parallel-coord/frontend/public/data/iris.data.csv"
+        csvFile =  ParCoordDataFiles().getIrisCSV()
+        #"/Users/halil/Yandex.Disk.localized/root/academic/myphd/phd/0070-coding/parallel-coord/frontend/public/data/iris.data.csv"
         csvDictReader = csv.DictReader(open(csvFile))
         self.df = pd.read_csv(csvFile)
     

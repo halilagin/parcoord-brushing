@@ -4,7 +4,7 @@
   "description": "Boilerplate for kick starting a React Project with ES6 (Babel) and Hot reloader using Webpack.",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server --config webpack.config.js --inline --progress --profile  --watch  --content-base . --host 0.0.0.0 --port 5002 --public ec2-34-207-115-100.compute-1.amazonaws.com",
+    "start": "webpack-dev-server --config webpack.config.js --inline --progress --profile  --watch  --content-base . --host 0.0.0.0 --port 5002 --public localhost",
     "build": "cross-env BABEL_ENV=production ./node_modules/.bin/webpack --config webpack.config.production.js",
     "lint": "eslint --cache --ignore-path .gitignore --format=node_modules/eslint-formatter-pretty . *.js",
     "test": "npm run lint"

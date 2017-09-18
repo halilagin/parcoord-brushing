@@ -71,7 +71,7 @@
 
   $().ready(function(){
       console.log("ready");
-    $.getJSON( "http://ec2-34-207-115-100.compute-1.amazonaws.com:5000/parcoord/iriskmeans/oftwovars?var1=petal_len&var2=petal_w&K=3", function( data_ ) {
+    $.getJSON( "http://localhost:5000/parcoord/iriskmeans/oftwovars?var1=petal_len&var2=petal_w&K=3", function( data_ ) {
         new VarCircularBrush(svg).start(data_);
     });
   });

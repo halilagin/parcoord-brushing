@@ -42,8 +42,8 @@ export class ParallelCoord extends Component {
 
 
   generateData(){
-    let url = "http://ec2-34-207-115-100.compute-1.amazonaws.com:5000/proghist/streaming/createdata?bincount="+this.refs.txtBinsCount.value;
-    //axios.get("http://ec2-34-207-115-100.compute-1.amazonaws.com:5000/proghist/streaming/data/0")
+    let url = "http://localhost:5000/proghist/streaming/createdata?bincount="+this.refs.txtBinsCount.value;
+    //axios.get("http://localhost:5000/proghist/streaming/data/0")
 
     axios.get(url)
       .then((resp) => {
@@ -140,7 +140,7 @@ export class ParallelCoord extends Component {
     loopDrawingProgHist(){
       console.log("streamingDataIdx", this.state.streamingDataIdx);
 
-      let url = "http://ec2-34-207-115-100.compute-1.amazonaws.com:5000/proghist/parallelcoord/streaming/fetchdata";
+      let url = "http://localhost:5000/proghist/parallelcoord/streaming/fetchdata";
       axios.get(url)
         .then((resp) => {
 

@@ -82,7 +82,7 @@ module.exports = {
 
   devServer:{
 	compress:true,
-	disableHostCheck: true, 
-	public: 'ec2-34-207-115-100.compute-1.amazonaws.com'
+	disableHostCheck: true,
+	public: 'localhost'
   }
 };

@@ -115,9 +115,10 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
 <script type="text/javascript">
   var remoteHost=true?"localhost":"34.235.8.207";
   var remoteUrls={
-    "kmeans":"http://"+remoteHost+":5000/parcoord/breastcancerkmeans/oftwovars",
-    "spatialSign":"http://"+remoteHost+":5000/parcoord/breastcancer/spatialsign/oftwovars",
     "fetcData":"http://"+remoteHost+":5000/parcoord/breastcancer/fetchData",
+    "kmeans":"http://"+remoteHost+":5000/parcoord/breastcancer/kmeans/oftwovars",
+    "spatialSign":"http://"+remoteHost+":5000/parcoord/breastcancer/spatialsign/oftwovars",
+
     "userintsSave":"http://"+remoteHost+":5000/parcoord/userints/save",
     "userintsFetchAll":"http://"+remoteHost+":5000/parcoord/userints/save",
 
@@ -125,11 +126,13 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
 </script>
 
 <div>
-  <button id="sepal_w_brush_btn">show brush</button>
-  <button id="experiment_start_btn">Start</button>
+  <div id="ExperimentContainer">
+    <button id="sepal_w_brush_btn">show brush</button>
+  </div>
 </div>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="/public/data/js/SVGContextMenu.js"></script>
+<script type="text/javascript" src="/public/data/js/ExperimentManager.js"></script>
 
 <script>
 

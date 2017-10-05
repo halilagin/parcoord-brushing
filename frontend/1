@@ -1,1 +1,0 @@
-webpack-dev-server --config webpack.config.js --inline --progress --profile  --watch  --content-base . --host 0.0.0.0 --public ec2-34-207-115-100.compute-1.amazonaws.com

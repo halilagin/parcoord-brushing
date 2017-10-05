@@ -82,7 +82,12 @@ module.exports = {
 
   devServer:{
 	compress:true,
+<<<<<<< HEAD
 	disableHostCheck: true, 
 	public: '34.235.8.207'
+=======
+	disableHostCheck: true,
+	public: 'localhost'
+>>>>>>> 9e2b48996771972af2794aeb4a30e0888731b477
   }
 };

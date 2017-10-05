@@ -131,7 +131,6 @@ function VarClusterBrush(container){
     var clusterBrushPanelDimIdx = +clusterBrushPanelClass_.substring(clusterBrushPanelClass_.lastIndexOf("_")+1);
 
 
-    console.log("cluster_brush_handle_dragend", $(this).attr("class"));
 
     var clazz = $(this).attr("class").split(" ")[1].substring("cbhandle_".length);
     var idxes = clazz.split("_");

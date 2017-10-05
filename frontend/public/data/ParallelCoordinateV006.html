@@ -69,6 +69,42 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
     cursor: move;
   }
 
+  .cluster_brush_c2{
+    opacity: 0.6;
+    fill:green;
+    background-color: #f8efc0;
+  }
+
+  .cluster_brush_c1{
+    opacity: 0.8;
+    fill:green;
+    background-color: #f8efc0;
+  }
+
+  .radial_brush_b{
+    opacity: 0.2;
+    background-color: #f8efc0;
+    fill:green;
+  }
+
+  .radial_brush_h2 {
+    opacity: 0.2;
+    fill:green;
+    background-color: #f8efc0;
+
+  }
+  .radial_brush_h1 {
+    opacity: 0.2;
+    fill:green;
+    background-color: #f8efc0;
+
+  }
+
+
+  .ss_point_active{
+    background-color: red;
+    fill:red !important;
+  }
 </style>
 <script
   src="https://code.jquery.com/jquery-3.2.1.min.js"
@@ -160,6 +196,7 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
 </script>
 
 <script type="text/javascript" src="/public/data/js/VarClusterBrush.js"></script>
+<script type="text/javascript" src="/public/data/js/VarRadialBrush.js"></script>
 
 <script type="text/javascript" >
 
@@ -180,6 +217,28 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
   function sigmaSlider_brushstart(){
 
   }
+
+
+  var VarBrushedPoint = function(brushType, active, dimName, dimIdx, brushIdx){
+    this.brushType = "corr";
+    this.active=true;
+    this.dimName=dimName;
+    this.dimIdx=dimIdx;
+    this.brushIdx = brushIdx;
+    this.judgeOfBrushes = {"corr":false, "circular":false, "radial":false};
+    this.display = function (){
+
+      var keys_ = Object.keys(this.judgeOfBrushes);
+
+      var result = keys_.some((key_)=>{
+        return this.judgeOfBrushes[key_] ;
+      });
+
+
+      return result;
+    };
+
+  };
 
   function brushstart() {
     var dimidx=dimensionBrush_dim_idx(this);
@@ -354,49 +413,68 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
     }
   }
 
-  function isInClusterBrush(dim_, dimName, dimIdx,rowIdx){
-
-
-    //if (y[dimensionName]["cluster_brushes"]==null || y[dimensionName]["cluster_brushes"].length==0)
-      //;
-
-//      for (var cbi=0;cbi<y[p]["cluster_brushes"].length;cbi++){
-//        var cb = y[p]["cluster_brushes"][cbi];
-//        for (var c=0;c<cb.length;c++){//c:cluster
-//          var cluster = cb[c];
-//          for (var i=0;i<cluster.length;i++){
-//            var yIdx = cluster[i];//yIdx is the one should be colored.
-//
-//            if (yIdx==rowIdx)
-//                return true;//brushed index in cluster is equal to the rowIdx of y dimension.
-//          }
-//        }
-//      }
-
+  function isInClusterBrush(rowIdx){
     //brushedPointIndexes
-
+    //ClusterBrushSelectedPointIndexes[clusterBrushPanelDimName]
     var tf = false;
-      for (var c=0;c<brushedPointIndexes.length;c++){//c:cluster
-          var cluster = brushedPointIndexes[c];
-          for (var i=0;i<cluster.length;i++){
-            var yIdx = cluster[i];//yIdx is the one should be colored.
+      var brushPanels = Object.keys(ClusterBrushSelectedPointIndexes);//it is a variable in VarClusterBrush.js
+      for (var b=0;b<brushPanels.length;b++){
+        var brushPanelDimName = brushPanels[b];
+        var brushedPointIndexes =ClusterBrushSelectedPointIndexes[brushPanelDimName];
 
-            if (yIdx==rowIdx) {
+        for (var c = 0; c < brushedPointIndexes.length; c++) {//c:cluster
+          var cluster = brushedPointIndexes[c];
+          for (var i = 0; i < cluster.length; i++) {
+            var yIdx = cluster[i];//yIdx is the one should be colored.
+            if (yIdx == rowIdx) {
               tf = true;//brushed index in cluster is equal to the rowIdx of y dimension.
               break;
             }
           }
-          if (tf==true) break;
-      }
-      return tf;
+          if (tf == true) break;
+        }
+    }
+    return tf;
 
   }
+
+  function isInRadialBrush(rowIdx){
+    //brushedPointIndexes
+    //ClusterBrushSelectedPointIndexes[clusterBrushPanelDimName]
+    var tf = false;
+    var brushPanels = Object.keys(RadialBrushSelectedPointIndexes);//it is a variable in VarRadialBrush.js
+
+    for (var b=0;b<brushPanels.length;b++){
+      var brushPanelDimName = brushPanels[b];
+      var brushedPointIndexes =RadialBrushSelectedPointIndexes[brushPanelDimName];
+
+      for (var c = 0; c < brushedPointIndexes.length; c++) {//c:cluster
+        var yIdx = brushedPointIndexes[c];
+        if (yIdx == rowIdx) {
+          tf = true;//brushed index in cluster is equal to the rowIdx of y dimension.
+          break;
+        }
+        if (tf == true) break;
+      }
+    }
+    return tf;
+
+  }
+
+
 
   function markBrushedLines(dimidx){
       if (y[dimidx.dim].brushes[dimidx.idx]["state"]==null || y[dimidx.dim].brushes[dimidx.idx]["state"]==undefined)
         y[dimidx.dim].brushes[dimidx.idx]["state"]={};
 
     y[dimidx.dim].brushes[dimidx.idx]["state"]["state"]="moving";
+
+
+    var markedPaths=[];
+    foreground.each( function (dim_, rowIdx) {
+      markedPaths.push(new VarBrushedPoint("", true, "", 0, rowIdx)); //brushType, active, dimName, dimIdx, brushIdx
+
+    });
 
     var activeDimensions = dimensions.filter(function (p) {
       var brush_ = y[p]["brushes"][0];
@@ -417,31 +495,112 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
           extents_.push(y[p]["brushes"][i].extent());
       return extents_;// [extents1,extents2]; extents=[1.2,1.6]
     });
-    foreground.style("display", function (dim_, rowIdx) {
-       var basicExtents = activeDimensions.every(function (dimName, dimIdx) {
-        var tf=false;
-        for (var k=0;k<extentsOfDim[dimIdx].length;k++) {
-          var extentList = extentsOfDim[dimIdx];//a dim has many extents
-          var ith_extent = extentList[k]; //each extentlist has many extents
+
+//    foreground.style("display", function (dim_, rowIdx) {
+//       var basicExtents = activeDimensions.every(function (dimName, dimIdx) {
+//        var tf=false;
+//        for (var k=0;k<extentsOfDim[dimIdx].length;k++) {
+//          var extentList = extentsOfDim[dimIdx];//a dim has many extents
+//          var ith_extent = extentList[k]; //each extentlist has many extents
+//          var val_ = +dim_[dimName];
+//          var inBasicBrush = ith_extent[0] <=val_  && val_ <= ith_extent[1];
+//
+//          markedLines.push({"brushType":"corr", "idx":k, active:true, "dimName":dimName });
+//          if (inBasicBrush)
+//            tf = true;
+//        }
+//
+//        var inClusterBrush = isInClusterBrush(dim_, dimName,dimIdx,rowIdx);
+//        //var inRadialBrush = isInRadialBrush(dim_, dimName,dimIdx,rowIdx);
+//
+//        tf = tf || inClusterBrush ;
+//        return tf;
+//      }) ? null : "none";
+//
+//      //do brushing for other types such as cluster brushing, outlier brushing.
+//
+//
+//      console.log("brush.tf",rowIdx, basicExtents);
+//
+//      return basicExtents;
+//    });
+
+
+
+    console.log("activeDimensions.length:",activeDimensions.length);
+
+    foreground.each( function (dim_, rowIdx) {
+
+      var corrBrushesOfRowIdx=true; //store true/false of each brushings in dims
+
+
+      activeDimensions.forEach(function (dimName, dimIdx) {
           var val_ = +dim_[dimName];
-          var inBasicBrush = ith_extent[0] <=val_  && val_ <= ith_extent[1];
-
-          if (inBasicBrush)
-            tf = true;
-        }
-
-        var inClusterBrush = isInClusterBrush(dim_, dimName,dimIdx,rowIdx);
-
-        tf = tf || inClusterBrush;
-        return tf;
-      }) ? null : "none";
-
-      //do brushing for other types such as cluster brushing, outlier brushing.
 
 
+          if (extentsOfDim[dimIdx].length>0) {
+            var markOfBrushesInDimIdx = false;
+            for (var k = 0; k < extentsOfDim[dimIdx].length; k++) {
+              var ith_extent = extentsOfDim[dimIdx][k]; ////a dim has many extents
+              var inBasicBrush = ith_extent[0] <= val_ && val_ <= ith_extent[1];
 
-      return basicExtents;
+              if (inBasicBrush) {
+                markOfBrushesInDimIdx = true;//if any extents returns true, mark it true and return
+                break;
+              }
+            }
+            corrBrushesOfRowIdx = corrBrushesOfRowIdx && markOfBrushesInDimIdx;
+
+          } else
+            ;
+
+        if (rowIdx==95)
+          console.log("row95:",corrBrushesOfRowIdx);
+          //console.log("dimidx.andconj:",corrBrushesOfRowIdx);
+          //if (inBasicBrush)
+
+
+            //markedPaths[rowIdx].judgeOfBrushes.corr =  tf;//markedPaths[rowIdx].judgeOfBrushes.corr || true;
+//          else
+//            markedPaths[rowIdx].judgeOfBrushes.corr =  markedPaths[rowIdx].judgeOfBrushes.corr || false;
+
+        //var inClusterBrush = isInClusterBrush(dim_, dimName,dimIdx,rowIdx);
+        //var inRadialBrush = isInRadialBrush(dim_, dimName,dimIdx,rowIdx);
+
+        //tf = tf || inClusterBrush ;
+
+      });
+
+
+
+
+      markedPaths[rowIdx].judgeOfBrushes.corr =corrBrushesOfRowIdx;
+
     });
+
+
+    markedPaths.forEach((row,idx)=>{
+      row.judgeOfBrushes.radial=isInRadialBrush(idx);
+      row.judgeOfBrushes.circular=isInClusterBrush(idx);
+      if (row.judgeOfBrushes.circular){
+          console.log("circular.true.idx", idx);
+      }
+    });
+
+
+//    if (Object.keys(RadialBrushSelectedPointIndexes).length>0)
+//      foreground.style("display", function (dim_, rowIdx) {
+//        var a = isInRadialBrush(rowIdx)?null:"none";
+//        return a;
+//      });
+
+
+
+    foreground.style("display", function (dim_, rowIdx) {
+      return markedPaths[rowIdx].display()?null:"none";
+    });
+    console.log("markedPaths.length", markedPaths.length);
+
   }
 
 
@@ -637,7 +796,7 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
 
   }
 
-  function createNewClusterBrush(dimName){
+  function createNewClusterBrush(dimName, markBrushedLinesCB){
     var dimIdx = findDimensionIndexByDimName(dimName);
     var d = dimensions[dimIdx];
     var key_ = dimensions[dimIdx]+"___"+dimensions[dimIdx+1];
@@ -668,8 +827,50 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
       .attr("height", boxWidth)
       .attr("fill", "#dedede");
 
-    $.getJSON( "http://34.235.8.207:5000/parcoord/iriskmeans/oftwovars?var1=petal_len&var2=petal_w&K=3", function( data_ ) {
-      new VarClusterBrush(newCorrBrushPanel.clusterbrushPanel).start(data_);
+    newCorrBrushPanel.clusterbrushPanel.datum({"dimName":key_});
+
+    $.getJSON( "http://localhost:5000/parcoord/iriskmeans/oftwovars?var1="+dimensions[dimIdx]+"&var2="+dimensions[dimIdx]+"&K=3", function( data_ ) {
+      new VarClusterBrush(newCorrBrushPanel.clusterbrushPanel).start(data_, markBrushedLinesCB);
+    });
+  }
+
+
+  function createNewRadialBrush(dimName, markBrushedLinesCB){
+    var dimIdx = findDimensionIndexByDimName(dimName);
+    var d = dimensions[dimIdx];
+    var key_ = dimensions[dimIdx]+"___"+dimensions[dimIdx+1];
+    var var1 = dimensions[dimIdx];
+    var var2 = dimensions[dimIdx+1];
+    console.log("createNewRadialBrush.key", key_);
+    if (corrBrushes[key_]==undefined || corrBrushes[key_]==null)
+      corrBrushes[key_]={};
+
+    if (corrBrushes[key_]["corrbrush_panels"]==undefined || corrBrushes[key_]["corrbrush_panels"]==null )
+      corrBrushes[key_]["corrbrush_panels"]=[];
+
+    var newRadialBrushPanelIdx = corrBrushes[key_]["corrbrush_panels"].length;
+    var corrBrushPanelMargin = 110*(newRadialBrushPanelIdx);
+
+    var newRadialBrushPanel = {
+      "radialbrushPanel":null,
+      "type":"radialbrush"
+    };
+    corrBrushes[key_]["corrbrush_panels"].push(newRadialBrushPanel);
+
+    newRadialBrushPanel.radialbrushPanel = corrbrushGridG.selectAll(".radialbrush_panel_"+key_+"_"+newRadialBrushPanelIdx)
+      .data([0]).enter().append("g")
+      .attr("class", "radialbrush_panel radialbrush_panel_"+key_+"_"+newRadialBrushPanelIdx)
+      .attr("transform", function(){return "translate(" + [(x(dimensions[dimIdx])+50),height+corrBrushPanelMargin+10] + ")"; })
+    ;
+
+    newRadialBrushPanel.radialbrushPanel.append("rect")
+      .attr("y", 0)
+      .attr("width", boxWidth)
+      .attr("height", boxWidth)
+      .attr("fill", "#dedede");
+
+    $.getJSON( "http://localhost:5000/parcoord/spatialsign/oftwovars?var1="+var1+"&var2="+var2, function( data_ ) {
+      new VarRadialBrush(newRadialBrushPanel.radialbrushPanel).start(data_, key_, markBrushedLinesCB);
     });
   }
 
@@ -679,15 +880,17 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
   function dimensionButtonSelected(dimName, selectedMenuItem){
     console.log("dimensionButtonSelected", dimName, selectedMenuItem);
 
-      if (selectedMenuItem="new cluster brush"){
-        createNewClusterBrush(dimName);
+      if (selectedMenuItem=="New cluster brush"){
+        createNewClusterBrush(dimName, markBrushedLines);
+      } else if (selectedMenuItem=="New radial brush"){
+        createNewRadialBrush(dimName, markBrushedLines);
       }
 
   }
 
   function createDimensionButtons(g){
     var menu = SVGContextMenu()
-      .items('new cluster brush', 'second option', 'whatever, man')
+      .items('New cluster brush', 'New radial brush', 'whatever, man')
       .onSelect(function(dimName, selectedItem){
         dimensionButtonSelected(dimName, selectedItem)
       });
@@ -712,11 +915,7 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
 //      .attr("transform", function(){return "translate(" + [(x(dimensions[dimIdx])),height+corrBrushPanelMargin+10] + ")"; })
 //    ;
 //
-<<<<<<< HEAD
-//    $.getJSON( "http://34.235.8.207:5000/parcoord/iriskmeans/oftwovars?var1=petal_len&var2=petal_w&K=3", function( data_ ) {
-=======
 //    $.getJSON( "http://localhost:5000/parcoord/iriskmeans/oftwovars?var1=petal_len&var2=petal_w&K=3", function( data_ ) {
->>>>>>> 9e2b48996771972af2794aeb4a30e0888731b477
 //      new VarClusterBrush(newCorrBrushPanel.clusterbrushPanel).start(data_);
 //    });
   }
@@ -989,21 +1188,13 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
 
   $().ready(function(){
 
-<<<<<<< HEAD
-    $.getJSON( "http://34.235.8.207:5000/proghist/parallelcoord/iriscorr/fetchData", function( data_ ) {
-      start(data_);
-    });
-
-    $.getJSON( "http://34.235.8.207:5000/parcoord/iriskmeans/oftwovars?var1=petal_len&var2=petal_w&K=3", function( data_ ) {
-=======
     $.getJSON( "http://localhost:5000/proghist/parallelcoord/iriscorr/fetchData", function( data_ ) {
       start(data_);
     });
 
-    $.getJSON( "http://localhost:5000/parcoord/iriskmeans/oftwovars?var1=petal_len&var2=petal_w&K=3", function( data_ ) {
->>>>>>> 9e2b48996771972af2794aeb4a30e0888731b477
-      new VarClusterBrush(clusterBrushContainer).start(data_);
-    });
+//    $.getJSON( "http://localhost:5000/parcoord/iriskmeans/oftwovars?var1=petal_len&var2=petal_w&K=3", function( data_ ) {
+//      new VarClusterBrush(clusterBrushContainer).start(data_);
+//    });
 
     $("#sepal_w_brush_btn").click(function(){
         //applyCorrbrush("petal_len", 3.2);

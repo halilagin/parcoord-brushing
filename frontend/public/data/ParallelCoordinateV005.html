@@ -822,6 +822,9 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
     var dimIdx = findDimensionIndexByDimName(dimName);
     var d = dimensions[dimIdx];
     var key_ = dimensions[dimIdx]+"___"+dimensions[dimIdx+1];
+    var var1 = dimensions[dimIdx];
+    var var2 = dimensions[dimIdx+1];
+    console.log("createNewRadialBrush.key", key_);
     if (corrBrushes[key_]==undefined || corrBrushes[key_]==null)
       corrBrushes[key_]={};
 
@@ -849,8 +852,13 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
       .attr("height", boxWidth)
       .attr("fill", "#dedede");
 
+<<<<<<< HEAD
     $.getJSON( "http://34.235.8.207:5000/parcoord/spatialsign/oftwovars?var1=petal_w&var2=petal_len", function( data_ ) {
       new VarRadialBrush(newRadialBrushPanel.radialbrushPanel).start(data_, "petal_w___petal_len", markBrushedLinesCB);
+=======
+    $.getJSON( "http://localhost:5000/parcoord/spatialsign/oftwovars?var1="+var1+"&var2="+var2, function( data_ ) {
+      new VarRadialBrush(newRadialBrushPanel.radialbrushPanel).start(data_, key_, markBrushedLinesCB);
+>>>>>>> 9e2b48996771972af2794aeb4a30e0888731b477
     });
   }
 
@@ -895,7 +903,11 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
 //      .attr("transform", function(){return "translate(" + [(x(dimensions[dimIdx])),height+corrBrushPanelMargin+10] + ")"; })
 //    ;
 //
+<<<<<<< HEAD
 //    $.getJSON( "http://34.235.8.207:5000/parcoord/iriskmeans/oftwovars?var1=petal_len&var2=petal_w&K=3", function( data_ ) {
+=======
+//    $.getJSON( "http://localhost:5000/parcoord/iriskmeans/oftwovars?var1=petal_len&var2=petal_w&K=3", function( data_ ) {
+>>>>>>> 9e2b48996771972af2794aeb4a30e0888731b477
 //      new VarClusterBrush(newCorrBrushPanel.clusterbrushPanel).start(data_);
 //    });
   }
@@ -1168,11 +1180,19 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
 
   $().ready(function(){
 
+<<<<<<< HEAD
     $.getJSON( "http://34.235.8.207:5000/proghist/parallelcoord/iriscorr/fetchData", function( data_ ) {
       start(data_);
     });
 
     $.getJSON( "http://34.235.8.207:5000/parcoord/iriskmeans/oftwovars?var1=petal_len&var2=petal_w&K=3", function( data_ ) {
+=======
+    $.getJSON( "http://localhost:5000/proghist/parallelcoord/iriscorr/fetchData", function( data_ ) {
+      start(data_);
+    });
+
+    $.getJSON( "http://localhost:5000/parcoord/iriskmeans/oftwovars?var1=petal_len&var2=petal_w&K=3", function( data_ ) {
+>>>>>>> 9e2b48996771972af2794aeb4a30e0888731b477
       new VarClusterBrush(clusterBrushContainer).start(data_);
     });
 

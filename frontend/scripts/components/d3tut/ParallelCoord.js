@@ -42,8 +42,8 @@ export class ParallelCoord extends Component {
 
 
   generateData(){
-    let url = "http://34.235.8.207:5000/proghist/streaming/createdata?bincount="+this.refs.txtBinsCount.value;
-    //axios.get("http://34.235.8.207:5000/proghist/streaming/data/0")
+    let url = "http://localhost:5000/proghist/streaming/createdata?bincount="+this.refs.txtBinsCount.value;
+    //axios.get("http://localhost:5000/proghist/streaming/data/0")
 
     axios.get(url)
       .then((resp) => {

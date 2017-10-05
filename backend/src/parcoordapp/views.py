@@ -12,6 +12,8 @@ from code.parallelcoord.ParCoordDataEigens import IrisDataEigens,\
 from code.parallelcoord.ParCoordKmeans import IrisDataKmeans, BreastCancerKmeans
 from code.parallelcoord.ParCoordSpatialSign import IrisDataSpatialSign,\
     BreastCancerSpatialSign
+from django.db import transaction
+from parcoordapp.models import ParCoordUserInteractionModel
 
 # Create your views here.
 
@@ -177,3 +179,42 @@ class ParallelCoordBreastCancerSpatialSignRest(APIView):
         
     def post(self, request):
         return self.get(request)
+    
+    
+
+class ParCoordUserInteractionDataSaveRest(APIView):
+    pass
+    
+   
+    def get(self, request):
+        
+        return Response({})
+    
+    @transaction.atomic
+    def post(self, request):
+        payload=json.loads(request.body)
+        print("request.body:",payload)
+
+        uid = ParCoordUserInteractionModel()
+        uid.data = request.body
+        uid.userName=payload["userName"]
+        uid.personName=payload["personName"]
+        uid.save()
+        return self.get(request)
+    
+#    
+
+
+class ParCoordUserInteractionDataFetchAllRest(APIView):
+    pass
+    
+   
+    def post(self, request, userinteraction_id):
+        uid = ParCoordUserInteractionModel.objects.get(pk=userinteraction_id);
+        
+        return Response(json.loads(uid.data))
+    
+    def get(self, request, userinteraction_id):
+        
+        return self.post(request, userinteraction_id)
+

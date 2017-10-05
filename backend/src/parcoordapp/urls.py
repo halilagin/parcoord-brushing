@@ -8,11 +8,14 @@ urlpatterns = [
     url(r'^iriscorr/fetchData', views.ParallelCoordIrisDataRest.as_view(), name="ParallelCoordIrisDataRestV3"),
     url(r'^iriskmeans/oftwovars', views.ParallelCoordIrisKmeansRest.as_view(), name="ParallelCoordIrisKmeansRestV3"),
     url(r'^spatialsign/oftwovars', views.ParallelCoordIrisSpatialSignRest.as_view(), name="ParallelCoordIrisSpatialSignRestV3"),
+    url(r'^breastcancer/eigens', views.ParallelCoordBreastCancerEigensRest.as_view(), name="ParallelCoordBreastCancerEigensRestV3"),
+    url(r'^breastcancer/fetchData', views.ParallelCoordBreastCancerDataRest.as_view(), name="ParallelCoordBreasCancerDataRestV3"),
+    url(r'^breastcancerkmeans/oftwovars', views.ParallelCoordBreastCancerKmeansRest.as_view(), name="ParallelCoordBreastCancerKmeansRestV3"),
+    url(r'^breastcancer/spatialsign/oftwovars', views.ParallelCoordBreastCancerSpatialSignRest.as_view(), name="ParallelCoordBreastCancerSpatialSignRestV3"),
 
 
 
 ]
-
 urlpatterns = format_suffix_patterns(urlpatterns)
 
 

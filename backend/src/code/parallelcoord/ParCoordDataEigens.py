@@ -41,7 +41,7 @@ class IrisDataEigens(object):
     def __init__(self):
         
         csvFile = ParCoordDataFiles().getIrisCSV() 
-        print ("IrisDataEigens.csv", csvFile)
+        print ("ParCoordDataEigens.csv", csvFile)
         #"/Users/halil/Yandex.Disk.localized/root/academic/myphd/phd/0070-coding/parallel-coord/frontend/public/data/iris.data.csv"
         csvDictReader = csv.DictReader(open(csvFile))
         self.df = pd.read_csv(csvFile)
@@ -94,4 +94,68 @@ class IrisDataEigens(object):
         return eigens
         
 
-print (IrisDataEigens().eigens())
+#print (ParCoordDataEigens().eigens())
+
+
+
+
+class BreastCancerDataEigens(object):
+    pass
+
+    def __init__(self):
+        
+        csvFile = ParCoordDataFiles().getBreastCancerCSV() 
+        print ("getBreastCancerCSV.csv", csvFile)
+        #"/Users/halil/Yandex.Disk.localized/root/academic/myphd/phd/0070-coding/parallel-coord/frontend/public/data/iris.data.csv"
+        csvDictReader = csv.DictReader(open(csvFile))
+                                       
+        self.df = pd.read_csv(csvFile)
+        
+    
+    def eigens(self):
+        pass
+    
+        vars=['class']
+        for i in np.arange(1,31,1):
+            vars.append('f'+str(i))
+        eigens = {}
+        for var1 in vars:
+            for var2 in vars:
+                if var1==var2:
+                    continue
+                x =np.asfarray(self.df[var1].values, dtype='float')
+                y =np.asfarray(self.df[var2].values, dtype='float')
+                x_extent = [np.min(x),np.max(x)]
+                y_extent = [np.min(y),np.max(y)]
+                extents = [x_extent, y_extent]
+                m1 = np.mean(x)
+                m2 = np.mean(y)
+                X = np.vstack((x,y))
+                cov_ = np.cov(X)
+                corr_ = np.ma.corrcoef(X)
+                #cov_ = corr_
+                invconv_ = np.linalg.inv(cov_)
+                
+                lambda_1, v1 = np.linalg.eig(corr_)
+                lambda_1 = np.sqrt(lambda_1)
+                
+                #angle_ = np.rad2deg(np.arccos(v1[0, 0]))
+                #https://stackoverflow.com/questions/20126061/creating-a-confidence-ellipses-in-a-sccatterplot-using-matplotlib
+                angle_ = np.degrees(np.arctan2(*v1[:,0][::-1]))
+
+                
+                eigens[var1+"___"+var2] = { 
+                               "eigvals":lambda_1.tolist(), 
+                               "eigvecs":v1.tolist(), 
+                               "angle":angle_, 
+                               "cov":cov_.tolist(), 
+                               "corr":corr_.tolist(), 
+                               
+                               "invcov":invconv_.tolist(), 
+                               "extents":extents,
+                               "m1":m1,
+                               "m2":m2}
+        #print ("eigens", eigens)
+        return eigens
+
+print(BreastCancerDataEigens().eigens())

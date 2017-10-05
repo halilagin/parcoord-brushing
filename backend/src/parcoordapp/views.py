@@ -14,6 +14,7 @@ from code.parallelcoord.ParCoordSpatialSign import IrisDataSpatialSign,\
     BreastCancerSpatialSign
 from django.db import transaction
 from parcoordapp.models import ParCoordUserInteractionModel
+import codecs
 
 # Create your views here.
 
@@ -180,7 +181,8 @@ class ParallelCoordBreastCancerSpatialSignRest(APIView):
     def post(self, request):
         return self.get(request)
     
-    
+
+
 
 class ParCoordUserInteractionDataSaveRest(APIView):
     pass
@@ -192,11 +194,15 @@ class ParCoordUserInteractionDataSaveRest(APIView):
     
     @transaction.atomic
     def post(self, request):
-        payload=json.loads(request.body)
-        print("request.body:",payload)
+        payload = json.loads(request.read().decode('utf-8'))
+        print(payload)
+#         reader = codecs.getreader("utf-8")
+#         
+#         payload=json.loads(request.body)
+#         print("request.body:",payload)
 
         uid = ParCoordUserInteractionModel()
-        uid.data = request.body
+        uid.data = str(payload["data"])
         uid.userName=payload["userName"]
         uid.personName=payload["personName"]
         uid.save()

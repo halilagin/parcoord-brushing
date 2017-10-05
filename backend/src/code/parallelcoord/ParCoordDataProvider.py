@@ -31,7 +31,7 @@ from matplotlib.patches import Ellipse
 
 
 import pylab
-from code.parallelcoord.IrisDataEigens import IrisDataEigens
+from code.parallelcoord.ParCoordDataEigens import IrisDataEigens
 from parcoordapp.apps import ParCoordDataFiles
 
 

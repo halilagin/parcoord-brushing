@@ -1,14 +1,14 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from code.parallelcoord.IrisDataProvider import IrisDataProvider
+from code.parallelcoord.ParCoordDataProvider import IrisDataProvider
 from rest_framework.response import Response
 from code.parallelcoord.ParallelCoordinates import ParallelCoordinates
 import os
 import pathlib
 import json
-from code.parallelcoord.IrisDataEigens import IrisDataEigens
-from code.parallelcoord.IrisDataKmeans import IrisDataKmeans
-from code.parallelcoord.IrisDataSpatialSign import IrisDataSpatialSign
+from code.parallelcoord.ParCoordDataEigens import IrisDataEigens
+from code.parallelcoord.ParCoordKmeans import IrisDataKmeans
+from code.parallelcoord.ParCoordSpatialSign import IrisDataSpatialSign
 
 # Create your views here.
 

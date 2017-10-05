@@ -16,8 +16,8 @@ from code.proghist.gausordering.AnnotatedBins import AnnotatedBins
 import copy
 from code.proghist.gausordering.GaussianProcessDataProducer import GaussianProcessDataProducer
 from code.parallelcoord.ParallelCoordinates import ParallelCoordinates
-from code.parallelcoord.IrisDataEigens import IrisDataEigens
-from code.parallelcoord.IrisDataProvider import IrisDataProvider
+from code.parallelcoord.ParCoordDataEigens import IrisDataEigens
+from code.parallelcoord.ParCoordDataProvider import IrisDataProvider
 # Create your views here.
 
 

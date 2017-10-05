@@ -117,6 +117,7 @@ function VarRadialBrush(container){
   this.brushCircleRadius = 0.80;
 
   this.radial_brush_arc_dragstart =function (){
+    experiment.addAction(new ExperimentAction("StartDraggingRadialBrush", null,{}));
 
     var clazz =  $(this).attr("class");
     var classNamePrefix="radial_brush_b___";
@@ -210,6 +211,8 @@ function VarRadialBrush(container){
 
 
   this.radial_brush_arc_dragend =function (){
+    experiment.addAction(new ExperimentAction("EndDraggingRadialBrush", null,{}));
+
     var moduloPI = function(v){
 
       while(v>2*Math.PI)

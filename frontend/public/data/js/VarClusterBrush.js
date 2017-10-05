@@ -95,6 +95,7 @@ var ClusterBrushSelectedPointIndexes = {};
 function VarClusterBrush(container){
   this.container = container;
   this.cluster_brush_handle_dragstart = function (){
+    experiment.addAction(new ExperimentAction("StartDraggingClusterBrush", null,{}));
     var this__= d3.select(this);
     this__.style('fill', 'red');
   };
@@ -121,6 +122,8 @@ function VarClusterBrush(container){
 
 
   this.cluster_brush_handle_dragend = function (){
+    experiment.addAction(new ExperimentAction("EndDraggingClusterBrush", null,{}));
+
     var this__= d3.select(this);
 
 

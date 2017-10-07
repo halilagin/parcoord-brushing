@@ -106,14 +106,16 @@ var OrderCorrAlg1 = function(variables, corrs){
     sequence.forEach(( item, idx)=>{
 
       if (uniques.includes(item.variable)==false && uniques.length<=this.variables.length)
-        uniques.push(item.variable);
+        if (item.variable!=null && item.variable!=undefined && item.variable!="undefined")
+          uniques.push(item.variable);
     });
 
     if (uniques.length<this.variables.length) {
 
       this.variables.forEach((item,idx)=>{
         if (uniques.includes(item.variable)==false && uniques.length<=this.variables.length)
-          uniques.push(item.variable);
+          if (item.variable!=null && item.variable!=undefined && item.variable!="undefined")
+            uniques.push(item.variable);
       });
     }
 
@@ -121,6 +123,7 @@ var OrderCorrAlg1 = function(variables, corrs){
   };
 
   this.runAlg=function() {
+
     var sequence = [];
     var keysCount = Object.keys(this.corrs).length;
 
@@ -130,18 +133,19 @@ var OrderCorrAlg1 = function(variables, corrs){
           break;
         sequence.push(rootKey);
         var corrPair = this.findHighestCorrSequenceForVariable(rootKey.pairName, sequence);
-        console.log(sequence.length, keysCount, corrPair);
         if (sequence.length >= keysCount)
           break;
       }
 
     var uniqueSequence = this.makeUnique(sequence);
-    console.log("uniqueSequence:",sequence,uniqueSequence);
     return uniqueSequence;
   };
 
   this.start = function() {
-    return this.runAlg();
+
+    var result = this.runAlg();
+
+    return result;
   };
 
   this.init(variables, corrs);
@@ -178,7 +182,7 @@ var OrderAxesManager=function (){
               </div>
               
               <div class="OA_twowayselect_right">
-                <div>Ordered variables</div>
+                <div>Ordered variables <span class="ordering_progressing" style="display:none;"> <img src="/public/images/parcoord/progressing.gif"></span></div>
                 <select multiple="multiple" size="10"  class="OA_axeslist" style="width: inherit !important; height: 200px !important;"></select>
               </div>
               <br style="clear: left;" />
@@ -199,13 +203,13 @@ var OrderAxesManager=function (){
   };
 
   this.removeOrderAxis = function(){
-    var isSelected = $(".OA_axeslist").find("option:selected").length;
+    var isSelected = $(".OA_origaxeslist").find("option:selected").length;
     if (isSelected==0){
       console.log("Please select a variable.");
       return;
     }
 
-    $(".OA_axeslist").find("option:selected").remove();
+    $(".OA_origaxeslist").find("option:selected").remove();
 
   };
 
@@ -222,12 +226,23 @@ var OrderAxesManager=function (){
     $(".OA_axeslist").find("option").each((idx,opt)=>{
       variables.push($(opt).attr("value"));
     });
-    var newSequence = this.orderCorrByAlg1(variables);
+    $(".OA_button_saveorder").css("display", "none !important");
+    $(".ordering_progressing").css("display", "block");
+    console.log("ordering started");
+    var newSequence;
+    setTimeout(
+      ()=> {
+        newSequence = this.orderCorrByAlg1(variables);
+        $(".OA_button_saveorder").css("display", "");
+        $(".ordering_progressing").css("display", "none");
+        console.log("ordering ended");
+        $(".OA_axeslist option").remove();
+        newSequence.forEach((item)=>{
+          $(".OA_axeslist").append(`<option value="${item}">${item}</option>`);
+        });
+      }, 1000);
 
-    $(".OA_axeslist option").remove();
-    newSequence.forEach((item)=>{
-      $(".OA_axeslist").append(`<option value="${item}">${item}</option>`);
-    });
+
 
   };
 

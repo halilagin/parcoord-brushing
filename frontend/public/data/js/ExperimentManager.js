@@ -39,7 +39,7 @@ var Experiment=function (){
 
   this.now = function() {
     return new Date().getTime();
-  }
+  };
 
   this.start = function() {
     this.startTime = this.now();

@@ -105,11 +105,63 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
     background-color: red;
     fill:red !important;
   }
+
+
+  .OA_buttons {
+    height: 30px;
+    background-color: #f8efc0;
+    -moz-border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -khtml-border-radius: 20px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    overflow:hidden;
+  }
+
+  .OA_button {
+    display:table;
+    margin: 3px;
+
+
+  }
+
+
+
+  .OA_twowayselect_container{
+    display:flex;
+  }
+  .OA_twowayselect_container > div{
+    flex:1;
+  }
+
+
+  .OA_twowayselect_left{
+    width: 150px !important;
+    min-width: 150px;
+
+  }
+
+
+  .OA_twowayselect_right{
+    width: 150px !important;
+    min-width: 150px;
+
+  }
+
+  .OA_twowayselect_middle{
+    width: 30px !important;
+    max-width: 30px;
+    margin:auto;
+  }
+
+
+
+
+
 </style>
-<script
-  src="https://code.jquery.com/jquery-3.2.1.min.js"
-  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-  crossorigin="anonymous"></script>
+  <link href="/public/js/jqueryui1121/jquery-ui.css" rel="stylesheet">
+  <script src="/public/js/jquery-3.2.1.min.js"></script>
+  <script src="/public/js/jqueryui1121/jquery-ui.js"></script>
 </head>
 <body>
 <script type="text/javascript">
@@ -128,68 +180,57 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
   <button id="sepal_w_brush_btn">show brush</button>
 
 </div>
+
+
+
+
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="/public/data/js/SVGContextMenu.js"></script>
 <script type="text/javascript" src="/public/data/js/ExperimentManager.js"></script>
+<script type="text/javascript" src="/public/data/js/OrderAxesManager.js"></script>
 
 <script>
 
+  var estcorr_remote_data=null;
+  var dimensions = null;
+
+  var margin=null;
+  var width=null;
+  var height=null;
+  var underHeightLength=null;
+  var x=null;
+  var y = null;
+  var boxWidth=null;
+  var boxHeight=null;
+  var circularBrushConfig=null;
 
 
+  var dragging=null;
 
-  var margin = {top: 30, right: 10, bottom: 10, left: 10};
-  var width = 960 - margin.left - margin.right;
-  var height = 450 - margin.top - margin.bottom;
-  var underHeightLength=250;
-  var x = d3.scale.ordinal().rangePoints([0, width], 1);
-  var y = {};
-  var boxWidth=100;
-  var boxHeight=100;
-  var circularBrushConfig={};
-
-
-  var dragging = {};
-
-  var line = d3.svg.line(),
-    axis = d3.svg.axis().orient("left"),
+  var line=null,
+    axis=null,
     background,
     foreground;
 
-  var svg = d3.select("body").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom+underHeightLength)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  var svg = null;
+  var clusterBrushContainer = null;
+  var corrbrushGridG = null;
 
-  var clusterBrushContainer = d3.select('body')
-    .append('svg')
-    .attr('class', 'box')
-    .attr('width', boxWidth+30)
-    .attr('height', boxHeight+30)
-    .style("padding", "5px");
-
-  var corrbrushGridG = svg.append("g")
-    .attr("class", "corrbrushgrid")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", 400)
-    .attr("transform", "translate(" + 0 + "," + 10 + ")");
 
 
 
   /*
     estcorrbrush:start
    */
-  var dimscales={};
-  var corrBrushes={};
-  var estcorrbrush_panels;
-  var estbrushInstance;
+  var dimscales=null;
+  var corrBrushes=null;
+  var estcorrbrush_panels=null;;
+  var estbrushInstance=null;;
 
-  var estcorr_xscale = d3.scale.linear().domain([-1, 1]).range([0, 70]);
-  var estcorr_yscale = d3.scale.linear().domain([-1, 1]).range([70, 0]);
-  var estcorr_rscale = d3.scale.linear().domain([0, 2]).range([0, 70]);
-  var estcorr_line = d3.svg.line()
-    .x(function(d) { return estcorr_xscale(d.x); })
-    .y(function(d) { return estcorr_yscale(d.y); });
+  var estcorr_xscale=null;
+  var estcorr_yscale=null;
+  var estcorr_rscale=null;
+  var estcorr_line =null;
 
   /*
    estcorrbrush:end
@@ -904,7 +945,6 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
 
 
 
-
   function dimensionButtonSelected(dimName, selectedMenuItem){
     console.log("dimensionButtonSelected", dimName, selectedMenuItem);
 
@@ -912,13 +952,15 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
         createNewClusterBrush(dimName, markBrushedLines);
       } else if (selectedMenuItem=="New radial brush"){
         createNewRadialBrush(dimName, markBrushedLines);
+      } else if (selectedMenuItem=="Order axes"){
+        orderAxesManager.showDialogOrderAxes();
       }
 
   }
 
   function createDimensionButtons(g){
     var menu = SVGContextMenu()
-      .items('New cluster brush', 'New radial brush', 'whatever, man')
+      .items('New cluster brush', 'New radial brush', 'Order axes','end')
       .onSelect(function(dimName, selectedItem){
         dimensionButtonSelected(dimName, selectedItem)
       });
@@ -1080,24 +1122,115 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
     }
   }
 
-  function start(data_){
+  function reset(){
+    estcorr_remote_data=null;
+    dimensions = null;
+
+    margin = {top: 30, right: 10, bottom: 10, left: 10};
+    width = 960 - margin.left - margin.right;
+    height = 450 - margin.top - margin.bottom;
+    underHeightLength=250;
+    x = null;
+    y = null;
+    boxWidth=100;
+    boxHeight=100;
+    circularBrushConfig={};
+
+
+    dragging = {};
+
+    line = d3.svg.line(),
+      axis = d3.svg.axis().orient("left"),
+      background,
+      foreground;
+
+    svg = null;
+    clusterBrushContainer = null;
+    corrbrushGridG = null;
+
+
+
+
+    /*
+     estcorrbrush:start
+     */
+    dimscales={};
+    corrBrushes={};
+    estcorrbrush_panels;
+    estbrushInstance;
+
+    estcorr_xscale = d3.scale.linear().domain([-1, 1]).range([0, 70]);
+    estcorr_yscale = d3.scale.linear().domain([-1, 1]).range([70, 0]);
+    estcorr_rscale = d3.scale.linear().domain([0, 2]).range([0, 70]);
+    estcorr_line = d3.svg.line()
+      .x(function(d) { return estcorr_xscale(d.x); })
+      .y(function(d) { return estcorr_yscale(d.y); });
+
+    /*
+     estcorrbrush:end
+     */
+
+    /*
+     sigma slider brushes
+     */
+
+    sigmaSlider_xScale = d3.scale.linear().domain([0,3]).range([0,70]);
+    sigmaSlider_rxScale = d3.scale.linear().domain([0,70]).range([0,3]);
+
+    sigmaSlider_axis = d3.svg.axis().scale(sigmaSlider_xScale)
+      .tickValues([0,0.5,1,1.5,2,2.5,3])
+      .tickFormat(function(v,i){ // <-C
+        return i%2==0?parseInt(v):v;
+      });
+  }
+
+  function start(data_, dims){
+    reset();
     estcorr_remote_data = data_;
+
     var data = data_.csv;
     var eigens = data_.eigens;
     console.log("eigens", eigens);
 
+    x=d3.scale.ordinal().rangePoints([0, width], 1);
+    y={};
+
+
+    svg = d3.select("body").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom+underHeightLength)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    clusterBrushContainer = d3.select('body')
+      .append('svg')
+      .attr('class', 'box')
+      .attr('width', boxWidth+30)
+      .attr('height', boxHeight+30)
+      .style("padding", "5px");
+
+    corrbrushGridG = svg.append("g")
+      .attr("class", "corrbrushgrid")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", 400)
+      .attr("transform", "translate(" + 0 + "," + 10 + ")");
 
 
 
+
+
+    dimensions = dims.filter(function(d) {
+      return d != "name" && (y[d] = d3.scale.linear()
+          .domain(d3.extent(data, function(p) { return +p[d]; }))
+          .range([height, 0]));
+    });
+
+    console.log("new.dimensions:",dimensions);
 
 
 
     // Extract the list of dimensions and create a scale for each.
-    x.domain(dimensions = d3.keys(data[0]).filter(function(d) {
-      return d != "name" && (y[d] = d3.scale.linear()
-          .domain(d3.extent(data, function(p) { return +p[d]; }))
-          .range([height, 0]));
-    }));
+    x.domain(dimensions);
 
     for (var k=0;k<dimensions.length;k++)
       for (var i=0;i<dimensions.length;i++){
@@ -1155,6 +1288,8 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
           g.attr("transform", function(d) { return "translate(" + position(d) + ")"; })
         })
         .on("dragend", function(d) {
+          console.log("dragend:",d3.select(this), d, dragging);
+
           delete dragging[d];
           transition(d3.select(this)).attr("transform", "translate(" + x(d) + ")");
           transition(foreground).attr("d", path);
@@ -1204,6 +1339,7 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
     createDimensionButtons(g);
 
 
+    orderAxesManager.initShowOrderAxesDialog();
 
   }
 
@@ -1213,7 +1349,7 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
 
 
     $.getJSON( remoteUrls.fetcData, function( data_ ) {
-      start(data_);
+      start(data_, Object.keys(data_.csv[0]));
     });
 
 
@@ -1224,8 +1360,6 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
     $("#sepal_w_brush_btn").click(function(){
         //applyCorrbrush("petal_len", 3.2);
     });
-
-
 
 
   });

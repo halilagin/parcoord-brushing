@@ -548,17 +548,21 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
         return false;
 
       var tf=false;
-      for (var i=0;i<y[p]["brushes"].length;i++)
-        if (!y[p]["brushes"][i].empty())
-          tf=true;
+      for (var i=0;i<y[p]["brushes"].length;i++) {
+        if ( !y[p]["brushes"][i].empty())
+          tf = true;
+      }
       return tf;
     });
 
     var extentsOfDim = activeDimensions.map(function (p) {
       var extents_=[];
-      for (var i=0;i<y[p]["brushes"].length;i++)
-        if (!y[p]["brushes"][i].empty())
+      for (var i=0;i<y[p]["brushes"].length;i++){
+
+        if ( !y[p]["brushes"][i].empty()) {
           extents_.push(y[p]["brushes"][i].extent());
+        }
+      }
       return extents_;// [extents1,extents2]; extents=[1.2,1.6]
     });
 
@@ -610,12 +614,15 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
             var markOfBrushesInDimIdx = false;
             for (var k = 0; k < extentsOfDim[dimIdx].length; k++) {
               var ith_extent = extentsOfDim[dimIdx][k]; ////a dim has many extents
-              var inBasicBrush = ith_extent[0] <= val_ && val_ <= ith_extent[1];
+              var activeExtent = y[dimName]["brushesstates"]===undefined || y[dimName]["brushesstates"][k]==undefined || y[dimName]["brushesstates"][k];
 
-              if (inBasicBrush) {
-                markOfBrushesInDimIdx = true;//if any extents returns true, mark it true and return
-                break;
-              }
+                var inBasicBrush = activeExtent?(ith_extent[0] <= val_ && val_ <= ith_extent[1]):true;
+
+                if (inBasicBrush) {
+                  markOfBrushesInDimIdx = true;//if any extents returns true, mark it true and return
+                  break;
+                }
+
             }
             corrBrushesOfRowIdx = corrBrushesOfRowIdx && markOfBrushesInDimIdx;
 
@@ -1107,6 +1114,25 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
       .attr("transform", (d, i) => {
         return "rotate(" + (-1 * 1 * eigens[key_].angle) + "," + estcorr_xscale(0) + "," + estcorr_yscale(0) + ")"
       });
+
+    //onoff ellipsis
+    //newCorrBrushPanel.ellpanel
+
+    var toggleOnChange = (res)=>{
+      console.log("SVGToggleSwitch:",res.getValue());
+
+      var dim_ =  dimensions[findDimensionIndexByDimName(d)+1];
+      if (y[dim_]["passivebrushes"]===undefined)
+        y[dim_]["brushesstates"]={};
+      y[dim_]["brushesstates"][newCorrBrushPanelIdx]=res.getValue();
+      //RadialBrush_markLinesOf(dimName, idx,datum_);
+      var dimidx = {"dim":dim_,"idx":newCorrBrushPanelIdx};
+      markBrushedLines(dimidx);
+    };
+
+    new SVGToggleSwitch({container:newCorrBrushPanel.ellpanel,onChange:toggleOnChange, dimension:d});
+
+
   }
 
 

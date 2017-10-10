@@ -90,6 +90,72 @@ var VarClusterBrushConf={"markBrushedLinesCB":()=>{}};
 
 
 var ClusterBrushSelectedPointIndexes = {};
+var ClusterBrushActiveInstances = {}; //{dimname:true}
+
+
+
+
+function ClusterBrush_markLines(cssClass, clusterBrushPanelClass){
+
+
+  var clusterBrushPanelClass_ = clusterBrushPanelClass.substring(clusterBrushPanelClass.indexOf("clusterbrush_panel_")+"clusterbrush_panel_".length);
+  var clusterBrushPanelDimName = clusterBrushPanelClass_.substring(0, clusterBrushPanelClass_.lastIndexOf("_"));
+  var clusterBrushPanelDimIdx = +clusterBrushPanelClass_.substring(clusterBrushPanelClass_.lastIndexOf("_")+1);
+
+  if (ClusterBrushActiveInstances[clusterBrushPanelClass]===undefined)
+    ClusterBrushActiveInstances[clusterBrushPanelClass]=true;
+
+
+  console.log("clsuter.data:",clusterBrushConfig.data.membersScaled);
+
+
+
+  if (ClusterBrushSelectedPointIndexes[clusterBrushPanelClass]==undefined || ClusterBrushSelectedPointIndexes[clusterBrushPanelClass]==null) {
+    ClusterBrushSelectedPointIndexes[clusterBrushPanelClass] = [];
+    for (var k=0;k<clusterBrushConfig.data.membersScaled.length;k++) {
+        //if (ClusterBrushSelectedPointIndexes[clusterBrushPanelClass][k]==undefined)
+        ClusterBrushSelectedPointIndexes[clusterBrushPanelClass].push([]);
+    }
+  }
+
+
+
+  //$("."+clusterBrushPanelClass).find(".cluster_brush_handle").each((idx, item)=> {
+    //var cssClass = $(item).attr("class");
+    console.log("ClusterBrush_markLines.forloop:",cssClass,ClusterBrushActiveInstances[clusterBrushPanelClass] );
+
+    // var clazz = cssClass.split(" ")[1].substring("cbhandle_".length);
+    // var idxes = clazz.split("_");
+
+
+    for (var k = 0; k < clusterBrushConfig.data.membersScaled.length; k++) {
+      var brushIdx = k;//+idxes[0];
+      var cb = clusterBrushConfig.brushes[brushIdx];
+      var brushCenter = [clusterBrushConfig.brushes[brushIdx].x,clusterBrushConfig.brushes[brushIdx].y];
+      var r1 = $(cb.brush.b1[0]).attr("r");
+      var r2 = $(cb.brush.b2[0]).attr("r");
+
+      var cluster = clusterBrushConfig.data.membersScaled[k];
+
+      //if (ClusterBrushSelectedPointIndexes[clusterBrushPanelClass][k]==undefined)
+        ClusterBrushSelectedPointIndexes[clusterBrushPanelClass][k] = [];
+      for (var i = 0; i < cluster.length; i++) {
+        var distx = cluster[i][0] - brushCenter[0];
+        var disty = cluster[i][1] - brushCenter[1];
+        var dist = Math.sqrt(distx * distx + disty * disty);
+
+        if (dist > r1 && dist < r2)
+          ClusterBrushActiveInstances[clusterBrushPanelClass] && ClusterBrushSelectedPointIndexes[clusterBrushPanelClass][k].push(i);
+      }
+    }
+  //});
+
+
+
+  //this__.style('fill', 'blue');
+  var dimidx = {"dim":clusterBrushPanelDimName.split("___")[1],"idx":clusterBrushPanelDimIdx};
+  VarClusterBrushConf.markBrushedLinesCB(dimidx);
+}
 
 
 function VarClusterBrush(container){
@@ -124,51 +190,18 @@ function VarClusterBrush(container){
   this.cluster_brush_handle_dragend = function (){
     experiment.addAction(new ExperimentAction("EndDraggingClusterBrush", null,{}));
 
-    var this__= d3.select(this);
+    //var this__= d3.select(this);
 
 
     //find panel information
-    var clusterBrushPanelClass = $(this).parent().attr("class");
-    var clusterBrushPanelClass_ = clusterBrushPanelClass.substring(clusterBrushPanelClass.indexOf("clusterbrush_panel_")+"clusterbrush_panel_".length);
-    var clusterBrushPanelDimName = clusterBrushPanelClass_.substring(0, clusterBrushPanelClass_.lastIndexOf("_"));
-    var clusterBrushPanelDimIdx = +clusterBrushPanelClass_.substring(clusterBrushPanelClass_.lastIndexOf("_")+1);
+    //var clusterBrushPanelClass = $(this).parent().attr("class");
+    // var clusterBrushPanelClass_ = clusterBrushPanelClass.substring(clusterBrushPanelClass.indexOf("clusterbrush_panel_")+"clusterbrush_panel_".length);
+    // var clusterBrushPanelDimName = clusterBrushPanelClass_.substring(0, clusterBrushPanelClass_.lastIndexOf("_"));
+    // var clusterBrushPanelDimIdx = +clusterBrushPanelClass_.substring(clusterBrushPanelClass_.lastIndexOf("_")+1);
 
 
+    ClusterBrush_markLines($(this).attr("class"), $(this).parent().attr("class").split(" ")[1]);
 
-    var clazz = $(this).attr("class").split(" ")[1].substring("cbhandle_".length);
-    var idxes = clazz.split("_");
-    var brushIdx = +idxes[0];
-    var bhandleIdx = +idxes[1];
-    var cb = clusterBrushConfig.brushes[brushIdx];
-    var brushCenter = [clusterBrushConfig.brushes[brushIdx].x,clusterBrushConfig.brushes[brushIdx].y];
-
-    var r1 = $(cb.brush.b1[0]).attr("r");
-    var r2 = $(cb.brush.b2[0]).attr("r");
-
-    if (ClusterBrushSelectedPointIndexes[clusterBrushPanelDimName]==undefined || ClusterBrushSelectedPointIndexes[clusterBrushPanelDimName]==null) {
-      ClusterBrushSelectedPointIndexes[clusterBrushPanelDimName] = [];
-      for (var k=0;k<clusterBrushConfig.data.membersScaled.length;k++) {
-        ClusterBrushSelectedPointIndexes[clusterBrushPanelDimName].push([]);
-      }
-    }
-
-
-    for (var k=0;k<clusterBrushConfig.data.membersScaled.length;k++) {
-      var cluster = clusterBrushConfig.data.membersScaled[k];
-      ClusterBrushSelectedPointIndexes[clusterBrushPanelDimName][k]=[];
-      for (var i = 0; i < cluster.length; i++) {
-        var distx = cluster[i][0]-brushCenter[0];
-        var disty = cluster[i][1]-brushCenter[1];
-        var dist = Math.sqrt(distx*distx+disty*disty);
-
-        if (dist>r1 && dist<r2)
-          ClusterBrushSelectedPointIndexes[clusterBrushPanelDimName][k].push(i);
-      }
-    }
-
-    this__.style('fill', 'blue');
-    var dimidx = {"dim":clusterBrushPanelDimName.split("___")[1],"idx":clusterBrushPanelDimIdx};
-    VarClusterBrushConf.markBrushedLinesCB(dimidx);
   };
 
 
@@ -224,6 +257,26 @@ function VarClusterBrush(container){
 
     cbConfig.brushes[idx].brush = clusterBrush;
 
+
+
+    var toggleOnChange = (res)=>{
+      console.log("SVGToggleSwitch:",res.getValue());
+      var clusterBrushPanelClass = res.getPanelCssClass();
+
+      ClusterBrushActiveInstances[clusterBrushPanelClass]=res.getValue();
+      //console.log("toggleOnChange.idClass:", d3.select( $("."+res.getPanelCssClass()).find(".radial_brush_b")[0]).datum() );
+
+      console.log("toggleOnChange.idClass:", clusterBrushPanelClass);
+
+
+      $("."+clusterBrushPanelClass).find(".cluster_brush_handle").each((idx, item)=>{
+        var cssClass = $(item).attr("class");
+        ClusterBrush_markLines(cssClass, clusterBrushPanelClass);
+      });
+
+    };
+
+    new SVGToggleSwitch({container:g_,onChange:toggleOnChange});
 
   };
 

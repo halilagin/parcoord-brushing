@@ -167,9 +167,9 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
 <script type="text/javascript">
   var remoteHost=true?"localhost":"34.235.8.207";
   var remoteUrls={
-    "fetcData":"http://"+remoteHost+":5000/parcoord/breastcancer/fetchData",
-    "kmeans":"http://"+remoteHost+":5000/parcoord/breastcancer/kmeans/oftwovars",
-    "spatialSign":"http://"+remoteHost+":5000/parcoord/breastcancer/spatialsign/oftwovars",
+    "fetcData":"http://"+remoteHost+":5000/parcoord/iris/fetchData",
+    "kmeans":"http://"+remoteHost+":5000/parcoord/iris/kmeans/oftwovars",
+    "spatialSign":"http://"+remoteHost+":5000/parcoord/iris/spatialsign/oftwovars",
 
     "userintsSave":"http://"+remoteHost+":5000/parcoord/userints/save",
     "userintsFetchAll":"http://"+remoteHost+":5000/parcoord/userints/save",
@@ -188,12 +188,11 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
 <script src="/public/data/js/SVGContextMenu.js"></script>
 <script type="text/javascript" src="/public/data/js/ExperimentManager.js"></script>
 <script type="text/javascript" src="/public/data/js/OrderAxesManager.js"></script>
+<script type="text/javascript" src="/public/data/js/SvgToggleSwitch.js"></script>
 
 <script>
 
   var estcorr_remote_data=null;
-  var estcorr_orig_remote_data = null;
-  var orig_dimensions = null;
   var dimensions = null;
 
   var margin=null;
@@ -486,9 +485,10 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
       var brushPanels = Object.keys(ClusterBrushSelectedPointIndexes);//it is a variable in VarClusterBrush.js
       for (var b=0;b<brushPanels.length;b++){
         var brushPanelDimName = brushPanels[b];
+        console.log(brushPanelDimName);
         var brushedPointIndexes =ClusterBrushSelectedPointIndexes[brushPanelDimName];
 
-        for (var c = 0; c < brushedPointIndexes.length; c++) {//c:cluster
+        for (var c = 0; ClusterBrushActiveInstances[brushPanelDimName] && c < brushedPointIndexes.length; c++) {//c:cluster
           var cluster = brushedPointIndexes[c];
           for (var i = 0; i < cluster.length; i++) {
             var yIdx = cluster[i];//yIdx is the one should be colored.
@@ -956,15 +956,13 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
         createNewRadialBrush(dimName, markBrushedLines);
       } else if (selectedMenuItem=="Order axes"){
         orderAxesManager.showDialogOrderAxes();
-      } else if (selectedMenuItem=="Remove after"){
-        orderAxesManager.removeAfter(dimName);
       }
 
   }
 
   function createDimensionButtons(g){
     var menu = SVGContextMenu()
-      .items('New cluster brush', 'New radial brush', 'Order axes','Remove after','end')
+      .items('New cluster brush', 'New radial brush', 'Order axes','end')
       .onSelect(function(dimName, selectedItem){
         dimensionButtonSelected(dimName, selectedItem)
       });
@@ -1131,7 +1129,7 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
     dimensions = null;
 
     margin = {top: 30, right: 10, bottom: 10, left: 10};
-    width = 3960 - margin.left - margin.right;
+    width = 960 - margin.left - margin.right;
     height = 450 - margin.top - margin.bottom;
     underHeightLength=250;
     x = null;
@@ -1190,9 +1188,7 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
 
   function start(data_, dims){
     reset();
-    width= dims.length*150 - margin.left - margin.right
     estcorr_remote_data = data_;
-
 
     var data = data_.csv;
     var eigens = data_.eigens;
@@ -1220,6 +1216,9 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
       .attr("width", width + margin.left + margin.right)
       .attr("height", 400)
       .attr("transform", "translate(" + 0 + "," + 10 + ")");
+
+
+
 
 
     dimensions = dims.filter(function(d) {
@@ -1352,11 +1351,7 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
 
 
     $.getJSON( remoteUrls.fetcData, function( data_ ) {
-      //make local copy
-      estcorr_orig_remote_data=$.extend({}, data_);
-      dimensions = Object.keys(data_.csv[0]);
-        orig_dimensions = dimensions.slice(0);
-      start(data_, dimensions);
+      start(data_, Object.keys(data_.csv[0]));
     });
 
 

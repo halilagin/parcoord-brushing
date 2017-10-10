@@ -182,9 +182,16 @@ var OrderAxesManager=function (){
               </div>
               
               <div class="OA_twowayselect_right">
-                <div>Ordered variables <span class="ordering_progressing" style="display:none;"> <img src="/public/images/parcoord/progressing.gif"></span></div>
-                <select multiple="multiple" size="10"  class="OA_axeslist" style="width: inherit !important; height: 200px !important;"></select>
+                <div>
+                  <div>Ordered variables <span class="ordering_progressing" style="display:none;"> <img src="/public/images/parcoord/progressing.gif"></span></div>
+                  <select multiple="multiple" size="10"  class="OA_axeslist" style="width: 150px !important; height: 200px !important;"></select>
+                 </div>
+                 <div>
+                    <span class="OA_twowayselect_moveup ui-button-icon ui-icon ui-icon-arrowthick-1-n" ></span>
+                    <span class="OA_twowayselect_movedown ui-button-icon ui-icon ui-icon-arrowthick-1-s" ></span>
+                 </div>
               </div>
+              
               <br style="clear: left;" />
             
             </div>
@@ -246,6 +253,19 @@ var OrderAxesManager=function (){
 
   };
 
+  this.moveUp = function (){
+    //$(this).parents('.leg').insertBefore($(this).parents('.leg').prev());
+    var selected = $(".DialogOrderAxes").find(".OA_axeslist option:selected");
+    selected.insertBefore(selected.prev());
+
+  };
+
+  this.moveDown = function (){
+    var selected = $(".DialogOrderAxes").find(".OA_axeslist option:selected");
+    selected.insertAfter(selected.next());
+
+  };
+
   this.saveDimensionsOrder=function(){
     var newSequence = [];
     $(".DialogOrderAxes").find(".OA_axeslist option").each((idx,opt)=>{
@@ -304,6 +324,14 @@ var OrderAxesManager=function (){
         this.saveDimensionsOrder();
     });
 
+    $(".OA_twowayselect_moveup").click(()=>{
+      this.moveUp();
+    });
+
+    $(".OA_twowayselect_movedown").click(()=>{
+      this.moveDown();
+    });
+
 
 
     $(".DialogOrderAxes").dialog({
@@ -321,26 +349,57 @@ var OrderAxesManager=function (){
 
   };
 
-this.initShowOrderAxesDialog= function (){
-  // $(".DialogOrderAxes").dialog("destroy");
-  // $(".DialogOrderAxes").remove();
-  // $("body").append(this.htmls.DialogOrderAxes);
-  //
-  // //estcorr_remote_data is the remote data storage, globally declared. csv formatted. each row is a hash, having variables names, namly axes titles.
-  // var axe = estcorr_remote_data.csv[0];
-  // var axeNames = Object.keys(axe);
-  // axeNames.forEach((name)=>{
-  //   $(".DialogOrderAxes").find(".OA_axeslist").append(`<option value="${name}">${name}</option>`);
-  // });
-  // $(".DialogOrderAxes").dialog({
-  //   autoOpen:false,
-  //   buttons:{
-  //     "OK": function(){
-  //       $(this).dialog("close");
-  //     }
-  //   }
-  // });
-};
+  this.initShowOrderAxesDialog= function (){
+    // $(".DialogOrderAxes").dialog("destroy");
+    // $(".DialogOrderAxes").remove();
+    // $("body").append(this.htmls.DialogOrderAxes);
+    //
+    // //estcorr_remote_data is the remote data storage, globally declared. csv formatted. each row is a hash, having variables names, namly axes titles.
+    // var axe = estcorr_remote_data.csv[0];
+    // var axeNames = Object.keys(axe);
+    // axeNames.forEach((name)=>{
+    //   $(".DialogOrderAxes").find(".OA_axeslist").append(`<option value="${name}">${name}</option>`);
+    // });
+    // $(".DialogOrderAxes").dialog({
+    //   autoOpen:false,
+    //   buttons:{
+    //     "OK": function(){
+    //       $(this).dialog("close");
+    //     }
+    //   }
+    // });
+  };
+
+
+  //removes dimensions after dimName
+  this.removeAfter = function(dimName){
+    var idx = dimensions.findIndex((val)=>{return val==dimName;});
+    var newDimensions = [];
+    var removedDimensions = [];
+    for (var i=0;i<dimensions.length;i++){
+      if (i<(idx+1))
+        newDimensions[i] = dimensions[i];
+      else
+        removedDimensions[i] = dimensions[i];
+    }
+    console.log("removeAfter.idx:",idx);
+    dimensions = newDimensions;
+
+    //remove dimensions discarded from the dataset
+    for (var i=0;i<estcorr_remote_data.csv.length;i++){
+      var newRow = {};
+      Object.keys(estcorr_remote_data.csv[i]).forEach((key)=>{
+        if (newDimensions.findIndex((val)=>{return val==key;})>-1)
+          newRow[key] = estcorr_remote_data.csv[i][key];
+      });
+      estcorr_remote_data.csv[i]=newRow;
+    }
+
+
+    $("svg").remove();
+
+    start(estcorr_remote_data, dimensions);
+  };
 
   this.init = function(){
     console.log("Order axes manager created!");

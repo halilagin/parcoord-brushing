@@ -109,6 +109,68 @@ var VarRadialBrushConf = {
   "markBrushedLinesCB":()=>{}
 };
 var RadialBrushSelectedPointIndexes = {};
+var RadialBrushActiveInstances = {}; //{dimname:true}
+
+
+var moduloPI = function(v){
+
+  while(v>2*Math.PI)
+    v-=2*Math.PI;
+  return v;
+};
+
+
+
+var RadialBrush_markLinesOf=function(dimName,idx, datum){
+
+  var circleDatum = d3.select(".radial_brush_c___"+dimName+"_"+idx).datum();
+  var arcLength = VarRadialBrushConf.arcLength;
+  for( var i=0;i<circleDatum.pointSize;i++) {
+    d3.select(".ss_"+dimName+"_point_"+i).classed("ss_point_active", false);
+  }
+
+  // if (RadialBrushSelectedPointIndexes[radialBrushPanelDimName]==undefined || RadialBrushSelectedPointIndexes[radialBrushPanelDimName]==null) {
+  //   RadialBrushSelectedPointIndexes[radialBrushPanelDimName] = [];
+  // }
+
+
+  RadialBrushSelectedPointIndexes[dimName]=[];
+  if (RadialBrushActiveInstances[dimName]===undefined)
+    RadialBrushActiveInstances[dimName]=true;
+
+  for( var i=0;i<circleDatum.pointSize;i++) {
+    var cls_ = ".ss_"+dimName+"_point_"+i;
+    var p = d3.select(cls_);
+    var r = p.datum().radian;
+
+
+    r = moduloPI(r);
+    var initialRadian=0;
+    if (datum["dragStartInfo"]!==undefined)
+      initialRadian = datum["dragStartInfo"].initialRadian;
+
+    var lower = moduloPI(initialRadian);
+    var higher = moduloPI( initialRadian + arcLength );
+
+
+    var isActive=false;
+    if (higher>lower) {//normal scenario
+      if (r >= lower && r < higher)
+        isActive = true;
+    } else {// when r is 3.00 but range is between 2.80 and 0.2. split it 2.80<->Math.PI and 0<->0.2
+      if ((r >= lower && r < 2*Math.PI) ||  (r >= 0 && r < higher) )
+        isActive = true;
+    }
+
+    if (isActive && RadialBrushActiveInstances[dimName]) {
+      p.classed("ss_point_active", true);
+      RadialBrushSelectedPointIndexes[dimName].push(i);
+    }
+  }
+
+  var dimidx = {"dim":dimName.split("___")[1],"idx":idx};
+  VarRadialBrushConf.markBrushedLinesCB(dimidx);
+};
 
 
 function VarRadialBrush(container){
@@ -209,25 +271,15 @@ function VarRadialBrush(container){
   };
 
 
-
-  this.radial_brush_arc_dragend =function (){
+  this.radial_brush_arc_dragend = function(){
     experiment.addAction(new ExperimentAction("EndDraggingRadialBrush", null,{}));
 
-    var moduloPI = function(v){
 
-      while(v>2*Math.PI)
-        v-=2*Math.PI;
-      return v;
-    };
-
-    var radialBrushPanelClass = $(this).parent().attr("class");
-    var radialBrushPanelClass_ = radialBrushPanelClass.substring(radialBrushPanelClass.indexOf("radialbrush_panel_")+"radialbrush_panel_".length);
-    var radialBrushPanelDimName = radialBrushPanelClass_.substring(0, radialBrushPanelClass_.lastIndexOf("_"));
-    var radialBrushPanelDimIdx = +radialBrushPanelClass_.substring(radialBrushPanelClass_.lastIndexOf("_")+1);
 
 
 
     var datum = d3.select(this).datum();
+    console.log("datum:", d3.select(this).attr("class"));
     datum["dragStartInfo"].initialRadian = datum["dragStartInfo"].lastRadian;//save last radian, when the radial brush done second time, start from here.
     d3.select(this).datum(datum);
 
@@ -238,49 +290,9 @@ function VarRadialBrush(container){
     var idx = +varspair.substring(varspair.lastIndexOf("_")+1);
 
 
-    var circleDatum = d3.select(".radial_brush_c___"+dimName+"_"+idx).datum();
-    var arcLength = VarRadialBrushConf.arcLength;
-    for( var i=0;i<circleDatum.pointSize;i++) {
-      d3.select(".ss_"+dimName+"_point_"+i).classed("ss_point_active", false);
-    }
-
-    // if (RadialBrushSelectedPointIndexes[radialBrushPanelDimName]==undefined || RadialBrushSelectedPointIndexes[radialBrushPanelDimName]==null) {
-    //   RadialBrushSelectedPointIndexes[radialBrushPanelDimName] = [];
-    // }
-
-
-    RadialBrushSelectedPointIndexes[radialBrushPanelDimName]=[];
-    for( var i=0;i<circleDatum.pointSize;i++) {
-      var cls_ = ".ss_"+dimName+"_point_"+i;
-      var p = d3.select(cls_);
-      var r = p.datum().radian;
-
-
-      r = moduloPI(r);
-      var lower = moduloPI(datum["dragStartInfo"].initialRadian);
-      var higher = moduloPI( datum["dragStartInfo"].initialRadian + arcLength );
-
-
-      var isActive=false;
-      if (higher>lower) {//normal scenario
-        if (r >= lower && r < higher)
-          isActive = true;
-      } else {// when r is 3.00 but range is between 2.80 and 0.2. split it 2.80<->Math.PI and 0<->0.2
-        if ((r >= lower && r < 2*Math.PI) ||  (r >= 0 && r < higher) )
-          isActive = true;
-      }
-
-      if (isActive) {
-        p.classed("ss_point_active", true);
-        RadialBrushSelectedPointIndexes[radialBrushPanelDimName].push(i);
-      }
-    }
-
-
+    RadialBrush_markLinesOf(dimName,idx, datum);
     console.log("radial_brush_arc_dragend", RadialBrushSelectedPointIndexes );
 
-    var dimidx = {"dim":dimName.split("___")[1],"idx":idx};
-    VarRadialBrushConf.markBrushedLinesCB(dimidx);
   };
 
 
@@ -387,6 +399,18 @@ function VarRadialBrush(container){
 
       .attr("transform", "translate("+c_cx+","+c_cy+")")
       .call(this.arcdrag);
+
+
+    var toggleOnChange = (res)=>{
+      console.log("SVGToggleSwitch:",res.getValue());
+      RadialBrushActiveInstances[dimName]=res.getValue();
+      //console.log("toggleOnChange.idClass:", d3.select( $("."+res.getPanelCssClass()).find(".radial_brush_b")[0]).datum() );
+      var datum_ = d3.select( $("."+res.getPanelCssClass()).find(".radial_brush_b")[0]).datum();
+      console.log("datum:",datum_);
+      RadialBrush_markLinesOf(dimName, idx,datum_);
+    };
+
+     new SVGToggleSwitch({container:g_,onChange:toggleOnChange, dimension:dimName});
   };
 
 

@@ -69,6 +69,9 @@ var Experiment=function (){
     });
 
 
+
+    this.surveyShortListManager = new SurveyShortListManager();
+    this.surveyShortListManager.init();
   };
 
   this.init();

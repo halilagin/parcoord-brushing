@@ -7,6 +7,7 @@ from code.parallelcoord.ParallelCoordinates import ParallelCoordinates
 import os
 import pathlib
 import json
+import ast
 from code.parallelcoord.ParCoordDataEigens import IrisDataEigens,\
     BreastCancerDataEigens
 from code.parallelcoord.ParCoordKmeans import IrisDataKmeans, BreastCancerKmeans
@@ -216,7 +217,7 @@ class ParCoordUserInteractionDataFetchAllRest(APIView):
     
    
     def post(self, request, userinteraction_id):
-        uid = ParCoordUserInteractionModel.objects.get(pk=userinteraction_id);
+        uid = ParCoordUserInteractionModel.objects.all()
         
         return Response(json.loads(uid.data))
     
@@ -224,3 +225,17 @@ class ParCoordUserInteractionDataFetchAllRest(APIView):
         
         return self.post(request, userinteraction_id)
 
+
+
+
+class ParCoordUserInteractionDataFetchParticipantRest(APIView):
+    pass
+    
+   
+    def post(self, request):
+        js = json.loads(request.body)
+        id = int (js["id"])
+        obj = ParCoordUserInteractionModel.objects.get(pk=id);
+        data = json.dumps(ast.literal_eval(obj.data))
+        return Response(data)
+    

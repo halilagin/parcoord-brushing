@@ -1,0 +1,226 @@
+
+<!--
+classical parallel coordinates
+see: https://bl.ocks.org/jasondavies/1341281
+
+programatic brushing
+see: http://bl.ocks.org/timelyportfolio/5c136de85de1c2abb6fc
+
+ordinal scale brushing
+see: http://bl.ocks.org/chrisbrich/4173587
+
+multiple brushes
+see: http://bl.ocks.org/ludwigschubert/0236fa8594c4b02711b2606a8f95f605
+http://bl.ocks.org/jssolichin/54b4995bd68275691a23
+
+
+context menu
+see: http://bl.ocks.org/jakosz/ce1e63d5149f64ac7ee9
+
+circular arc
+see: http://jsfiddle.net/h9XNz/
+
+spatial sign
+see: https://topepo.github.io/recipes/reference/step_spatialsign.html
+see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
+-->
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  <style>
+
+  svg {
+    font: 10px sans-serif;
+  }
+
+  .background path {
+    fill: none;
+    stroke: #ddd;
+    shape-rendering: crispEdges;
+  }
+
+  .foreground path {
+    fill: none;
+    stroke: steelblue;
+  }
+
+  .brush .extent {
+    fill-opacity: .3;
+    stroke: #fff;
+    shape-rendering: crispEdges;
+  }
+
+  .clusterbrush_panel {
+    background-color: #f8efc0;
+  }
+
+  .axis line,
+  .axis path {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+
+  .axis text {
+    text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+    cursor: move;
+  }
+
+  .cluster_brush_c2{
+    opacity: 0.6;
+    fill:green;
+    background-color: #f8efc0;
+  }
+
+  .cluster_brush_c1{
+    opacity: 0.8;
+    fill:green;
+    background-color: #f8efc0;
+  }
+
+  .radial_brush_b{
+    opacity: 0.2;
+    background-color: #f8efc0;
+    fill:green;
+  }
+
+  .radial_brush_h2 {
+    opacity: 0.2;
+    fill:green;
+    background-color: #f8efc0;
+
+  }
+  .radial_brush_h1 {
+    opacity: 0.2;
+    fill:green;
+    background-color: #f8efc0;
+
+  }
+
+
+  .ss_point_active{
+    background-color: red;
+    fill:red !important;
+  }
+
+
+  .OA_buttons {
+    height: 30px;
+    background-color: #f8efc0;
+    -moz-border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -khtml-border-radius: 20px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    overflow:hidden;
+  }
+
+  .OA_button {
+    display:table;
+    margin: 3px;
+
+
+  }
+
+
+
+  .OA_twowayselect_container{
+    display:flex;
+  }
+  .OA_twowayselect_container > div{
+    flex:1;
+  }
+
+
+  .OA_twowayselect_left{
+    width: 150px !important;
+    min-width: 150px;
+
+  }
+
+
+  .OA_twowayselect_right{
+    width: 150px !important;
+    min-width: 150px;
+
+  }
+
+  .OA_twowayselect_middle{
+    width: 30px !important;
+    max-width: 30px;
+    margin:auto;
+  }
+
+
+
+  .debrmanager_dialog_q{
+    margin-top:30px;
+  }
+
+  .debrmanager_dialog_q_text{
+    font-weight: bold;
+    font-size: 14px;
+  }
+
+  .debrmanager_dialog_q_choice{
+    margin-top:7px;
+  }
+
+  .debrmanager_dialog_container{
+    background-color: #f8efc0;
+  }
+
+
+  .sslmanager_dialog_container{
+    background-color: #f8efc0;
+  }
+
+  .sslmanager_dialog_q{
+    margin-top:30px;
+  }
+
+  .sslmanager_dialog_q_text{
+    font-weight: bold;
+    font-size: 14px;
+  }
+
+  .sslmanager_dialog_q_choice{
+    margin-top:7px;
+  }
+</style>
+  <link href="/public/js/jqueryui1121/jquery-ui.css" rel="stylesheet">
+  <script src="/public/js/jquery-3.2.1.min.js"></script>
+  <script src="/public/js/jqueryui1121/jquery-ui.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+  var remoteHost=true?"localhost":"34.235.8.207";
+  var remoteUrls={
+    "fetcData":"http://"+remoteHost+":5000/parcoord/breastcancer/fetchData",
+    "kmeans":"http://"+remoteHost+":5000/parcoord/breastcancer/kmeans/oftwovars",
+    "spatialSign":"http://"+remoteHost+":5000/parcoord/breastcancer/spatialsign/oftwovars",
+
+    "userintsSave":"http://"+remoteHost+":5000/parcoord/userints/save",
+    "userintsFetchAll":"http://"+remoteHost+":5000/parcoord/userints/save",
+  };
+</script>
+
+<script type="text/javascript" src="/public/data/js/ResultAnalysisManager.js"></script>
+
+
+
+
+<script type="text/javascript">
+
+
+</script>
+
+
+</body>
+
+</html>

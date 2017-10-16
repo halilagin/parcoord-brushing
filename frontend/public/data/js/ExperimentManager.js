@@ -62,16 +62,25 @@ var Experiment=function (){
 
     $("#ExperimentContainer").append("<button id='ExperimentEnd'>End</button>");
     $("#ExperimentEnd").click(()=>{
-      $.post(remoteUrls.userintsSave, JSON.stringify({"userName":"halil-test2", "personName":"halil-test2","data":experiment.actions}), function(data){
-        console.log("user actions saved!");
-        alert("Experiment is finished! Thank you for your participation.");
+
+      $(".debrmanager_dialog").dialog("open");
+
+      $(".debrmanager_dialog").parent().css({
+        "width":"100%",
+        "height":"100%",
+        "left":'0px',
+        "top":'0px'
       });
+
     });
 
 
 
     this.surveyShortListManager = new SurveyShortListManager();
-    this.surveyShortListManager.init();
+    //this.surveyShortListManager.init();
+    this.debriefingManager = new DebriefingManager({"tasks":["task1","task2","task3","task4","task5","task6","task7","task8","task9"]});
+    //this.debriefingManager.init();
+
   };
 
   this.init();

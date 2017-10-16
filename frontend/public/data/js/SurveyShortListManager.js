@@ -4,9 +4,13 @@
 
 
 var SurveyShortListManager=function (){
+
+  this.checkeds=[];//save for future works. it is saved user actions.
+
+
   this.q3=`
            <div class="sslmanager_dialog_q">
-              <div class="sslmanager_dialog_q_text">If the correlation coefficient between two variables is 0.2 (Pearson correlation), what can be deduced about the relation between these variables (Reminder, Coefficient value can be between -1 and 1)
+              <div class="sslmanager_dialog_q_text">If the Pearson's correlation coefficient between two variables is 0.2, what can be deduced about the relation between these variables (Coefficient value can be between -1 and 1)
 
               </div>
               
@@ -220,6 +224,7 @@ var SurveyShortListManager=function (){
 
 
   this.initDialog = function() {
+    var checkeds__ = this.checkeds;
     $(".sslmanager_dialog").dialog("destroy");
     $(".sslmanager_dialog").remove();
 
@@ -239,6 +244,8 @@ var SurveyShortListManager=function (){
             }
           });
 
+          checkeds__.push($(".sslmanager_dialog_container").html());
+          console.log("checkeds:", checkeds__);
           console.log("your score:", sum);
 
           if (sum>50) {
@@ -281,11 +288,15 @@ var SurveyShortListManager=function (){
         var cb = $(choice).find("label").find("input")[0];
 
         $(cb).prop("checked", false);
-
+        $(cb).removeClass("checked");
         console.log("cb",cb);
       });
 
       t.prop("checked", true);
+      $(t).addClass("checked");
+
+
+
     }
 
 

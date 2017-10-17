@@ -16,6 +16,7 @@ from code.parallelcoord.ParCoordSpatialSign import IrisDataSpatialSign,\
 from django.db import transaction
 from parcoordapp.models import ParCoordUserInteractionModel
 import codecs
+from django.core import serializers
 
 # Create your views here.
 
@@ -206,6 +207,8 @@ class ParCoordUserInteractionDataSaveRest(APIView):
         uid.data = str(payload["data"])
         uid.userName=payload["userName"]
         uid.personName=payload["personName"]
+        uid.testName=payload["testName"]
+                
         uid.save()
         return self.get(request)
     
@@ -237,5 +240,23 @@ class ParCoordUserInteractionDataFetchParticipantRest(APIView):
         id = int (js["id"])
         obj = ParCoordUserInteractionModel.objects.get(pk=id);
         data = json.dumps(ast.literal_eval(obj.data))
+        return Response(data)
+    
+
+class ParCoordUserInteractionDataFetchTestsByNameRest(APIView):
+    pass
+    
+   
+    def post(self, request):
+        js = json.loads(request.body)
+        testName =js["testName"]
+        print("testname",testName)
+        obj = ParCoordUserInteractionModel.objects.filter(testName=testName)
+        data = serializers.serialize('json', obj)
+        data = json.dumps(ast.literal_eval(data))
+
+        #data = json.dumps(ast.literal_eval(obj))
+        #data=obj
+        print(data)
         return Response(data)
     

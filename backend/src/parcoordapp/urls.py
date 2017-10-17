@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^userints/save', views.ParCoordUserInteractionDataSaveRest.as_view(), name="ParCoordUserInteractionDataSaveRestV3"),
     url(r'^userints/fetchAll', views.ParCoordUserInteractionDataFetchAllRest.as_view(), name="ParCoordUserInteractionDataSaveRestV3"),
     url(r'^userints/fetchParticipant', views.ParCoordUserInteractionDataFetchParticipantRest.as_view(), name="ParCoordUserInteractionDataFetchParticipantRestV3"),
+    url(r'^userints/searchByTestName', views.ParCoordUserInteractionDataFetchTestsByNameRest.as_view(), name="ParCoordUserInteractionDataFetchTestsByNameRestV3"),
 
 
 

@@ -1293,7 +1293,7 @@ var DebriefingManager=function (conf){
             "debriefing":checkeds__
           };
 
-          $.post(remoteUrls.userintsSave, JSON.stringify({"userName":"halil-test2", "personName":"halil-test2","data":postedData}), (data)=>{
+          $.post(remoteUrls.userintsSave, JSON.stringify({"testName":"mocktest003","userName":"halil-test2", "personName":"halil-test2","data":postedData}), (data)=>{
             console.log("user actions saved!");
             alert("Experiment is finished! Thank you for your participation.");
             $(this).dialog("close");
@@ -1330,22 +1330,21 @@ var DebriefingManager=function (conf){
     var q = t.parent().parent().parent().parent();
     var singleAnswered = q.find(".debrmanager_dialog_q_choices").hasClass("single_answer");
     if (singleAnswered) {
-      console.log("cbOnChange.singleAnswered:",singleAnswered);
       var choices = t.parent().parent().parent();
       var chkbx = $(choices).children().each((idx, choice)=>{
         var cb = $(choice).find("label").find("input")[0];
 
         $(cb).prop("checked", false);
         $(cb).removeClass("checked");
-        console.log("cb",cb);
       });
 
       t.prop("checked", true);
-      $(t).addClass("checked");
-
-
-
     }
+
+    if (t.prop("checked"))
+      $(t).addClass("checked");
+    else
+      $(t).removeClass("checked");
 
 
   };

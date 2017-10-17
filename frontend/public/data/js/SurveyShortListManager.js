@@ -291,14 +291,15 @@ var SurveyShortListManager=function (){
         $(cb).removeClass("checked");
         console.log("cb",cb);
       });
-
       t.prop("checked", true);
-      $(t).addClass("checked");
-
-
-
     }
 
+
+    //t.prop("checked", true);
+    if (t.prop("checked"))
+      $(t).addClass("checked");
+    else
+      $(t).removeClass("checked");
 
   };
 

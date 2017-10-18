@@ -1293,7 +1293,7 @@ var DebriefingManager=function (conf){
             "debriefing":checkeds__
           };
 
-          $.post(remoteUrls.userintsSave, JSON.stringify({"testName":"mocktest003","userName":"halil-test2", "personName":"halil-test2","data":postedData}), (data)=>{
+          $.post(remoteUrls.userintsSave, JSON.stringify({"testName":"mocktest004","userName":"halil-test2", "personName":"halil-test2","data":postedData}), (data)=>{
             console.log("user actions saved!");
             alert("Experiment is finished! Thank you for your participation.");
             $(this).dialog("close");

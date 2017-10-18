@@ -226,10 +226,10 @@ function VarClusterBrush(container){
       .attr("class", "cluster_brush cluster_brush_c2")
       .attr('cx', cbConfig.brushes[idx].x)
       .attr('cy', cbConfig.brushes[idx].y)
-      .attr('r', cbConfig.brushes[idx].r2)
+      .attr('r', cbConfig.brushes[idx].r2+10-3.0/2) // 3/2 is half radius of handle circle. to make the handle centered.
       .style('fill', "lightgreen")
 
-      .call(this.drag);
+      ;//.call(this.drag);
 
     clusterBrush.b1= g_.append("svg:circle")
       .attr("class", "cluster_brush cluster_brush_c1")
@@ -238,7 +238,7 @@ function VarClusterBrush(container){
       .attr('r', cbConfig.brushes[idx].r1)
       .style('fill', "white")
 
-      .call(this.drag);
+      ;//.call(this.drag);
 
     clusterBrush.b1handle= g_.append("svg:circle")
       .attr("class", "cluster_brush_handle cbhandle_"+idx+"_"+0)
@@ -249,8 +249,8 @@ function VarClusterBrush(container){
 
     clusterBrush.b2handle= g_.append("svg:circle")
       .attr("class", "cluster_brush_handle cbhandle_"+idx+"_"+1)
-      .attr('cx', cbConfig.brushes[idx].x+cbConfig.brushes[idx].r2)
-      .attr('cy', cbConfig.brushes[idx].y)
+      .attr('cx', cbConfig.brushes[idx].x+cbConfig.brushes[idx].r2+6)
+      .attr('cy', cbConfig.brushes[idx].y+8)
       .attr('r', 3)
       .call(this.drag);
 

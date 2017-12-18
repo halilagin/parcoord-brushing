@@ -18,6 +18,8 @@ urlpatterns = [
     url(r'^userints/searchByTestName', views.ParCoordUserInteractionDataFetchTestsByNameRest.as_view(), name="ParCoordUserInteractionDataFetchTestsByNameRestV3"),
 
 
+    url(r'^paperplots/data/poscorr', views.ParCoordPaperPlotsRest.as_view(), name="ParCoordPaperPlotsRestV3"),
+
 
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)

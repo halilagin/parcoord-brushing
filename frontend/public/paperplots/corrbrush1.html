@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+
+    svg {
+      font: 10px sans-serif;
+    }
+
+    .background path {
+      fill: none;
+      stroke: #ddd;
+      shape-rendering: crispEdges;
+    }
+
+    .foreground path {
+      fill: none;
+      stroke: steelblue;
+    }
+
+    .brush .extent {
+      fill-opacity: .3;
+      stroke: #fff;
+      shape-rendering: crispEdges;
+    }
+
+    .clusterbrush_panel {
+      background-color: #f8efc0;
+    }
+
+    .axis line,
+    .axis path {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+
+    .axis text {
+      text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+      cursor: move;
+    }
+
+    .cluster_brush_c2 {
+      opacity: 0.6;
+      fill: green;
+      background-color: #f8efc0;
+    }
+
+    .cluster_brush_c1 {
+      opacity: 0.8;
+      fill: green;
+      background-color: #f8efc0;
+    }
+
+    .radial_brush_b {
+      opacity: 0.2;
+      background-color: #f8efc0;
+      fill: green;
+    }
+
+    .radial_brush_h2 {
+      opacity: 0.2;
+      fill: green;
+      background-color: #f8efc0;
+
+    }
+
+    .radial_brush_h1 {
+      opacity: 0.2;
+      fill: green;
+      background-color: #f8efc0;
+
+    }
+
+    .ss_point_active {
+      background-color: red;
+      fill: red !important;
+    }
+
+    .OA_buttons {
+      height: 30px;
+      background-color: #f8efc0;
+      -moz-border-radius: 20px;
+      -webkit-border-radius: 20px;
+      -khtml-border-radius: 20px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .OA_button {
+      display: table;
+      margin: 3px;
+
+    }
+
+    .OA_twowayselect_container {
+      display: flex;
+    }
+
+    .OA_twowayselect_container > div {
+      flex: 1;
+    }
+
+    .OA_twowayselect_left {
+      width: 150px !important;
+      min-width: 150px;
+
+    }
+
+    .OA_twowayselect_right {
+      width: 150px !important;
+      min-width: 150px;
+
+    }
+
+    .OA_twowayselect_middle {
+      width: 30px !important;
+      max-width: 30px;
+      margin: auto;
+    }
+
+    .debrmanager_dialog_q {
+      margin-top: 30px;
+    }
+
+    .debrmanager_dialog_q_text {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .debrmanager_dialog_q_choice {
+      margin-top: 7px;
+    }
+
+    .debrmanager_dialog_container {
+      background-color: #f8efc0;
+    }
+
+    .sslmanager_dialog_container {
+      background-color: #f8efc0;
+    }
+
+    .sslmanager_dialog_q {
+      margin-top: 30px;
+    }
+
+    .sslmanager_dialog_q_text {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .sslmanager_dialog_q_choice {
+      margin-top: 7px;
+    }
+
+    .corrbrush_panel .extent {
+      fill: #d95f0e;
+
+      opacity: 0.8;
+    }
+
+    .body_{
+      width: 150px;
+      height: 150px;
+
+    }
+
+  </style>
+</head>
+<body class="body_">
+<svg width="150" height="150">
+  <g transform="translate(10,0)">
+    <g class="corrbrushgrid" width="150" height="150" transform="translate(10,0)">
+      <g class="corrbrush_panel estcorrbrush_panel_sepal_len___sepal_w_0" transform="translate(10,0)">
+        <rect y="0" width="70" height="70" fill="#fff7bc"></rect>
+        <g class="estcorrbrush_sigma_sepal_len___sepal_w_0" transform="translate(0,90)">
+          <g class="estcorrbrush_sslider_sepal_len___sepal_w_0" transform="translate(0,0)"
+             style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+            <rect class="background" x="0" width="70" style="visibility: hidden; cursor: crosshair;"></rect>
+            <rect class="extent" x="30.33333333333333" width="9.333333333333329" height="10"
+                  style="cursor: move;"></rect>
+            <g class="resize e" transform="translate(39.66666666666666,0)" style="cursor: ew-resize;">
+              <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+            </g>
+            <g class="resize w" transform="translate(30.33333333333333,0)" style="cursor: ew-resize;">
+              <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+            </g>
+          </g>
+          <g class="axis" style="font-size: 7px;">
+            <g class="tick" transform="translate(0,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">0</text>
+            </g>
+            <g class="tick" transform="translate(11.666666666666666,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">0.5</text>
+            </g>
+            <g class="tick" transform="translate(23.333333333333332,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">1</text>
+            </g>
+            <g class="tick" transform="translate(35,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">1.5</text>
+            </g>
+            <g class="tick" transform="translate(46.666666666666664,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">2</text>
+            </g>
+            <g class="tick" transform="translate(58.333333333333336,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">2.5</text>
+            </g>
+            <g class="tick" transform="translate(70,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">3</text>
+            </g>
+            <path class="domain" d="M0,6V0H70V6"></path>
+          </g>
+        </g>
+        <g class="estcorrbrush_slider_sepal_len___sepal_w_0" transform="translate(0,70)"
+           style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+          <rect class="background" x="0" width="70" style="visibility: hidden; cursor: crosshair;"></rect>
+          <rect class="extent" x="34.5" width="7" height="10" style="cursor: move;"></rect>
+          <g class="resize e" transform="translate(41.5,0)" style="cursor: ew-resize;">
+            <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize w" transform="translate(34.5,0)" style="cursor: ew-resize;">
+            <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+          </g>
+        </g>
+        <path class="estcorrvertpath" stroke="#d95f0e" stroke-width="0.3" fill="none"
+              d="M38.00000000000001,70L38.00000000000001,0"></path>
+        <path class="estcorrhorpath" stroke="#d95f0e" stroke-width="0.3" fill="none"
+              d="M0,40.13227465469824L70,40.13227465469824"></path>
+        <ellipse class="estcorrbrush_ellipse_sepal_len_0" cx="35" cy="35" rx="36.86430972077933" ry="33.03063227990731"
+                 fill="none" stroke="#000" transform="rotate(44.99999999999999,35,35)"></ellipse>
+      </g>
+    </g>
+  </g>
+</svg>
+</body>
+</html>

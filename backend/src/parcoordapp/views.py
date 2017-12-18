@@ -17,7 +17,7 @@ from django.db import transaction
 from parcoordapp.models import ParCoordUserInteractionModel
 import codecs
 from django.core import serializers
-
+import numpy as np
 # Create your views here.
 
 
@@ -260,3 +260,30 @@ class ParCoordUserInteractionDataFetchTestsByNameRest(APIView):
         print(data)
         return Response(data)
     
+
+
+
+class ParCoordPaperPlotsRest(APIView):
+    pass
+    
+    
+    def genData(self,type):
+        mean = [3, 3]
+        cov = [[1, 0.8], [0.8, 1]]
+        
+        if type=="negative":
+            cov = [[1, -0.8], [-0.8, 1]]
+        elif type=="random":
+            cov = [[1, 0], [0, 1]]
+        data =  np.random.multivariate_normal(mean, cov, 200)
+        return data
+   
+    def post(self, request):
+        type = request.POST.get('type')
+        data = self.genData(type)
+        return Response(data.tolist())
+    
+    def get(self, request):
+        type = request.GET.get('type')
+        data = self.genData(type)
+        return Response(data.tolist())

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+
+    svg {
+      font: 10px sans-serif;
+    }
+
+    .background path {
+      fill: none;
+      stroke: #ddd;
+      shape-rendering: crispEdges;
+    }
+
+    .foreground path {
+      fill: none;
+      stroke: steelblue;
+    }
+
+    .brush .extent {
+      fill-opacity: .3;
+      stroke: #fff;
+      shape-rendering: crispEdges;
+    }
+
+    .clusterbrush_panel {
+      background-color: #f8efc0;
+    }
+
+    .axis line,
+    .axis path {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+
+    .axis text {
+      text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+      cursor: move;
+    }
+
+    .cluster_brush_c2 {
+      opacity: 0.6;
+      fill: green;
+      background-color: #f8efc0;
+    }
+
+    .cluster_brush_c1 {
+      opacity: 0.8;
+      fill: green;
+      background-color: #f8efc0;
+    }
+
+    .radial_brush_b {
+      opacity: 0.2;
+      background-color: #f8efc0;
+      fill: green;
+    }
+
+    .radial_brush_h2 {
+      opacity: 0.2;
+      fill: green;
+      background-color: #f8efc0;
+
+    }
+
+    .radial_brush_h1 {
+      opacity: 0.2;
+      fill: green;
+      background-color: #f8efc0;
+
+    }
+
+    .ss_point_active {
+      background-color: red;
+      fill: red !important;
+    }
+
+    .OA_buttons {
+      height: 30px;
+      background-color: #f8efc0;
+      -moz-border-radius: 20px;
+      -webkit-border-radius: 20px;
+      -khtml-border-radius: 20px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .OA_button {
+      display: table;
+      margin: 3px;
+
+    }
+
+    .OA_twowayselect_container {
+      display: flex;
+    }
+
+    .OA_twowayselect_container > div {
+      flex: 1;
+    }
+
+    .OA_twowayselect_left {
+      width: 150px !important;
+      min-width: 150px;
+
+    }
+
+    .OA_twowayselect_right {
+      width: 150px !important;
+      min-width: 150px;
+
+    }
+
+    .OA_twowayselect_middle {
+      width: 30px !important;
+      max-width: 30px;
+      margin: auto;
+    }
+
+    .debrmanager_dialog_q {
+      margin-top: 30px;
+    }
+
+    .debrmanager_dialog_q_text {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .debrmanager_dialog_q_choice {
+      margin-top: 7px;
+    }
+
+    .debrmanager_dialog_container {
+      background-color: #f8efc0;
+    }
+
+    .sslmanager_dialog_container {
+      background-color: #f8efc0;
+    }
+
+    .sslmanager_dialog_q {
+      margin-top: 30px;
+    }
+
+    .sslmanager_dialog_q_text {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .sslmanager_dialog_q_choice {
+      margin-top: 7px;
+    }
+
+    .corrbrush_panel .extent {
+      fill: #d95f0e;
+
+      opacity: 0.8;
+    }
+
+    .body_{
+      width: 150px;
+      height: 150px;
+
+    }
+
+    .panelbackground {
+      fill:#ffffbf;
+    }
+
+    .ellipseline{
+      stroke:#fc8d59;
+      stroke-width: 1.5px;
+    }
+
+  </style>
+</head>
+<body class="body_">
+<svg width="450" height="150">
+
+
+  <g transform="translate(10,0)">
+    <g class="corrbrushgrid" width="150" height="150" transform="translate(10,0)">
+
+      <g class="corrbrush_panel estcorrbrush_panel_class___f1_0" transform="translate(0,0)">
+        <rect class="panelbackground" y="0" width="70" height="70" ></rect>
+        <ellipse class="estcorrbrush_ellipse_class_0 ellipseline" cx="35" cy="35" rx="18.185573226188545" ry="46.03569187527145"
+                 fill="none" stroke="#000" transform="rotate(45.00000000000001,35,35)"></ellipse>
+      </g>
+    </g>
+    <g width="150" height="150" transform="translate(0,85)">
+      <text x="35" y="0" font-family="Verdana" font-size="12" fill="black">(a)</text>
+    </g>
+
+  </g>
+
+
+
+
+  <g transform="translate(90,0)">
+    <g class="corrbrushgrid" width="150" height="150" transform="translate(10,0)">
+
+      <g class="corrbrush_panel estcorrbrush_panel_class___f1_0" transform="translate(0,0)">
+        <rect class="panelbackground" y="0" width="70" height="70"></rect>
+        <ellipse class="estcorrbrush_ellipse_class_0 ellipseline" cx="35" cy="35" rx="35" ry="35"
+                 fill="none" stroke="#000" transform="rotate(45.00000000000001,35,35)"></ellipse>
+      </g>
+    </g>
+
+    <g width="150" height="150" transform="translate(0,85)">
+      <text x="35" y="0" font-family="Verdana" font-size="12" fill="black">(b)</text>
+    </g>
+  </g>
+
+
+  <g transform="translate(170,0)">
+    <g class="corrbrushgrid" width="150" height="150" transform="translate(10,0)">
+
+      <g class="corrbrush_panel estcorrbrush_panel_class___f1_0" transform="translate(0,0)">
+        <rect class="panelbackground" y="0" width="70" height="70"></rect>
+        <ellipse class="estcorrbrush_ellipse_class_0 ellipseline" cx="35" cy="35" rx="46.03569187527145" ry="18.185573226188545"
+                 fill="none" stroke="#000" transform="rotate(45.00000000000001,35,35)"></ellipse>
+      </g>
+    </g>
+    <g width="150" height="150" transform="translate(0,85)">
+      <text x="35" y="0" font-family="Verdana" font-size="12" fill="black">(c)</text>
+    </g>
+
+  </g>
+
+
+
+</svg>
+</body>
+</html>

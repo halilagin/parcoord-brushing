@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+
+    svg {
+      font: 10px sans-serif;
+    }
+
+    .background path {
+      fill: none;
+      stroke: #ddd;
+      shape-rendering: crispEdges;
+    }
+
+    .foreground path {
+      fill: none;
+      stroke: steelblue;
+    }
+
+    .brush .extent {
+      fill-opacity: .3;
+      stroke: #fff;
+      shape-rendering: crispEdges;
+    }
+
+    .clusterbrush_panel {
+      background-color: #f8efc0;
+    }
+
+    .axis line,
+    .axis path {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+
+    .axis text {
+      text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+      cursor: move;
+    }
+
+    .cluster_brush_c2 {
+      opacity: 0.6;
+      fill: green;
+      background-color: #f8efc0;
+    }
+
+    .cluster_brush_c1 {
+      opacity: 0.8;
+      fill: green;
+      background-color: #f8efc0;
+    }
+
+    .radial_brush_b {
+      opacity: 0.2;
+      background-color: #f8efc0;
+      fill: green;
+    }
+
+    .radial_brush_h2 {
+      opacity: 0.2;
+      fill: green;
+      background-color: #f8efc0;
+
+    }
+
+    .radial_brush_h1 {
+      opacity: 0.2;
+      fill: green;
+      background-color: #f8efc0;
+
+    }
+
+    .ss_point_active {
+      background-color: red;
+      fill: red !important;
+    }
+
+    .OA_buttons {
+      height: 30px;
+      background-color: #f8efc0;
+      -moz-border-radius: 20px;
+      -webkit-border-radius: 20px;
+      -khtml-border-radius: 20px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .OA_button {
+      display: table;
+      margin: 3px;
+
+    }
+
+    .OA_twowayselect_container {
+      display: flex;
+    }
+
+    .OA_twowayselect_container > div {
+      flex: 1;
+    }
+
+    .OA_twowayselect_left {
+      width: 150px !important;
+      min-width: 150px;
+
+    }
+
+    .OA_twowayselect_right {
+      width: 150px !important;
+      min-width: 150px;
+
+    }
+
+    .OA_twowayselect_middle {
+      width: 30px !important;
+      max-width: 30px;
+      margin: auto;
+    }
+
+    .debrmanager_dialog_q {
+      margin-top: 30px;
+    }
+
+    .debrmanager_dialog_q_text {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .debrmanager_dialog_q_choice {
+      margin-top: 7px;
+    }
+
+    .debrmanager_dialog_container {
+      background-color: #f8efc0;
+    }
+
+    .sslmanager_dialog_container {
+      background-color: #f8efc0;
+    }
+
+    .sslmanager_dialog_q {
+      margin-top: 30px;
+    }
+
+    .sslmanager_dialog_q_text {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .sslmanager_dialog_q_choice {
+      margin-top: 7px;
+    }
+
+    .corrbrush_panel .extent {
+      fill: #d95f0e;
+
+      opacity: 0.8;
+    }
+
+    .body_{
+      width: 150px;
+      height: 150px;
+
+    }
+
+    .panelbackground {
+      fill:#ffffbf;
+    }
+
+    .ellipseline{
+      stroke:#fc8d59;
+      stroke-width: 1.5px;
+    }
+
+
+    .arrow{
+      stroke-width:0.5;
+      stroke:#000;
+
+    }
+
+
+    #arrow{
+      stroke-width:0.5;
+    }
+
+    .gaussianline{
+      stroke: #00f;
+      fill:none;
+    }
+
+  </style>
+
+  <link href="/public/js/jqueryui1121/jquery-ui.css" rel="stylesheet">
+  <script src="/public/js/jquery-3.2.1.min.js"></script>
+  <script src="/public/js/jqueryui1121/jquery-ui.js"></script>
+
+</head>
+<body class="body_">
+
+<script type="text/javascript">
+  var remoteHost=true?"localhost":"34.235.8.207";
+  var remoteUrls={
+    "fetcData":"http://"+remoteHost+":5000/parcoord/iris/fetchData",
+    "kmeans":"http://"+remoteHost+":5000/parcoord/iris/kmeans/oftwovars",
+    "spatialSign":"http://"+remoteHost+":5000/parcoord/iris/spatialsign/oftwovars",
+
+    "userintsSave":"http://"+remoteHost+":5000/parcoord/userints/save",
+    "userintsFetchAll":"http://"+remoteHost+":5000/parcoord/userints/save",
+
+  };
+</script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+
+<svg id="mainsvg" width="450" height="300">
+
+  <g transform="translate(20,0)" id="poscorr">
+
+  </g>
+  <g transform="translate(110,0)" id="randomcorr">
+
+  </g>
+
+  <g transform="translate(200,0)" id="negcorr">
+
+  </g>
+
+  <g transform="translate(10,90)">
+    <g class="corrbrushgrid" width="150" height="150" transform="translate(10,0)">
+
+      <g class="corrbrush_panel estcorrbrush_panel_class___f1_0" transform="translate(0,0)">
+        <rect class="panelbackground" y="0" width="70" height="70" ></rect>
+        <ellipse class="estcorrbrush_ellipse_class_0 ellipseline" cx="35" cy="35" rx="18.185573226188545" ry="46.03569187527145"
+                 fill="none" stroke="#000" transform="rotate(45.00000000000001,35,35)"></ellipse>
+      </g>
+    </g>
+    <g width="150" height="150" transform="translate(0,85)">
+      <text x="35" y="0" font-family="Verdana" font-size="12" fill="black">(a)</text>
+    </g>
+
+  </g>
+
+
+
+
+  <g transform="translate(100,90)">
+    <g class="corrbrushgrid" width="150" height="150" transform="translate(10,0)">
+
+      <g class="corrbrush_panel estcorrbrush_panel_class___f1_0" transform="translate(0,0)">
+        <rect class="panelbackground" y="0" width="70" height="70"></rect>
+        <ellipse class="estcorrbrush_ellipse_class_0 ellipseline" cx="35" cy="35" rx="35" ry="35"
+                 fill="none" stroke="#000" transform="rotate(45.00000000000001,35,35)"></ellipse>
+      </g>
+    </g>
+
+    <g width="150" height="150" transform="translate(0,85)">
+      <text x="35" y="0" font-family="Verdana" font-size="12" fill="black">(b)</text>
+    </g>
+  </g>
+
+
+  <g transform="translate(190,90)">
+    <g class="corrbrushgrid" width="150" height="150" transform="translate(10,0)">
+
+      <g class="corrbrush_panel estcorrbrush_panel_class___f1_0" transform="translate(0,0)">
+        <rect class="panelbackground" y="0" width="70" height="70"></rect>
+        <ellipse class="estcorrbrush_ellipse_class_0 ellipseline" cx="35" cy="35" rx="46.03569187527145" ry="18.185573226188545"
+                 fill="none" stroke="#000" transform="rotate(45.00000000000001,35,35)"></ellipse>
+      </g>
+    </g>
+    <g width="150" height="150" transform="translate(0,85)">
+      <text x="35" y="0" font-family="Verdana" font-size="12" fill="black">(c)</text>
+    </g>
+
+  </g>
+
+  <g transform="translate(20,190)" id="ellipseeigen">
+    <!--<path id="lambda1" transform="translate(0,0)scale(0.006,-0.006)" xmlns="http://www.w3.org/2000/svg"  stroke="none" fill="rgb(0,0,0)" d="M967,302 C956,196,914,144,840,144 C730,144,680,268,636,474L565,791 C515,1017,478,1165,454,1236 C409,1374,342,1433,268,1433 C149,1433,73,1295,69,1109H105 C114,1253,194,1287,252,1287 C333,1287,404,1200,453,936 L25,14H214L512,690L598,302 C630,164,664,79,702,47 C741,15,781,0,823,0 C895,0,1003,48,1003,302Z"/>-->
+
+
+    <g transform="translate(50,0)scale(1,1)" id="xgaussian"  ></g>
+    <g transform="translate(0,-50)rotate(90,0,100)" id="ygaussian"></g>
+  </g>
+
+  <g transform="translate(160,190)" id="ellipsebrush">
+    <!--<path id="lambda1" transform="translate(0,0)scale(0.006,-0.006)" xmlns="http://www.w3.org/2000/svg"  stroke="none" fill="rgb(0,0,0)" d="M967,302 C956,196,914,144,840,144 C730,144,680,268,636,474L565,791 C515,1017,478,1165,454,1236 C409,1374,342,1433,268,1433 C149,1433,73,1295,69,1109H105 C114,1253,194,1287,252,1287 C333,1287,404,1200,453,936 L25,14H214L512,690L598,302 C630,164,664,79,702,47 C741,15,781,0,823,0 C895,0,1003,48,1003,302Z"/>-->
+
+
+    <!--<g transform="translate(50,0)scale(1,1)" id="xgaussian"  ></g>-->
+    <g transform="translate(80,-50)rotate(90,0,100)" id="brush_ygaussian"></g>
+  </g>
+
+</svg>
+
+
+<script type="application/javascript">
+
+  function drawScatter(data, panelId){
+
+    //var data = [[5,3], [10,17], [15,4], [2,8]];
+
+    var margin = {top: 0, right: 0, bottom: 0, left: 0}
+      , width = 70
+      , height = 70;
+
+    var x = d3.scale.linear()
+      .domain([0, 6*Math.sqrt(2)])
+      .range([ 0, width ]);
+
+    var y = d3.scale.linear()
+      .domain([0, 6*Math.sqrt(2)])
+      .range([ height, 0 ]);
+
+//    var chart = d3.select('body')
+//      .append('svg:svg')
+//      .attr('width', width + margin.right + margin.left)
+//      .attr('height', height + margin.top + margin.bottom)
+//      .attr('class', 'chart');
+
+    var chart = d3.select("#"+panelId);
+
+    var main = chart.append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+      .attr('width', width)
+      .attr('height', height)
+      .attr('class', 'main');
+
+    // draw the x axis
+    var xAxis = d3.svg.axis()
+      .scale(x)
+      .orient('bottom');
+
+    main.append('g')
+      .attr('transform', 'translate(0,' + height + ')')
+      .attr('class', 'main axis date')
+      .call(xAxis);
+
+    // draw the y axis
+    var yAxis = d3.svg.axis()
+      .scale(y)
+      .orient('left');
+
+    main.append('g')
+      .attr('transform', 'translate(0,0)')
+      .attr('class', 'main axis date')
+      .call(yAxis);
+
+    var g = main.append("svg:g");
+
+    g.selectAll("scatter-dots")
+      .data(data)
+      .enter().append("svg:circle")
+      .attr("cx", function (d,i) { return x(d[0]); } )
+      .attr("cy", function (d) { return y(d[1]); } )
+      .attr("r", 1.2);
+
+  }
+
+
+  function drawEllipseBrush(panelId) {
+    var lambdaD = "M967,302 C956,196,914,144,840,144 C730,144,680,268,636,474L565,791 C515,1017,478,1165,454,1236 C409,1374,342,1433,268,1433 C149,1433,73,1295,69,1109H105 C114,1253,194,1287,252,1287 C333,1287,404,1200,453,936 L25,14H214L512,690L598,302 C630,164,664,79,702,47 C741,15,781,0,823,0 C895,0,1003,48,1003,302Z";
+    var sigmaD = "M 6 5 L 6.406531 20.35309 L 194.7323 255.1056 L 4.31761 481.6469 L 3.767654 495.9135 L 373 494 C 376.606 448.306 386.512 401.054 395 356 L 383 353 C 371.817 378.228 363.867 405.207 340 421.958 C 313.834 440.322 279.304 438 249 438 L 79 438 L 252.2885 228.6811 L 96.04328 33.3622 L 187 32.99999 C 245.309 32.99999 328.257 18.91731 351.329 89.00002 C 355.273 100.98 358.007 113.421 359 126 L 372 126 L 362 5 L 6 5 L 6 5 L 6 5 L 6 5 L 6 5 z";
+
+    var margin = {top: 0, right: 0, bottom: 0, left: 0}
+      , width = 100
+      , height = 100;
+
+    var x = d3.scale.linear()
+      .domain([0, 6*Math.sqrt(2)])
+      .range([ 0, width ]);
+
+    var y = d3.scale.linear()
+      .domain([0, 6*Math.sqrt(2)])
+      .range([ height, 0 ]);
+
+//    var chart = d3.select('body')
+//      .append('svg:svg')
+//      .attr('width', width + margin.right + margin.left)
+//      .attr('height', height + margin.top + margin.bottom)
+//      .attr('class', 'chart');
+
+    var chart = d3.select("#"+panelId);
+
+    var main = chart.append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+      .attr('width', width)
+      .attr('height', height)
+      .attr('class', 'main');
+
+    // draw the x axis
+    var xAxis = d3.svg.axis()
+      .scale(x)
+      .ticks(0)
+      .orient('bottom');
+
+    main.append('g')
+      .attr('transform', 'translate(0,' + height + ')')
+      .attr('class', 'main axis date')
+      .call(xAxis);
+
+    // draw the y axis
+    var yAxis = d3.svg.axis()
+      .scale(y)
+      .ticks(0)
+      .orient('left');
+
+    main.append('g')
+      .attr('transform', 'translate(0,0)')
+      .attr('class', 'main axis date')
+      .call(yAxis);
+
+    d3.select("#"+panelId).selectAll(".ellipseeigen")
+      .data([0]).enter()
+      .append("ellipse")
+      .attr("class", "ellipseeigen")
+      .attr("cx", 50)
+      .attr("cy", 50)
+      .attr("rx", 12)
+      .attr("ry", 40)
+      .attr("fill", "none")
+      .attr("stroke", "#f00")
+      .attr("transform", (d, i) => {
+        return "rotate(45,50,50)"
+      });
+
+
+
+
+    var defs = d3.select("#mainsvg").append("defs");
+
+    defs.append("marker")
+      .attr({
+        "id":"arrow",
+        "viewBox":"0 -5 10 10",
+        "refX":5,
+        "refY":0,
+        "markerWidth":8,
+        "markerHeight":8,
+        "orient":"auto"
+      })
+      .append("path")
+      .attr("d", "M0,-5L10,0L0,5")
+      .attr("class","arrowHead");
+
+
+
+
+
+
+
+
+    var gxline = d3.svg.line()
+      .x(function(d) {
+        return x(d.q);
+      })
+      .y(function(d) {
+        return y(-d.p);
+      });
+
+    var gyline = d3.svg.line()
+      .x(function(d) {
+        return x(d.q);
+      })
+      .y(function(d) {
+        return y(d.p);
+      });
+
+//    drawXGaussian("xgaussian",x,y,gxline);
+    drawXGaussian("brush_ygaussian",x,y, gyline);
+
+
+    d3.select("#"+panelId).append("line")
+        .attr("x1", 50)
+        .attr("y1", 34)
+        .attr("x2", 50)
+        .attr("y2", 67)
+        .attr("stroke-width", 1.5)
+        .attr("stroke", "#00f")
+      .attr("stroke-dasharray","1, 1")
+      ;
+
+    d3.select("#"+panelId).append("line")
+      .attr("x1", 50)
+      .attr("y1", 67)
+      .attr("x2", 50)
+      .attr("y2", 100)
+      .attr("stroke-width", 0.5)
+      .attr("stroke", "#000")
+    ;
+
+    d3.select("#"+panelId).append("line")
+      .attr("x1", 50)
+      .attr("y1", 34)
+      .attr("x2", 86)
+      .attr("y2", 34)
+      .attr("stroke-width", 0.5)
+      .attr("stroke", "#000")
+      .attr("stroke-dasharray","1, 1")
+    ;
+
+    d3.select("#"+panelId).append("line")
+      .attr("x1", 50)
+      .attr("y1", 67)
+      .attr("x2", 86)
+      .attr("y2", 67)
+      .attr("stroke-width", 0.5)
+      .attr("stroke", "#000")
+      .attr("stroke-dasharray","1, 1")
+    ;
+
+
+    d3.select("#"+panelId).append("line")
+      .attr("x1", 90)
+      .attr("y1", 50)
+      .attr("x2", 0)
+      .attr("y2", 50)
+      .attr("stroke-width", 0.5)
+      .attr("stroke", "#000")
+      .attr("stroke-dasharray","1, 1")
+    ;
+
+    d3.select("#"+panelId).append("text")
+      .attr("x", -15)
+      .attr("y", 50)
+      .attr("font-size","12")
+      .attr("font-style","italic")
+      .attr("fill","#00f")
+
+      .text("μ")
+    ;
+
+    d3.select("#"+panelId).append("text")
+      .attr("x", -7)
+      .attr("y", 53)
+      .attr("font-size","5")
+      .attr("fill","#00f")
+      .text("2")
+    ;
+
+
+
+
+    d3.select("#"+panelId).append("text")
+      .attr("x", 45)
+      .attr("y", 107)
+      .attr("font-size","12")
+      .attr("font-style","italic")
+      .text("μ")
+    ;
+
+    d3.select("#"+panelId).append("text")
+      .attr("x", 53)
+      .attr("y", 109)
+      .attr("font-size","5")
+      .text("1")
+    ;
+
+    d3.select("#"+panelId).append("path")
+      .attr("d", sigmaD)
+      .attr("fill","#00f")
+      .attr("transform","translate(98,47)scale(0.01,0.01)")
+    ;
+
+    d3.select("#"+panelId).append("text")
+      .attr("x", 102)
+      .attr("y", 54)
+      .attr("fill","#00f")
+      .attr("font-size","4")
+      .text("2")
+    ;
+
+
+
+
+    d3.select("#"+panelId).append("line")
+      .attr("x1", 100)
+      .attr("y1", 45)
+      .attr("x2", 100)
+      .attr("y2", 36)
+      .attr("stroke-width", 0.5)
+      .attr("class","arrow")
+      .attr("marker-end","url(#arrow)")
+      .attr("stroke", "#000");
+
+    d3.select("#"+panelId).append("line")
+      .attr("x1", 100)
+      .attr("y1", 55)
+      .attr("x2", 100)
+      .attr("y2", 64)
+      .attr("stroke-width", 0.5)
+      .attr("class","arrow")
+      .attr("marker-end","url(#arrow)")
+      .attr("stroke", "#000");
+
+
+  }
+
+
+
+
+  function drawXGaussian(panelId,x,y,line) {
+
+      var data =[];
+    function getData() {
+
+      for (var i = 0; i < 1000; i++) {
+        var q = normal(); // calc random draw from normal dist
+        var p = gaussian(q); // calc prob of rand draw
+        var el = {
+          "q": q,
+          "p": p
+        };
+        data.push(el);
+      };
+
+      // need to sort for plotting
+      //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+      data.sort(function(x, y) {
+        return x.q - y.q;
+      });
+
+      data = data.slice(60,940);
+    }
+
+    // from http://bl.ocks.org/mbostock/4349187
+    // Sample from a normal distribution with mean 0, stddev 1.
+    function normal() {
+      var x = 0,
+        y = 0,
+        rds, c;
+      do {
+        x = Math.random() * 2 - 1;
+        y = Math.random() * 2 - 1;
+        rds = x * x + y * y;
+      } while (rds == 0 || rds > 1);
+      c = Math.sqrt(-2 * Math.log(rds) / rds); // Box-Muller transform
+      return x * c; // throw away extra sample y * c
+    }
+
+    //taken from Jason Davies science library
+    // https://github.com/jasondavies/science.js/
+    function gaussian(x_) {
+      var gaussianConstant = 1 / Math.sqrt(2 * Math.PI),
+        mean = 0,
+        sigma = 0.4;
+
+      x_ = (x_ - mean) / sigma;
+      return gaussianConstant * Math.exp(-.5 * x_ * x_) / sigma;
+    };
+
+
+
+    getData();
+
+
+    d3.select("#"+panelId).append("path")
+      .datum(data)
+      .attr("class", "gaussianline")
+      .attr("d", line);
+
+
+
+  }
+
+
+  $().ready(function () {
+
+    $.getJSON("http://localhost:5000/parcoord/paperplots/data/poscorr/?type=positive", function (data_) {//type:random,negative,positive
+      drawScatter(data_, "poscorr");
+
+    });
+
+    $.getJSON("http://localhost:5000/parcoord/paperplots/data/poscorr/?type=random", function (data_) {//type:random,negative,positive
+      drawScatter(data_, "randomcorr");
+
+    });
+
+    $.getJSON("http://localhost:5000/parcoord/paperplots/data/poscorr/?type=negative", function (data_) {//type:random,negative,positive
+      drawScatter(data_, "negcorr");
+
+    });
+
+    //drawEllipseEigens("ellipseeigen");
+    drawEllipseBrush("ellipsebrush");
+
+
+  });
+
+</script>
+</body>
+</html>

@@ -57,7 +57,7 @@ class MultiModePlot(object):
         gmm.fit(samples)
         return np.array(gmm.means_).ravel().tolist(), np.array(np.sqrt(gmm.covariances_)).ravel().tolist()
         
-    def start(self, mu, sigma):
+    def start(self, mu, sigma, filename):
         pass
                 
         samples, dists = self.getData(mu, sigma)
@@ -107,7 +107,8 @@ class MultiModePlot(object):
             )
         ax.add_patch(rect3)
         
-        plt.show()
+        #plt.show()
+        plt.savefig("/Users/halil/Downloads/"+filename, format="svg")
 #         sns.distplot(samples)
 #         plt.show()
 #         
@@ -117,7 +118,7 @@ class MultiModePlot(object):
 mu = [5, 12, 18]
 sigma = [2, 3, 3]
 mmp = MultiModePlot()
-mmp.start(mu,sigma)
+mmp.start(mu,sigma, "gmmlines1.svg")
 
 # do em for original data. produces gmm lines from the em clusters. do sorting to make brushes sorted. as in original data.
 em_mu, em_sigma = mmp.calcEM(mu, sigma)
@@ -127,7 +128,7 @@ em_mu1 = em_zip1.T[0].tolist()
 em_sigma1 = em_zip1.T[1].tolist()
 print (em_mu1,em_sigma1)   
 
-mmp.start(em_mu1,em_sigma1)
+mmp.start(em_mu1,em_sigma1,"gmmlines2.svg")
 
     
         

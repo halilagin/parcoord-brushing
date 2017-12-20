@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+
+    svg {
+      font: 10px sans-serif;
+    }
+
+    .background path {
+      fill: none;
+      stroke: #ddd;
+      shape-rendering: crispEdges;
+    }
+
+    .foreground path {
+      fill: none;
+      stroke: steelblue;
+    }
+
+    .brush .extent {
+      fill-opacity: .3;
+      stroke: #fff;
+      shape-rendering: crispEdges;
+    }
+
+    .clusterbrush_panel {
+      background-color: #f8efc0;
+    }
+
+    .axis line,
+    .axis path {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+
+    .axis text {
+      text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+      cursor: move;
+    }
+
+    .cluster_brush_c2 {
+      opacity: 0.6;
+      fill: green;
+      background-color: #f8efc0;
+    }
+
+    .cluster_brush_c1 {
+      opacity: 0.8;
+      fill: green;
+      background-color: #f8efc0;
+    }
+
+    .radial_brush_b {
+      opacity: 0.2;
+      background-color: #f8efc0;
+      fill: green;
+    }
+
+    .radial_brush_h2 {
+      opacity: 0.2;
+      fill: green;
+      background-color: #f8efc0;
+
+    }
+
+    .radial_brush_h1 {
+      opacity: 0.2;
+      fill: green;
+      background-color: #f8efc0;
+
+    }
+
+    .ss_point_active {
+      background-color: red;
+      fill: red !important;
+    }
+
+    .OA_buttons {
+      height: 30px;
+      background-color: #f8efc0;
+      -moz-border-radius: 20px;
+      -webkit-border-radius: 20px;
+      -khtml-border-radius: 20px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .OA_button {
+      display: table;
+      margin: 3px;
+
+    }
+
+    .OA_twowayselect_container {
+      display: flex;
+    }
+
+    .OA_twowayselect_container > div {
+      flex: 1;
+    }
+
+    .OA_twowayselect_left {
+      width: 150px !important;
+      min-width: 150px;
+
+    }
+
+    .OA_twowayselect_right {
+      width: 150px !important;
+      min-width: 150px;
+
+    }
+
+    .OA_twowayselect_middle {
+      width: 30px !important;
+      max-width: 30px;
+      margin: auto;
+    }
+
+    .debrmanager_dialog_q {
+      margin-top: 30px;
+    }
+
+    .debrmanager_dialog_q_text {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .debrmanager_dialog_q_choice {
+      margin-top: 7px;
+    }
+
+    .debrmanager_dialog_container {
+      background-color: #f8efc0;
+    }
+
+    .sslmanager_dialog_container {
+      background-color: #f8efc0;
+    }
+
+    .sslmanager_dialog_q {
+      margin-top: 30px;
+    }
+
+    .sslmanager_dialog_q_text {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .sslmanager_dialog_q_choice {
+      margin-top: 7px;
+    }
+
+    .corrbrush_panel .extent {
+      fill: #d95f0e;
+
+      opacity: 0.8;
+    }
+
+    .corrbrush_panel .ellrect{
+      fill:#fff7bc !important;
+
+      opacity: 0.8;
+    }
+
+    .body_ {
+      width: 150px;
+      height: 150px;
+
+    }
+
+    .panelbackground {
+      fill: #ffffbf;
+    }
+
+    .ellipseline {
+      stroke: #fc8d59;
+      stroke-width: 1.5px;
+    }
+
+    .arrow {
+      stroke-width: 0.5;
+      stroke: #000;
+
+    }
+
+    #arrow {
+      stroke-width: 0.5;
+    }
+
+    .gaussianline {
+      stroke: #00f;
+      fill: none;
+    }
+
+  </style>
+
+  <link href="/public/js/jqueryui1121/jquery-ui.css" rel="stylesheet">
+  <script src="/public/js/jquery-3.2.1.min.js"></script>
+  <script src="/public/js/jqueryui1121/jquery-ui.js"></script>
+
+</head>
+<body class="body_">
+
+<script type="text/javascript">
+  var remoteHost = true ? "localhost" : "34.235.8.207";
+  var remoteUrls = {
+    "fetcData": "http://" + remoteHost + ":5000/parcoord/iris/fetchData",
+    "kmeans": "http://" + remoteHost + ":5000/parcoord/iris/kmeans/oftwovars",
+    "spatialSign": "http://" + remoteHost + ":5000/parcoord/iris/spatialsign/oftwovars",
+
+    "userintsSave": "http://" + remoteHost + ":5000/parcoord/userints/save",
+    "userintsFetchAll": "http://" + remoteHost + ":5000/parcoord/userints/save",
+
+  };
+</script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<svg width="750" height="700">
+  <g transform="translate(10,30)">
+    <g class="corrbrushgrid" width="750" height="400" transform="translate(0,10)">
+      <g class="corrbrush_panel estcorrbrush_panel_sepal_len___sepal_w_0" transform="translate(123,420)">
+        <rect y="0" width="70" height="70" class="ellrect"></rect>
+        <g class="estcorrbrush_sigma_sepal_len___sepal_w_0" transform="translate(0,90)">
+          <g class="estcorrbrush_sslider_sepal_len___sepal_w_0" transform="translate(0,0)"
+             style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+            <rect class="background" x="0" width="70" style="visibility: hidden; cursor: crosshair;"></rect>
+            <rect class="extent" x="7.333333333333332" width="9.333333333333332" height="10"
+                  style="cursor: move;"></rect>
+            <g class="resize e" transform="translate(16.666666666666664,0)" style="cursor: ew-resize;">
+              <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+            </g>
+            <g class="resize w" transform="translate(7.333333333333332,0)" style="cursor: ew-resize;">
+              <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+            </g>
+          </g>
+          <g class="axis" style="font-size: 7px;">
+            <g class="tick" transform="translate(0,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">0</text>
+            </g>
+            <g class="tick" transform="translate(11.666666666666666,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">0.5</text>
+            </g>
+            <g class="tick" transform="translate(23.333333333333332,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">1</text>
+            </g>
+            <g class="tick" transform="translate(35,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">1.5</text>
+            </g>
+            <g class="tick" transform="translate(46.666666666666664,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">2</text>
+            </g>
+            <g class="tick" transform="translate(58.333333333333336,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">2.5</text>
+            </g>
+            <g class="tick" transform="translate(70,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">3</text>
+            </g>
+            <path class="domain" d="M0,6V0H70V6"></path>
+          </g>
+        </g>
+        <g class="estcorrbrush_slider_sepal_len___sepal_w_0" transform="translate(0,70)"
+           style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+          <rect class="background" x="0" width="70" style="visibility: hidden; cursor: crosshair;"></rect>
+          <rect class="extent" x="31.5" width="10" height="10" style="cursor: move;"></rect>
+          <g class="resize e" transform="translate(38.5,0)" style="cursor: ew-resize;">
+            <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize w" transform="translate(31.5,0)" style="cursor: ew-resize;">
+            <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+          </g>
+        </g>
+        <path class="estcorrvertpath" stroke="#d95f0e" stroke-width="0.5" fill="none" d="M35,70L35,0"></path>
+        <path class="estcorrhorpath" stroke="#d95f0e" stroke-width="0.5" fill="none" d="M0,35L70,35"></path>
+        <ellipse class="estcorrbrush_ellipse_sepal_len_0" cx="35" cy="35" rx="36.86430972077933" ry="33.03063227990731"
+                 fill="none" stroke="#000" transform="rotate(44.99999999999999,35,35)"></ellipse>
+        <g width="32" height="20" transform="translate(70,10)">
+          <g width="32" height="20" transform="rotate(90,32,20)" style="cursor: pointer;">
+            <rect x="0" y="0" rx="10" ry="10" width="32" height="20" style="fill: rgb(34, 170, 34);"></rect>
+            <circle cx="22" cy="10" r="6" style="fill: white;"></circle>
+          </g>
+        </g>
+      </g>
+      <g class="corrbrush_panel estcorrbrush_panel_sepal_w___petal_len_0" transform="translate(269,420)">
+        <rect y="0" width="70" height="70" class="ellrect"></rect>
+        <g class="estcorrbrush_sigma_sepal_w___petal_len_0" transform="translate(0,90)">
+          <g class="estcorrbrush_sslider_sepal_w___petal_len_0" transform="translate(0,0)"
+             style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+            <rect class="background" x="0" width="70" style="visibility: hidden; cursor: crosshair;"></rect>
+            <rect class="extent" x="23.333333333333332" width="10" height="10" style="cursor: move;"></rect>
+            <g class="resize e" transform="translate(32.666666666666664,0)" style="cursor: ew-resize;">
+              <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+            </g>
+            <g class="resize w" transform="translate(23.333333333333332,0)" style="cursor: ew-resize;">
+              <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+            </g>
+          </g>
+          <g class="axis" style="font-size: 7px;">
+            <g class="tick" transform="translate(0,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">0</text>
+            </g>
+            <g class="tick" transform="translate(11.666666666666666,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">0.5</text>
+            </g>
+            <g class="tick" transform="translate(23.333333333333332,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">1</text>
+            </g>
+            <g class="tick" transform="translate(35,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">1.5</text>
+            </g>
+            <g class="tick" transform="translate(46.666666666666664,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">2</text>
+            </g>
+            <g class="tick" transform="translate(58.333333333333336,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">2.5</text>
+            </g>
+            <g class="tick" transform="translate(70,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">3</text>
+            </g>
+            <path class="domain" d="M0,6V0H70V6"></path>
+          </g>
+        </g>
+        <g class="estcorrbrush_slider_sepal_w___petal_len_0" transform="translate(0,70)"
+           style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+          <rect class="background" x="0" width="70" style="visibility: hidden; cursor: crosshair;"></rect>
+          <rect class="extent" x="31.5" width="10" height="10" style="cursor: move;"></rect>
+          <g class="resize e" transform="translate(38.5,0)" style="cursor: ew-resize;">
+            <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize w" transform="translate(31.5,0)" style="cursor: ew-resize;">
+            <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+          </g>
+        </g>
+        <path class="estcorrvertpath" stroke="#d95f0e" stroke-width="0.5" fill="none" d="M35,70L35,0"></path>
+        <path class="estcorrhorpath" stroke="#d95f0e" stroke-width="0.5" fill="none" d="M0,35L70,35"></path>
+        <ellipse class="estcorrbrush_ellipse_sepal_w_0" cx="35" cy="35" rx="41.714892042188175" ry="26.64334404515667"
+                 fill="none" stroke="#000" transform="rotate(45.00000000000001,35,35)"></ellipse>
+        <g width="32" height="20" transform="translate(70,10)">
+          <g width="32" height="20" transform="rotate(90,32,20)" style="cursor: pointer;">
+            <rect x="0" y="0" rx="10" ry="10" width="32" height="20" style="fill: rgb(221, 34, 17);"></rect>
+            <circle cx="10" cy="10" r="6" style="fill: rgb(255, 255, 255);"></circle>
+          </g>
+        </g>
+      </g>
+      <g class="corrbrush_panel estcorrbrush_panel_petal_len___petal_w_0" transform="translate(415,420)">
+        <rect y="0" width="70" height="70" class="ellrect"></rect>
+        <g class="estcorrbrush_sigma_petal_len___petal_w_0" transform="translate(0,90)">
+          <g class="estcorrbrush_sslider_petal_len___petal_w_0" transform="translate(0,0)"
+             style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+            <rect class="background" x="0" width="70" style="visibility: hidden; cursor: crosshair;"></rect>
+            <rect class="extent" x="23.333333333333332" width="10" height="10" style="cursor: move;"></rect>
+            <g class="resize e" transform="translate(32.666666666666664,0)" style="cursor: ew-resize;">
+              <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+            </g>
+            <g class="resize w" transform="translate(23.333333333333332,0)" style="cursor: ew-resize;">
+              <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+            </g>
+          </g>
+          <g class="axis" style="font-size: 7px;">
+            <g class="tick" transform="translate(0,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">0</text>
+            </g>
+            <g class="tick" transform="translate(11.666666666666666,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">0.5</text>
+            </g>
+            <g class="tick" transform="translate(23.333333333333332,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">1</text>
+            </g>
+            <g class="tick" transform="translate(35,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">1.5</text>
+            </g>
+            <g class="tick" transform="translate(46.666666666666664,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">2</text>
+            </g>
+            <g class="tick" transform="translate(58.333333333333336,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">2.5</text>
+            </g>
+            <g class="tick" transform="translate(70,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">3</text>
+            </g>
+            <path class="domain" d="M0,6V0H70V6"></path>
+          </g>
+        </g>
+        <g class="estcorrbrush_slider_petal_len___petal_w_0" transform="translate(0,70)"
+           style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+          <rect class="background" x="0" width="70" style="visibility: hidden; cursor: crosshair;"></rect>
+          <rect class="extent" x="31.5" width="10" height="10" style="cursor: move;"></rect>
+          <g class="resize e" transform="translate(38.5,0)" style="cursor: ew-resize;">
+            <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize w" transform="translate(31.5,0)" style="cursor: ew-resize;">
+            <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+          </g>
+        </g>
+        <path class="estcorrvertpath" stroke="#d95f0e" stroke-width="0.5" fill="none" d="M35,70L35,0"></path>
+        <path class="estcorrhorpath" stroke="#d95f0e" stroke-width="0.5" fill="none" d="M0,35L70,35"></path>
+        <ellipse class="estcorrbrush_ellipse_petal_len_0" cx="35" cy="35" rx="49.034451601781306" ry="6.754447135966513"
+                 fill="none" stroke="#000" transform="rotate(-45,35,35)"></ellipse>
+        <g width="32" height="20" transform="translate(70,10)">
+          <g width="32" height="20" transform="rotate(90,32,20)" style="cursor: pointer;">
+            <rect x="0" y="0" rx="10" ry="10" width="32" height="20" style="fill: rgb(221, 34, 17);"></rect>
+            <circle cx="10" cy="10" r="6" style="fill: rgb(255, 255, 255);"></circle>
+          </g>
+        </g>
+      </g>
+      <g class="corrbrush_panel estcorrbrush_panel_petal_w___t_set_ver_vir_0" transform="translate(561,420)">
+        <rect y="0" width="70" height="70" class="ellrect"></rect>
+        <g class="estcorrbrush_sigma_petal_w___t_set_ver_vir_0" transform="translate(0,90)">
+          <g class="estcorrbrush_sslider_petal_w___t_set_ver_vir_0" transform="translate(0,0)"
+             style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+            <rect class="background" x="0" width="70" style="visibility: hidden; cursor: crosshair;"></rect>
+            <rect class="extent" x="23.333333333333332" width="10" height="10" style="cursor: move;"></rect>
+            <g class="resize e" transform="translate(32.666666666666664,0)" style="cursor: ew-resize;">
+              <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+            </g>
+            <g class="resize w" transform="translate(23.333333333333332,0)" style="cursor: ew-resize;">
+              <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+            </g>
+          </g>
+          <g class="axis" style="font-size: 7px;">
+            <g class="tick" transform="translate(0,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">0</text>
+            </g>
+            <g class="tick" transform="translate(11.666666666666666,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">0.5</text>
+            </g>
+            <g class="tick" transform="translate(23.333333333333332,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">1</text>
+            </g>
+            <g class="tick" transform="translate(35,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">1.5</text>
+            </g>
+            <g class="tick" transform="translate(46.666666666666664,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">2</text>
+            </g>
+            <g class="tick" transform="translate(58.333333333333336,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">2.5</text>
+            </g>
+            <g class="tick" transform="translate(70,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">3</text>
+            </g>
+            <path class="domain" d="M0,6V0H70V6"></path>
+          </g>
+        </g>
+        <g class="estcorrbrush_slider_petal_w___t_set_ver_vir_0" transform="translate(0,70)"
+           style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+          <rect class="background" x="0" width="70" style="visibility: hidden; cursor: crosshair;"></rect>
+          <rect class="extent" x="31.5" width="10" height="10" style="cursor: move;"></rect>
+          <g class="resize e" transform="translate(38.5,0)" style="cursor: ew-resize;">
+            <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize w" transform="translate(31.5,0)" style="cursor: ew-resize;">
+            <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+          </g>
+        </g>
+        <path class="estcorrvertpath" stroke="#d95f0e" stroke-width="0.5" fill="none" d="M35,70L35,0"></path>
+        <path class="estcorrhorpath" stroke="#d95f0e" stroke-width="0.5" fill="none" d="M0,35L70,35"></path>
+        <ellipse class="estcorrbrush_ellipse_petal_w_0" cx="35" cy="35" rx="48.95577784242613" ry="7.302863537203661"
+                 fill="none" stroke="#000" transform="rotate(-45,35,35)"></ellipse>
+        <g width="32" height="20" transform="translate(70,10)">
+          <g width="32" height="20" transform="rotate(90,32,20)" style="cursor: pointer;">
+            <rect x="0" y="0" rx="10" ry="10" width="32" height="20" style="fill: rgb(221, 34, 17);"></rect>
+            <circle cx="10" cy="10" r="6" style="fill: rgb(255, 255, 255);"></circle>
+          </g>
+        </g>
+      </g>
+    </g>
+    <g class="background">
+      <path
+        d="M73,318.8888888888889L219,153.75000000000006L365,382.20338983050846L511,392.9166666666667L657,410"></path>
+      <path
+        d="M73,341.66666666666663L219,239.16666666666669L365,382.20338983050846L511,392.9166666666667L657,410"></path>
+      <path d="M73,364.4444444444444L219,205L365,389.1525423728814L511,392.9166666666667L657,410"></path>
+      <path
+        d="M73,375.83333333333337L219,222.08333333333337L365,375.2542372881356L511,392.9166666666667L657,410"></path>
+      <path
+        d="M73,330.27777777777777L219,136.66666666666669L365,382.20338983050846L511,392.9166666666667L657,410"></path>
+      <path d="M73,284.72222222222223L219,85.41666666666673L365,361.35593220338984L511,358.75L657,410"></path>
+      <path
+        d="M73,375.83333333333337L219,170.83333333333337L365,382.20338983050846L511,375.8333333333333L657,410"></path>
+      <path
+        d="M73,330.27777777777777L219,170.83333333333337L365,375.2542372881356L511,392.9166666666667L657,410"></path>
+      <path
+        d="M73,398.6111111111111L219,256.25000000000006L365,382.20338983050846L511,392.9166666666667L657,410"></path>
+      <path d="M73,341.66666666666663L219,222.08333333333337L365,375.2542372881356L511,410L657,410"></path>
+      <path
+        d="M73,284.72222222222223L219,119.58333333333336L365,375.2542372881356L511,392.9166666666667L657,410"></path>
+      <path d="M73,353.0555555555556L219,170.83333333333337L365,368.3050847457627L511,392.9166666666667L657,410"></path>
+      <path d="M73,353.0555555555556L219,239.16666666666669L365,382.20338983050846L511,410L657,410"></path>
+      <path d="M73,410L219,239.16666666666669L365,403.05084745762707L511,410L657,410"></path>
+      <path
+        d="M73,239.16666666666669L219,68.33333333333336L365,396.10169491525426L511,392.9166666666667L657,410"></path>
+      <path d="M73,250.55555555555554L219,0L365,375.2542372881356L511,358.75L657,410"></path>
+      <path d="M73,284.72222222222223L219,85.41666666666673L365,389.1525423728814L511,358.75L657,410"></path>
+      <path
+        d="M73,318.8888888888889L219,153.75000000000006L365,382.20338983050846L511,375.8333333333333L657,410"></path>
+      <path
+        d="M73,250.55555555555554L219,102.50000000000009L365,361.35593220338984L511,375.8333333333333L657,410"></path>
+      <path d="M73,318.8888888888889L219,102.50000000000009L365,375.2542372881356L511,375.8333333333333L657,410"></path>
+      <path
+        d="M73,284.72222222222223L219,170.83333333333337L365,361.35593220338984L511,392.9166666666667L657,410"></path>
+      <path d="M73,318.8888888888889L219,119.58333333333336L365,375.2542372881356L511,358.75L657,410"></path>
+      <path d="M73,375.83333333333337L219,136.66666666666669L365,410L511,392.9166666666667L657,410"></path>
+      <path
+        d="M73,318.8888888888889L219,187.9166666666667L365,361.35593220338984L511,341.66666666666663L657,410"></path>
+      <path
+        d="M73,353.0555555555556L219,170.83333333333337L365,347.45762711864404L511,392.9166666666667L657,410"></path>
+      <path
+        d="M73,330.27777777777777L219,239.16666666666669L365,368.3050847457627L511,392.9166666666667L657,410"></path>
+      <path d="M73,330.27777777777777L219,170.83333333333337L365,368.3050847457627L511,358.75L657,410"></path>
+      <path d="M73,307.5L219,153.75000000000006L365,375.2542372881356L511,392.9166666666667L657,410"></path>
+      <path d="M73,307.5L219,170.83333333333337L365,382.20338983050846L511,392.9166666666667L657,410"></path>
+      <path d="M73,364.4444444444444L219,205L365,368.3050847457627L511,392.9166666666667L657,410"></path>
+      <path d="M73,353.0555555555556L219,222.08333333333337L365,368.3050847457627L511,392.9166666666667L657,410"></path>
+      <path d="M73,284.72222222222223L219,170.83333333333337L365,375.2542372881356L511,358.75L657,410"></path>
+      <path d="M73,307.5L219,51.25000000000009L365,375.2542372881356L511,410L657,410"></path>
+      <path
+        d="M73,273.33333333333337L219,34.16666666666668L365,382.20338983050846L511,392.9166666666667L657,410"></path>
+      <path d="M73,341.66666666666663L219,222.08333333333337L365,375.2542372881356L511,410L657,410"></path>
+      <path d="M73,330.27777777777777L219,205L365,396.10169491525426L511,392.9166666666667L657,410"></path>
+      <path
+        d="M73,273.33333333333337L219,153.75000000000006L365,389.1525423728814L511,392.9166666666667L657,410"></path>
+      <path d="M73,341.66666666666663L219,222.08333333333337L365,375.2542372881356L511,410L657,410"></path>
+      <path d="M73,398.6111111111111L219,239.16666666666669L365,389.1525423728814L511,392.9166666666667L657,410"></path>
+      <path d="M73,318.8888888888889L219,170.83333333333337L365,375.2542372881356L511,392.9166666666667L657,410"></path>
+      <path
+        d="M73,330.27777777777777L219,153.75000000000006L365,389.1525423728814L511,375.8333333333333L657,410"></path>
+      <path
+        d="M73,387.22222222222223L219,358.75000000000006L365,389.1525423728814L511,375.8333333333333L657,410"></path>
+      <path d="M73,398.6111111111111L219,205L365,389.1525423728814L511,392.9166666666667L657,410"></path>
+      <path
+        d="M73,330.27777777777777L219,153.75000000000006L365,368.3050847457627L511,324.5833333333333L657,410"></path>
+      <path d="M73,318.8888888888889L219,102.50000000000009L365,347.45762711864404L511,358.75L657,410"></path>
+      <path
+        d="M73,353.0555555555556L219,239.16666666666669L365,382.20338983050846L511,375.8333333333333L657,410"></path>
+      <path d="M73,318.8888888888889L219,102.50000000000009L365,368.3050847457627L511,392.9166666666667L657,410"></path>
+      <path d="M73,375.83333333333337L219,205L365,382.20338983050846L511,392.9166666666667L657,410"></path>
+      <path
+        d="M73,296.11111111111114L219,119.58333333333336L365,375.2542372881356L511,392.9166666666667L657,410"></path>
+      <path
+        d="M73,330.27777777777777L219,187.9166666666667L365,382.20338983050846L511,392.9166666666667L657,410"></path>
+      <path d="M73,102.50000000000004L219,205L365,152.8813559322034L511,187.91666666666669L657,205"></path>
+      <path d="M73,170.83333333333331L219,205L365,166.77966101694918L511,170.83333333333331L657,205"></path>
+      <path
+        d="M73,113.8888888888889L219,222.08333333333337L365,138.98305084745763L511,170.83333333333331L657,205"></path>
+      <path d="M73,273.33333333333337L219,358.75000000000006L365,201.52542372881356L511,205L657,205"></path>
+      <path
+        d="M73,159.44444444444446L219,273.33333333333337L365,159.8305084745763L511,170.83333333333331L657,205"></path>
+      <path d="M73,250.55555555555554L219,273.33333333333337L365,166.77966101694918L511,205L657,205"></path>
+      <path d="M73,182.22222222222226L219,187.9166666666667L365,152.8813559322034L511,153.75L657,205"></path>
+      <path d="M73,341.66666666666663L219,341.6666666666667L365,250.16949152542375L511,256.25L657,205"></path>
+      <path d="M73,148.05555555555563L219,256.25000000000006L365,159.8305084745763L511,205L657,205"></path>
+      <path d="M73,307.5L219,290.41666666666663L365,208.47457627118644L511,187.91666666666669L657,205"></path>
+      <path d="M73,330.27777777777777L219,410L365,236.27118644067798L511,256.25L657,205"></path>
+      <path
+        d="M73,227.77777777777774L219,239.16666666666669L365,187.6271186440678L511,170.83333333333331L657,205"></path>
+      <path d="M73,216.38888888888889L219,375.8333333333333L365,201.52542372881356L511,256.25L657,205"></path>
+      <path
+        d="M73,205.00000000000006L219,256.25000000000006L365,152.8813559322034L511,187.91666666666669L657,205"></path>
+      <path d="M73,261.9444444444445L219,256.25000000000006L365,229.3220338983051L511,205L657,205"></path>
+      <path
+        d="M73,136.66666666666669L219,222.08333333333337L365,173.72881355932202L511,187.91666666666669L657,205"></path>
+      <path
+        d="M73,261.9444444444445L219,239.16666666666669L365,166.77966101694918L511,170.83333333333331L657,205"></path>
+      <path d="M73,239.16666666666669L219,290.41666666666663L365,194.5762711864407L511,256.25L657,205"></path>
+      <path
+        d="M73,193.61111111111111L219,375.8333333333333L365,166.77966101694918L511,170.83333333333331L657,205"></path>
+      <path
+        d="M73,261.9444444444445L219,324.58333333333337L365,208.47457627118644L511,239.16666666666663L657,205"></path>
+      <path d="M73,227.77777777777774L219,205L365,145.93220338983053L511,119.58333333333331L657,205"></path>
+      <path d="M73,205.00000000000006L219,273.33333333333337L365,201.52542372881356L511,205L657,205"></path>
+      <path
+        d="M73,182.22222222222226L219,324.58333333333337L365,138.98305084745763L511,170.83333333333331L657,205"></path>
+      <path
+        d="M73,205.00000000000006L219,273.33333333333337L365,152.8813559322034L511,222.08333333333337L657,205"></path>
+      <path d="M73,170.83333333333331L219,256.25000000000006L365,180.67796610169492L511,205L657,205"></path>
+      <path
+        d="M73,148.05555555555563L219,239.16666666666669L365,173.72881355932202L511,187.91666666666669L657,205"></path>
+      <path
+        d="M73,125.27777777777783L219,273.33333333333337L365,145.93220338983053L511,187.91666666666669L657,205"></path>
+      <path
+        d="M73,136.66666666666669L219,239.16666666666669L365,132.03389830508476L511,136.66666666666669L657,205"></path>
+      <path
+        d="M73,216.38888888888889L219,256.25000000000006L365,166.77966101694918L511,170.83333333333331L657,205"></path>
+      <path d="M73,250.55555555555554L219,307.5L365,236.27118644067798L511,256.25L657,205"></path>
+      <path
+        d="M73,273.33333333333337L219,341.6666666666667L365,215.42372881355934L511,239.16666666666663L657,205"></path>
+      <path d="M73,273.33333333333337L219,341.6666666666667L365,222.3728813559322L511,256.25L657,205"></path>
+      <path
+        d="M73,239.16666666666669L219,290.41666666666663L365,208.47457627118644L511,222.08333333333337L657,205"></path>
+      <path d="M73,216.38888888888889L219,290.41666666666663L365,125.08474576271189L511,153.75L657,205"></path>
+      <path
+        d="M73,284.72222222222223L219,239.16666666666669L365,166.77966101694918L511,170.83333333333331L657,205"></path>
+      <path d="M73,216.38888888888889L219,170.83333333333337L365,166.77966101694918L511,153.75L657,205"></path>
+      <path
+        d="M73,136.66666666666669L219,222.08333333333337L365,152.8813559322034L511,170.83333333333331L657,205"></path>
+      <path d="M73,182.22222222222226L219,358.75000000000006L365,173.72881355932202L511,205L657,205"></path>
+      <path d="M73,261.9444444444445L219,239.16666666666669L365,194.5762711864407L511,205L657,205"></path>
+      <path d="M73,273.33333333333337L219,324.58333333333337L365,201.52542372881356L511,205L657,205"></path>
+      <path d="M73,273.33333333333337L219,307.5L365,173.72881355932202L511,222.08333333333337L657,205"></path>
+      <path
+        d="M73,205.00000000000006L219,239.16666666666669L365,159.8305084745763L511,187.91666666666669L657,205"></path>
+      <path d="M73,239.16666666666669L219,307.5L365,201.52542372881356L511,222.08333333333337L657,205"></path>
+      <path d="M73,330.27777777777777L219,358.75000000000006L365,250.16949152542375L511,256.25L657,205"></path>
+      <path d="M73,261.9444444444445L219,290.41666666666663L365,187.6271186440678L511,205L657,205"></path>
+      <path
+        d="M73,250.55555555555554L219,239.16666666666669L365,187.6271186440678L511,222.08333333333337L657,205"></path>
+      <path d="M73,250.55555555555554L219,256.25000000000006L365,187.6271186440678L511,205L657,205"></path>
+      <path d="M73,193.61111111111111L219,256.25000000000006L365,180.67796610169492L511,205L657,205"></path>
+      <path
+        d="M73,318.8888888888889L219,324.58333333333337L365,271.0169491525424L511,239.16666666666663L657,205"></path>
+      <path d="M73,250.55555555555554L219,273.33333333333337L365,194.5762711864407L511,205L657,205"></path>
+      <path d="M73,182.22222222222226L219,187.9166666666667L365,62.542372881355945L511,0L657,0"></path>
+      <path d="M73,239.16666666666669L219,290.41666666666663L365,125.08474576271189L511,102.5L657,0"></path>
+      <path d="M73,91.1111111111112L219,239.16666666666669L365,69.49152542372882L511,68.33333333333331L657,0"></path>
+      <path d="M73,182.22222222222226L219,256.25000000000006L365,90.33898305084749L511,119.58333333333331L657,0"></path>
+      <path d="M73,159.44444444444446L219,239.16666666666669L365,76.44067796610172L511,51.24999999999996L657,0"></path>
+      <path d="M73,34.16666666666673L219,239.16666666666669L365,20.84745762711868L511,68.33333333333331L657,0"></path>
+      <path
+        d="M73,341.66666666666663L219,324.58333333333337L365,166.77966101694918L511,136.66666666666669L657,0"></path>
+      <path d="M73,68.33333333333336L219,256.25000000000006L365,41.694915254237316L511,119.58333333333331L657,0"></path>
+      <path d="M73,136.66666666666669L219,324.58333333333337L365,76.44067796610172L511,119.58333333333331L657,0"></path>
+      <path d="M73,79.72222222222221L219,136.66666666666669L365,55.59322033898309L511,0L657,0"></path>
+      <path d="M73,159.44444444444446L219,205L365,125.08474576271189L511,85.41666666666669L657,0"></path>
+      <path d="M73,170.83333333333331L219,290.41666666666663L365,111.18644067796612L511,102.5L657,0"></path>
+      <path d="M73,125.27777777777783L219,239.16666666666669L365,97.28813559322035L511,68.33333333333331L657,0"></path>
+      <path d="M73,250.55555555555554L219,324.58333333333337L365,132.03389830508476L511,85.41666666666669L657,0"></path>
+      <path
+        d="M73,239.16666666666669L219,273.33333333333337L365,125.08474576271189L511,17.083333333333364L657,0"></path>
+      <path d="M73,170.83333333333331L219,205L365,111.18644067796612L511,34.16666666666668L657,0"></path>
+      <path d="M73,159.44444444444446L219,239.16666666666669L365,97.28813559322035L511,119.58333333333331L657,0"></path>
+      <path d="M73,22.77777777777779L219,102.50000000000009L365,13.898305084745772L511,51.24999999999996L657,0"></path>
+      <path d="M73,22.77777777777779L219,307.5L365,0L511,34.16666666666668L657,0"></path>
+      <path d="M73,216.38888888888889L219,375.8333333333333L365,132.03389830508476L511,170.83333333333331L657,0"></path>
+      <path d="M73,113.8888888888889L219,205L365,83.38983050847459L511,34.16666666666668L657,0"></path>
+      <path d="M73,261.9444444444445L219,273.33333333333337L365,138.98305084745763L511,85.41666666666669L657,0"></path>
+      <path d="M73,22.77777777777779L219,273.33333333333337L365,13.898305084745772L511,85.41666666666669L657,0"></path>
+      <path
+        d="M73,182.22222222222226L219,290.41666666666663L365,138.98305084745763L511,119.58333333333331L657,0"></path>
+      <path d="M73,136.66666666666669L219,187.9166666666667L365,83.38983050847459L511,68.33333333333331L657,0"></path>
+      <path d="M73,79.72222222222221L219,205L365,62.542372881355945L511,119.58333333333331L657,0"></path>
+      <path
+        d="M73,193.61111111111111L219,273.33333333333337L365,145.93220338983053L511,119.58333333333331L657,0"></path>
+      <path
+        d="M73,205.00000000000006L219,239.16666666666669L365,138.98305084745763L511,119.58333333333331L657,0"></path>
+      <path d="M73,170.83333333333331L219,273.33333333333337L365,90.33898305084749L511,68.33333333333331L657,0"></path>
+      <path d="M73,79.72222222222221L219,239.16666666666669L365,76.44067796610172L511,153.75L657,0"></path>
+      <path d="M73,56.94444444444442L219,273.33333333333337L365,55.59322033898309L511,102.5L657,0"></path>
+      <path d="M73,0L219,102.50000000000009L365,34.74576271186441L511,85.41666666666669L657,0"></path>
+      <path d="M73,170.83333333333331L219,273.33333333333337L365,90.33898305084749L511,51.24999999999996L657,0"></path>
+      <path
+        d="M73,182.22222222222226L219,273.33333333333337L365,125.08474576271189L511,170.83333333333331L657,0"></path>
+      <path d="M73,205.00000000000006L219,307.5L365,90.33898305084749L511,187.91666666666669L657,0"></path>
+      <path d="M73,22.77777777777779L219,239.16666666666669L365,55.59322033898309L511,34.16666666666668L657,0"></path>
+      <path d="M73,182.22222222222226L219,170.83333333333337L365,90.33898305084749L511,17.083333333333364L657,0"></path>
+      <path d="M73,170.83333333333331L219,222.08333333333337L365,97.28813559322035L511,119.58333333333331L657,0"></path>
+      <path
+        d="M73,216.38888888888889L219,239.16666666666669L365,145.93220338983053L511,119.58333333333331L657,0"></path>
+      <path d="M73,113.8888888888889L219,222.08333333333337L365,104.23728813559322L511,68.33333333333331L657,0"></path>
+      <path d="M73,136.66666666666669L219,222.08333333333337L365,90.33898305084749L511,17.083333333333364L657,0"></path>
+      <path d="M73,113.8888888888889L219,222.08333333333337L365,125.08474576271189L511,34.16666666666668L657,0"></path>
+      <path d="M73,239.16666666666669L219,290.41666666666663L365,125.08474576271189L511,102.5L657,0"></path>
+      <path d="M73,125.27777777777783L219,205L365,69.49152542372882L511,34.16666666666668L657,0"></path>
+      <path d="M73,136.66666666666669L219,187.9166666666667L365,83.38983050847459L511,0L657,0"></path>
+      <path d="M73,136.66666666666669L219,239.16666666666669L365,118.13559322033899L511,34.16666666666668L657,0"></path>
+      <path d="M73,182.22222222222226L219,324.58333333333337L365,132.03389830508476L511,102.5L657,0"></path>
+      <path d="M73,159.44444444444446L219,239.16666666666669L365,118.13559322033899L511,85.41666666666669L657,0"></path>
+      <path d="M73,193.61111111111111L219,170.83333333333337L365,104.23728813559322L511,34.16666666666668L657,0"></path>
+      <path
+        d="M73,227.77777777777774L219,239.16666666666669L365,125.08474576271189L511,119.58333333333331L657,0"></path>
+    </g>
+    <g class="foreground">
+      <path
+        d="M73,318.8888888888889L219,153.75000000000006L365,382.20338983050846L511,392.9166666666667L657,410"></path>
+      <path
+        d="M73,341.66666666666663L219,239.16666666666669L365,382.20338983050846L511,392.9166666666667L657,410"></path>
+      <path d="M73,364.4444444444444L219,205L365,389.1525423728814L511,392.9166666666667L657,410"></path>
+      <path
+        d="M73,375.83333333333337L219,222.08333333333337L365,375.2542372881356L511,392.9166666666667L657,410"></path>
+      <path d="M73,330.27777777777777L219,136.66666666666669L365,382.20338983050846L511,392.9166666666667L657,410"
+            style="display: none;"></path>
+      <path d="M73,284.72222222222223L219,85.41666666666673L365,361.35593220338984L511,358.75L657,410"
+            style="display: none;"></path>
+      <path
+        d="M73,375.83333333333337L219,170.83333333333337L365,382.20338983050846L511,375.8333333333333L657,410"></path>
+      <path
+        d="M73,330.27777777777777L219,170.83333333333337L365,375.2542372881356L511,392.9166666666667L657,410"></path>
+      <path
+        d="M73,398.6111111111111L219,256.25000000000006L365,382.20338983050846L511,392.9166666666667L657,410"></path>
+      <path d="M73,341.66666666666663L219,222.08333333333337L365,375.2542372881356L511,410L657,410"></path>
+      <path d="M73,284.72222222222223L219,119.58333333333336L365,375.2542372881356L511,392.9166666666667L657,410"
+            style="display: none;"></path>
+      <path d="M73,353.0555555555556L219,170.83333333333337L365,368.3050847457627L511,392.9166666666667L657,410"></path>
+      <path d="M73,353.0555555555556L219,239.16666666666669L365,382.20338983050846L511,410L657,410"></path>
+      <path d="M73,410L219,239.16666666666669L365,403.05084745762707L511,410L657,410"></path>
+      <path d="M73,239.16666666666669L219,68.33333333333336L365,396.10169491525426L511,392.9166666666667L657,410"
+            style="display: none;"></path>
+      <path d="M73,250.55555555555554L219,0L365,375.2542372881356L511,358.75L657,410" style="display: none;"></path>
+      <path d="M73,284.72222222222223L219,85.41666666666673L365,389.1525423728814L511,358.75L657,410"
+            style="display: none;"></path>
+      <path
+        d="M73,318.8888888888889L219,153.75000000000006L365,382.20338983050846L511,375.8333333333333L657,410"></path>
+      <path d="M73,250.55555555555554L219,102.50000000000009L365,361.35593220338984L511,375.8333333333333L657,410"
+            style="display: none;"></path>
+      <path d="M73,318.8888888888889L219,102.50000000000009L365,375.2542372881356L511,375.8333333333333L657,410"
+            style="display: none;"></path>
+      <path
+        d="M73,284.72222222222223L219,170.83333333333337L365,361.35593220338984L511,392.9166666666667L657,410"></path>
+      <path d="M73,318.8888888888889L219,119.58333333333336L365,375.2542372881356L511,358.75L657,410"
+            style="display: none;"></path>
+      <path d="M73,375.83333333333337L219,136.66666666666669L365,410L511,392.9166666666667L657,410"
+            style="display: none;"></path>
+      <path
+        d="M73,318.8888888888889L219,187.9166666666667L365,361.35593220338984L511,341.66666666666663L657,410"></path>
+      <path
+        d="M73,353.0555555555556L219,170.83333333333337L365,347.45762711864404L511,392.9166666666667L657,410"></path>
+      <path
+        d="M73,330.27777777777777L219,239.16666666666669L365,368.3050847457627L511,392.9166666666667L657,410"></path>
+      <path d="M73,330.27777777777777L219,170.83333333333337L365,368.3050847457627L511,358.75L657,410"></path>
+      <path d="M73,307.5L219,153.75000000000006L365,375.2542372881356L511,392.9166666666667L657,410"></path>
+      <path d="M73,307.5L219,170.83333333333337L365,382.20338983050846L511,392.9166666666667L657,410"></path>
+      <path d="M73,364.4444444444444L219,205L365,368.3050847457627L511,392.9166666666667L657,410"></path>
+      <path d="M73,353.0555555555556L219,222.08333333333337L365,368.3050847457627L511,392.9166666666667L657,410"></path>
+      <path d="M73,284.72222222222223L219,170.83333333333337L365,375.2542372881356L511,358.75L657,410"></path>
+      <path d="M73,307.5L219,51.25000000000009L365,375.2542372881356L511,410L657,410" style="display: none;"></path>
+      <path d="M73,273.33333333333337L219,34.16666666666668L365,382.20338983050846L511,392.9166666666667L657,410"
+            style="display: none;"></path>
+      <path d="M73,341.66666666666663L219,222.08333333333337L365,375.2542372881356L511,410L657,410"></path>
+      <path d="M73,330.27777777777777L219,205L365,396.10169491525426L511,392.9166666666667L657,410"></path>
+      <path
+        d="M73,273.33333333333337L219,153.75000000000006L365,389.1525423728814L511,392.9166666666667L657,410"></path>
+      <path d="M73,341.66666666666663L219,222.08333333333337L365,375.2542372881356L511,410L657,410"></path>
+      <path d="M73,398.6111111111111L219,239.16666666666669L365,389.1525423728814L511,392.9166666666667L657,410"></path>
+      <path d="M73,318.8888888888889L219,170.83333333333337L365,375.2542372881356L511,392.9166666666667L657,410"></path>
+      <path
+        d="M73,330.27777777777777L219,153.75000000000006L365,389.1525423728814L511,375.8333333333333L657,410"></path>
+      <path d="M73,387.22222222222223L219,358.75000000000006L365,389.1525423728814L511,375.8333333333333L657,410"
+            style="display: none;"></path>
+      <path d="M73,398.6111111111111L219,205L365,389.1525423728814L511,392.9166666666667L657,410"></path>
+      <path
+        d="M73,330.27777777777777L219,153.75000000000006L365,368.3050847457627L511,324.5833333333333L657,410"></path>
+      <path d="M73,318.8888888888889L219,102.50000000000009L365,347.45762711864404L511,358.75L657,410"
+            style="display: none;"></path>
+      <path
+        d="M73,353.0555555555556L219,239.16666666666669L365,382.20338983050846L511,375.8333333333333L657,410"></path>
+      <path d="M73,318.8888888888889L219,102.50000000000009L365,368.3050847457627L511,392.9166666666667L657,410"
+            style="display: none;"></path>
+      <path d="M73,375.83333333333337L219,205L365,382.20338983050846L511,392.9166666666667L657,410"></path>
+      <path d="M73,296.11111111111114L219,119.58333333333336L365,375.2542372881356L511,392.9166666666667L657,410"
+            style="display: none;"></path>
+      <path
+        d="M73,330.27777777777777L219,187.9166666666667L365,382.20338983050846L511,392.9166666666667L657,410"></path>
+      <path d="M73,102.50000000000004L219,205L365,152.8813559322034L511,187.91666666666669L657,205"></path>
+      <path d="M73,170.83333333333331L219,205L365,166.77966101694918L511,170.83333333333331L657,205"></path>
+      <path
+        d="M73,113.8888888888889L219,222.08333333333337L365,138.98305084745763L511,170.83333333333331L657,205"></path>
+      <path d="M73,273.33333333333337L219,358.75000000000006L365,201.52542372881356L511,205L657,205"
+            style="display: none;"></path>
+      <path
+        d="M73,159.44444444444446L219,273.33333333333337L365,159.8305084745763L511,170.83333333333331L657,205"></path>
+      <path d="M73,250.55555555555554L219,273.33333333333337L365,166.77966101694918L511,205L657,205"></path>
+      <path d="M73,182.22222222222226L219,187.9166666666667L365,152.8813559322034L511,153.75L657,205"></path>
+      <path d="M73,341.66666666666663L219,341.6666666666667L365,250.16949152542375L511,256.25L657,205"
+            style="display: none;"></path>
+      <path d="M73,148.05555555555563L219,256.25000000000006L365,159.8305084745763L511,205L657,205"></path>
+      <path d="M73,307.5L219,290.41666666666663L365,208.47457627118644L511,187.91666666666669L657,205"></path>
+      <path d="M73,330.27777777777777L219,410L365,236.27118644067798L511,256.25L657,205" style="display: none;"></path>
+      <path
+        d="M73,227.77777777777774L219,239.16666666666669L365,187.6271186440678L511,170.83333333333331L657,205"></path>
+      <path d="M73,216.38888888888889L219,375.8333333333333L365,201.52542372881356L511,256.25L657,205"
+            style="display: none;"></path>
+      <path
+        d="M73,205.00000000000006L219,256.25000000000006L365,152.8813559322034L511,187.91666666666669L657,205"></path>
+      <path d="M73,261.9444444444445L219,256.25000000000006L365,229.3220338983051L511,205L657,205"></path>
+      <path
+        d="M73,136.66666666666669L219,222.08333333333337L365,173.72881355932202L511,187.91666666666669L657,205"></path>
+      <path
+        d="M73,261.9444444444445L219,239.16666666666669L365,166.77966101694918L511,170.83333333333331L657,205"></path>
+      <path d="M73,239.16666666666669L219,290.41666666666663L365,194.5762711864407L511,256.25L657,205"></path>
+      <path d="M73,193.61111111111111L219,375.8333333333333L365,166.77966101694918L511,170.83333333333331L657,205"
+            style="display: none;"></path>
+      <path d="M73,261.9444444444445L219,324.58333333333337L365,208.47457627118644L511,239.16666666666663L657,205"
+            style="display: none;"></path>
+      <path d="M73,227.77777777777774L219,205L365,145.93220338983053L511,119.58333333333331L657,205"></path>
+      <path d="M73,205.00000000000006L219,273.33333333333337L365,201.52542372881356L511,205L657,205"></path>
+      <path d="M73,182.22222222222226L219,324.58333333333337L365,138.98305084745763L511,170.83333333333331L657,205"
+            style="display: none;"></path>
+      <path
+        d="M73,205.00000000000006L219,273.33333333333337L365,152.8813559322034L511,222.08333333333337L657,205"></path>
+      <path d="M73,170.83333333333331L219,256.25000000000006L365,180.67796610169492L511,205L657,205"></path>
+      <path
+        d="M73,148.05555555555563L219,239.16666666666669L365,173.72881355932202L511,187.91666666666669L657,205"></path>
+      <path
+        d="M73,125.27777777777783L219,273.33333333333337L365,145.93220338983053L511,187.91666666666669L657,205"></path>
+      <path
+        d="M73,136.66666666666669L219,239.16666666666669L365,132.03389830508476L511,136.66666666666669L657,205"></path>
+      <path
+        d="M73,216.38888888888889L219,256.25000000000006L365,166.77966101694918L511,170.83333333333331L657,205"></path>
+      <path d="M73,250.55555555555554L219,307.5L365,236.27118644067798L511,256.25L657,205"></path>
+      <path d="M73,273.33333333333337L219,341.6666666666667L365,215.42372881355934L511,239.16666666666663L657,205"
+            style="display: none;"></path>
+      <path d="M73,273.33333333333337L219,341.6666666666667L365,222.3728813559322L511,256.25L657,205"
+            style="display: none;"></path>
+      <path
+        d="M73,239.16666666666669L219,290.41666666666663L365,208.47457627118644L511,222.08333333333337L657,205"></path>
+      <path d="M73,216.38888888888889L219,290.41666666666663L365,125.08474576271189L511,153.75L657,205"></path>
+      <path
+        d="M73,284.72222222222223L219,239.16666666666669L365,166.77966101694918L511,170.83333333333331L657,205"></path>
+      <path d="M73,216.38888888888889L219,170.83333333333337L365,166.77966101694918L511,153.75L657,205"></path>
+      <path
+        d="M73,136.66666666666669L219,222.08333333333337L365,152.8813559322034L511,170.83333333333331L657,205"></path>
+      <path d="M73,182.22222222222226L219,358.75000000000006L365,173.72881355932202L511,205L657,205"
+            style="display: none;"></path>
+      <path d="M73,261.9444444444445L219,239.16666666666669L365,194.5762711864407L511,205L657,205"></path>
+      <path d="M73,273.33333333333337L219,324.58333333333337L365,201.52542372881356L511,205L657,205"
+            style="display: none;"></path>
+      <path d="M73,273.33333333333337L219,307.5L365,173.72881355932202L511,222.08333333333337L657,205"></path>
+      <path
+        d="M73,205.00000000000006L219,239.16666666666669L365,159.8305084745763L511,187.91666666666669L657,205"></path>
+      <path d="M73,239.16666666666669L219,307.5L365,201.52542372881356L511,222.08333333333337L657,205"></path>
+      <path d="M73,330.27777777777777L219,358.75000000000006L365,250.16949152542375L511,256.25L657,205"
+            style="display: none;"></path>
+      <path d="M73,261.9444444444445L219,290.41666666666663L365,187.6271186440678L511,205L657,205"></path>
+      <path
+        d="M73,250.55555555555554L219,239.16666666666669L365,187.6271186440678L511,222.08333333333337L657,205"></path>
+      <path d="M73,250.55555555555554L219,256.25000000000006L365,187.6271186440678L511,205L657,205"></path>
+      <path d="M73,193.61111111111111L219,256.25000000000006L365,180.67796610169492L511,205L657,205"></path>
+      <path d="M73,318.8888888888889L219,324.58333333333337L365,271.0169491525424L511,239.16666666666663L657,205"
+            style="display: none;"></path>
+      <path d="M73,250.55555555555554L219,273.33333333333337L365,194.5762711864407L511,205L657,205"></path>
+      <path d="M73,182.22222222222226L219,187.9166666666667L365,62.542372881355945L511,0L657,0"></path>
+      <path d="M73,239.16666666666669L219,290.41666666666663L365,125.08474576271189L511,102.5L657,0"></path>
+      <path d="M73,91.1111111111112L219,239.16666666666669L365,69.49152542372882L511,68.33333333333331L657,0"></path>
+      <path d="M73,182.22222222222226L219,256.25000000000006L365,90.33898305084749L511,119.58333333333331L657,0"></path>
+      <path d="M73,159.44444444444446L219,239.16666666666669L365,76.44067796610172L511,51.24999999999996L657,0"></path>
+      <path d="M73,34.16666666666673L219,239.16666666666669L365,20.84745762711868L511,68.33333333333331L657,0"></path>
+      <path d="M73,341.66666666666663L219,324.58333333333337L365,166.77966101694918L511,136.66666666666669L657,0"
+            style="display: none;"></path>
+      <path d="M73,68.33333333333336L219,256.25000000000006L365,41.694915254237316L511,119.58333333333331L657,0"></path>
+      <path d="M73,136.66666666666669L219,324.58333333333337L365,76.44067796610172L511,119.58333333333331L657,0"
+            style="display: none;"></path>
+      <path d="M73,79.72222222222221L219,136.66666666666669L365,55.59322033898309L511,0L657,0"
+            style="display: none;"></path>
+      <path d="M73,159.44444444444446L219,205L365,125.08474576271189L511,85.41666666666669L657,0"></path>
+      <path d="M73,170.83333333333331L219,290.41666666666663L365,111.18644067796612L511,102.5L657,0"></path>
+      <path d="M73,125.27777777777783L219,239.16666666666669L365,97.28813559322035L511,68.33333333333331L657,0"></path>
+      <path d="M73,250.55555555555554L219,324.58333333333337L365,132.03389830508476L511,85.41666666666669L657,0"
+            style="display: none;"></path>
+      <path
+        d="M73,239.16666666666669L219,273.33333333333337L365,125.08474576271189L511,17.083333333333364L657,0"></path>
+      <path d="M73,170.83333333333331L219,205L365,111.18644067796612L511,34.16666666666668L657,0"></path>
+      <path d="M73,159.44444444444446L219,239.16666666666669L365,97.28813559322035L511,119.58333333333331L657,0"></path>
+      <path d="M73,22.77777777777779L219,102.50000000000009L365,13.898305084745772L511,51.24999999999996L657,0"
+            style="display: none;"></path>
+      <path d="M73,22.77777777777779L219,307.5L365,0L511,34.16666666666668L657,0"></path>
+      <path d="M73,216.38888888888889L219,375.8333333333333L365,132.03389830508476L511,170.83333333333331L657,0"
+            style="display: none;"></path>
+      <path d="M73,113.8888888888889L219,205L365,83.38983050847459L511,34.16666666666668L657,0"></path>
+      <path d="M73,261.9444444444445L219,273.33333333333337L365,138.98305084745763L511,85.41666666666669L657,0"></path>
+      <path d="M73,22.77777777777779L219,273.33333333333337L365,13.898305084745772L511,85.41666666666669L657,0"></path>
+      <path
+        d="M73,182.22222222222226L219,290.41666666666663L365,138.98305084745763L511,119.58333333333331L657,0"></path>
+      <path d="M73,136.66666666666669L219,187.9166666666667L365,83.38983050847459L511,68.33333333333331L657,0"></path>
+      <path d="M73,79.72222222222221L219,205L365,62.542372881355945L511,119.58333333333331L657,0"></path>
+      <path
+        d="M73,193.61111111111111L219,273.33333333333337L365,145.93220338983053L511,119.58333333333331L657,0"></path>
+      <path
+        d="M73,205.00000000000006L219,239.16666666666669L365,138.98305084745763L511,119.58333333333331L657,0"></path>
+      <path d="M73,170.83333333333331L219,273.33333333333337L365,90.33898305084749L511,68.33333333333331L657,0"></path>
+      <path d="M73,79.72222222222221L219,239.16666666666669L365,76.44067796610172L511,153.75L657,0"></path>
+      <path d="M73,56.94444444444442L219,273.33333333333337L365,55.59322033898309L511,102.5L657,0"></path>
+      <path d="M73,0L219,102.50000000000009L365,34.74576271186441L511,85.41666666666669L657,0"
+            style="display: none;"></path>
+      <path d="M73,170.83333333333331L219,273.33333333333337L365,90.33898305084749L511,51.24999999999996L657,0"></path>
+      <path
+        d="M73,182.22222222222226L219,273.33333333333337L365,125.08474576271189L511,170.83333333333331L657,0"></path>
+      <path d="M73,205.00000000000006L219,307.5L365,90.33898305084749L511,187.91666666666669L657,0"></path>
+      <path d="M73,22.77777777777779L219,239.16666666666669L365,55.59322033898309L511,34.16666666666668L657,0"></path>
+      <path d="M73,182.22222222222226L219,170.83333333333337L365,90.33898305084749L511,17.083333333333364L657,0"></path>
+      <path d="M73,170.83333333333331L219,222.08333333333337L365,97.28813559322035L511,119.58333333333331L657,0"></path>
+      <path
+        d="M73,216.38888888888889L219,239.16666666666669L365,145.93220338983053L511,119.58333333333331L657,0"></path>
+      <path d="M73,113.8888888888889L219,222.08333333333337L365,104.23728813559322L511,68.33333333333331L657,0"></path>
+      <path d="M73,136.66666666666669L219,222.08333333333337L365,90.33898305084749L511,17.083333333333364L657,0"></path>
+      <path d="M73,113.8888888888889L219,222.08333333333337L365,125.08474576271189L511,34.16666666666668L657,0"></path>
+      <path d="M73,239.16666666666669L219,290.41666666666663L365,125.08474576271189L511,102.5L657,0"></path>
+      <path d="M73,125.27777777777783L219,205L365,69.49152542372882L511,34.16666666666668L657,0"></path>
+      <path d="M73,136.66666666666669L219,187.9166666666667L365,83.38983050847459L511,0L657,0"></path>
+      <path d="M73,136.66666666666669L219,239.16666666666669L365,118.13559322033899L511,34.16666666666668L657,0"></path>
+      <path d="M73,182.22222222222226L219,324.58333333333337L365,132.03389830508476L511,102.5L657,0"
+            style="display: none;"></path>
+      <path d="M73,159.44444444444446L219,239.16666666666669L365,118.13559322033899L511,85.41666666666669L657,0"></path>
+      <path d="M73,193.61111111111111L219,170.83333333333337L365,104.23728813559322L511,34.16666666666668L657,0"></path>
+      <path
+        d="M73,227.77777777777774L219,239.16666666666669L365,125.08474576271189L511,119.58333333333331L657,0"></path>
+    </g>
+    <g class="dimension dimension_sepal_len" transform="translate(73)">
+      <g class="axis axis_sepal_len">
+        <g class="tick" transform="translate(0,387.22222222222223)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">4.5</text>
+        </g>
+        <g class="tick" transform="translate(0,330.27777777777777)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">5.0</text>
+        </g>
+        <g class="tick" transform="translate(0,273.33333333333337)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">5.5</text>
+        </g>
+        <g class="tick" transform="translate(0,216.38888888888889)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">6.0</text>
+        </g>
+        <g class="tick" transform="translate(0,159.44444444444446)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">6.5</text>
+        </g>
+        <g class="tick" transform="translate(0,102.50000000000004)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">7.0</text>
+        </g>
+        <g class="tick" transform="translate(0,45.55555555555558)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">7.5</text>
+        </g>
+        <path class="domain" d="M-6,0H0V410H-6"></path>
+        <text y="-9" style="text-anchor: middle;">sepal_len</text>
+      </g>
+      <g class="brush dimension_brush_sepal_len_0"
+         style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+        <rect class="background" y="0" height="410" x="-8" width="16"
+              style="visibility: hidden; cursor: crosshair; pointer-events: all;"></rect>
+        <rect class="extent" y="0" height="0" x="-8" width="16" style="cursor: move;"></rect>
+        <g class="resize n" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+        <g class="resize s" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+      </g>
+      <g class="brush dimension_brush_sepal_len_1"
+         style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+        <rect class="background" y="0" height="410" x="-8" width="16"
+              style="visibility: hidden; cursor: crosshair; pointer-events: none;"></rect>
+        <rect class="extent" y="0" height="0" x="-8" width="16" style="cursor: move;"></rect>
+        <g class="resize n" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+        <g class="resize s" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+      </g>
+      <g class="dimension_buttonpanel dimension_buttonpanel_sepal_len" transform="translate(-5,415)">
+        <rect y="0" width="10" height="10" fill="red"></rect>
+      </g>
+    </g>
+    <g class="dimension dimension_sepal_w" transform="translate(219)">
+      <g class="axis axis_sepal_w">
+        <g class="tick" transform="translate(0,410)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">2.0</text>
+        </g>
+        <g class="tick" transform="translate(0,375.8333333333333)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">2.2</text>
+        </g>
+        <g class="tick" transform="translate(0,341.6666666666667)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">2.4</text>
+        </g>
+        <g class="tick" transform="translate(0,307.5)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">2.6</text>
+        </g>
+        <g class="tick" transform="translate(0,273.33333333333337)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">2.8</text>
+        </g>
+        <g class="tick" transform="translate(0,239.16666666666669)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">3.0</text>
+        </g>
+        <g class="tick" transform="translate(0,205)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">3.2</text>
+        </g>
+        <g class="tick" transform="translate(0,170.83333333333337)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">3.4</text>
+        </g>
+        <g class="tick" transform="translate(0,136.66666666666669)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">3.6</text>
+        </g>
+        <g class="tick" transform="translate(0,102.50000000000009)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">3.8</text>
+        </g>
+        <g class="tick" transform="translate(0,68.33333333333336)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">4.0</text>
+        </g>
+        <g class="tick" transform="translate(0,34.16666666666668)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">4.2</text>
+        </g>
+        <g class="tick" transform="translate(0,0)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">4.4</text>
+        </g>
+        <path class="domain" d="M-6,0H0V410H-6"></path>
+        <text y="-9" style="text-anchor: middle;">sepal_w</text>
+      </g>
+      <g class="brush dimension_brush_sepal_w_0"
+         style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+        <rect class="background" y="0" height="410" x="-8" width="16"
+              style="visibility: hidden; cursor: crosshair; pointer-events: all;"></rect>
+        <rect class="extent" y="0" height="0" x="-8" width="16" style="cursor: move;"></rect>
+        <g class="resize n" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+        <g class="resize s" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+      </g>
+      <g class="brush dimension_brush_sepal_w_1"
+         style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+        <rect class="background" y="0" height="410" x="-8" width="16"
+              style="visibility: hidden; cursor: crosshair; pointer-events: none;"></rect>
+        <rect class="extent" y="145.80858725743505" height="174.660209227615" x="-8" width="16"
+              style="cursor: move;"></rect>
+        <g class="resize n" transform="translate(0,145.80859375)" style="cursor: ns-resize;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+        <g class="resize s" transform="translate(0,320.46881103515625)" style="cursor: ns-resize;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+      </g>
+      <g class="dimension_buttonpanel dimension_buttonpanel_sepal_w" transform="translate(-5,415)">
+        <rect y="0" width="10" height="10" fill="red"></rect>
+      </g>
+    </g>
+    <g class="dimension dimension_petal_len" transform="translate(365)">
+      <g class="axis axis_petal_len">
+        <g class="tick" transform="translate(0,410)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">1.0</text>
+        </g>
+        <g class="tick" transform="translate(0,375.2542372881356)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">1.5</text>
+        </g>
+        <g class="tick" transform="translate(0,340.50847457627117)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">2.0</text>
+        </g>
+        <g class="tick" transform="translate(0,305.7627118644068)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">2.5</text>
+        </g>
+        <g class="tick" transform="translate(0,271.0169491525424)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">3.0</text>
+        </g>
+        <g class="tick" transform="translate(0,236.27118644067798)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">3.5</text>
+        </g>
+        <g class="tick" transform="translate(0,201.52542372881356)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">4.0</text>
+        </g>
+        <g class="tick" transform="translate(0,166.77966101694918)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">4.5</text>
+        </g>
+        <g class="tick" transform="translate(0,132.03389830508476)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">5.0</text>
+        </g>
+        <g class="tick" transform="translate(0,97.28813559322035)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">5.5</text>
+        </g>
+        <g class="tick" transform="translate(0,62.542372881355945)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">6.0</text>
+        </g>
+        <g class="tick" transform="translate(0,27.796610169491544)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">6.5</text>
+        </g>
+        <path class="domain" d="M-6,0H0V410H-6"></path>
+        <text y="-9" style="text-anchor: middle;">petal_len</text>
+      </g>
+      <g class="brush dimension_brush_petal_len_0"
+         style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+        <rect class="background" y="0" height="410" x="-8" width="16"
+              style="visibility: hidden; cursor: crosshair; pointer-events: all;"></rect>
+        <rect class="extent" y="0" height="0" x="-8" width="16" style="cursor: move;"></rect>
+        <g class="resize n" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+        <g class="resize s" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+      </g>
+      <g class="brush dimension_brush_petal_len_1"
+         style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+        <rect class="background" y="0" height="410" x="-8" width="16"
+              style="visibility: hidden; cursor: crosshair; pointer-events: none;"></rect>
+        <rect class="extent" y="0" height="0" x="-8" width="16" style="cursor: move;"></rect>
+        <g class="resize n" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+        <g class="resize s" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+      </g>
+      <g class="dimension_buttonpanel dimension_buttonpanel_petal_len" transform="translate(-5,415)">
+        <rect y="0" width="10" height="10" fill="red"></rect>
+      </g>
+    </g>
+    <g class="dimension dimension_petal_w" transform="translate(511)">
+      <g class="axis axis_petal_w">
+        <g class="tick" transform="translate(0,392.9166666666667)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">0.2</text>
+        </g>
+        <g class="tick" transform="translate(0,358.75)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">0.4</text>
+        </g>
+        <g class="tick" transform="translate(0,324.5833333333333)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">0.6</text>
+        </g>
+        <g class="tick" transform="translate(0,290.41666666666663)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">0.8</text>
+        </g>
+        <g class="tick" transform="translate(0,256.25)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">1.0</text>
+        </g>
+        <g class="tick" transform="translate(0,222.08333333333337)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">1.2</text>
+        </g>
+        <g class="tick" transform="translate(0,187.91666666666669)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">1.4</text>
+        </g>
+        <g class="tick" transform="translate(0,153.75)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">1.6</text>
+        </g>
+        <g class="tick" transform="translate(0,119.58333333333331)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">1.8</text>
+        </g>
+        <g class="tick" transform="translate(0,85.41666666666669)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">2.0</text>
+        </g>
+        <g class="tick" transform="translate(0,51.24999999999996)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">2.2</text>
+        </g>
+        <g class="tick" transform="translate(0,17.083333333333364)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">2.4</text>
+        </g>
+        <path class="domain" d="M-6,0H0V410H-6"></path>
+        <text y="-9" style="text-anchor: middle;">petal_w</text>
+      </g>
+      <g class="brush dimension_brush_petal_w_0"
+         style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+        <rect class="background" y="0" height="410" x="-8" width="16"
+              style="visibility: hidden; cursor: crosshair; pointer-events: all;"></rect>
+        <rect class="extent" y="0" height="0" x="-8" width="16" style="cursor: move;"></rect>
+        <g class="resize n" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+        <g class="resize s" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+      </g>
+      <g class="brush dimension_brush_petal_w_1"
+         style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+        <rect class="background" y="0" height="410" x="-8" width="16"
+              style="visibility: hidden; cursor: crosshair; pointer-events: none;"></rect>
+        <rect class="extent" y="0" height="0" x="-8" width="16" style="cursor: move;"></rect>
+        <g class="resize n" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+        <g class="resize s" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+      </g>
+      <g class="dimension_buttonpanel dimension_buttonpanel_petal_w" transform="translate(-5,415)">
+        <rect y="0" width="10" height="10" fill="red"></rect>
+      </g>
+    </g>
+    <g class="dimension dimension_t_set_ver_vir" transform="translate(657)">
+      <g class="axis axis_t_set_ver_vir">
+        <g class="tick" transform="translate(0,410)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">1.0</text>
+        </g>
+        <g class="tick" transform="translate(0,369)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">1.2</text>
+        </g>
+        <g class="tick" transform="translate(0,328)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">1.4</text>
+        </g>
+        <g class="tick" transform="translate(0,287)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">1.6</text>
+        </g>
+        <g class="tick" transform="translate(0,246)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">1.8</text>
+        </g>
+        <g class="tick" transform="translate(0,205)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">2.0</text>
+        </g>
+        <g class="tick" transform="translate(0,163.99999999999997)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">2.2</text>
+        </g>
+        <g class="tick" transform="translate(0,123.00000000000001)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">2.4</text>
+        </g>
+        <g class="tick" transform="translate(0,81.99999999999999)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">2.6</text>
+        </g>
+        <g class="tick" transform="translate(0,41.000000000000036)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">2.8</text>
+        </g>
+        <g class="tick" transform="translate(0,0)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">3.0</text>
+        </g>
+        <path class="domain" d="M-6,0H0V410H-6"></path>
+        <text y="-9" style="text-anchor: middle;">t_set_ver_vir</text>
+      </g>
+      <g class="brush dimension_brush_t_set_ver_vir_0"
+         style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+        <rect class="background" y="0" height="410" x="-8" width="16"
+              style="visibility: hidden; cursor: crosshair; pointer-events: all;"></rect>
+        <rect class="extent" y="0" height="0" x="-8" width="16" style="cursor: move;"></rect>
+        <g class="resize n" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+        <g class="resize s" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+      </g>
+      <g class="brush dimension_brush_t_set_ver_vir_1"
+         style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+        <rect class="background" y="0" height="410" x="-8" width="16"
+              style="visibility: hidden; cursor: crosshair; pointer-events: none;"></rect>
+        <rect class="extent" y="0" height="0" x="-8" width="16" style="cursor: move;"></rect>
+        <g class="resize n" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+        <g class="resize s" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+      </g>
+      <g class="dimension_buttonpanel dimension_buttonpanel_t_set_ver_vir" transform="translate(-5,415)">
+        <rect y="0" width="10" height="10" fill="red"></rect>
+      </g>
+    </g>
+  </g>
+</svg>
+
+<script type="application/javascript">
+
+  function drawScatter(data, panelId) {
+
+    //var data = [[5,3], [10,17], [15,4], [2,8]];
+
+    var margin = {top: 0, right: 0, bottom: 0, left: 0}
+      , width = 70
+      , height = 70;
+
+    var x = d3.scale.linear()
+      .domain([0, 6 * Math.sqrt(2)])
+      .range([0, width]);
+
+    var y = d3.scale.linear()
+      .domain([0, 6 * Math.sqrt(2)])
+      .range([height, 0]);
+
+//    var chart = d3.select('body')
+//      .append('svg:svg')
+//      .attr('width', width + margin.right + margin.left)
+//      .attr('height', height + margin.top + margin.bottom)
+//      .attr('class', 'chart');
+
+    var chart = d3.select("#" + panelId);
+
+    var main = chart.append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+      .attr('width', width)
+      .attr('height', height)
+      .attr('class', 'main');
+
+    // draw the x axis
+    var xAxis = d3.svg.axis()
+      .scale(x)
+      .orient('bottom');
+
+    main.append('g')
+      .attr('transform', 'translate(0,' + height + ')')
+      .attr('class', 'main axis date')
+      .call(xAxis);
+
+    // draw the y axis
+    var yAxis = d3.svg.axis()
+      .scale(y)
+      .orient('left');
+
+    main.append('g')
+      .attr('transform', 'translate(0,0)')
+      .attr('class', 'main axis date')
+      .call(yAxis);
+
+    var g = main.append("svg:g");
+
+    g.selectAll("scatter-dots")
+      .data(data)
+      .enter().append("svg:circle")
+      .attr("cx", function (d, i) {
+        return x(d[0]);
+      })
+      .attr("cy", function (d) {
+        return y(d[1]);
+      })
+      .attr("r", 1.2);
+
+  }
+
+
+  function drawEllipseBrush(panelId) {
+    var lambdaD = "M967,302 C956,196,914,144,840,144 C730,144,680,268,636,474L565,791 C515,1017,478,1165,454,1236 C409,1374,342,1433,268,1433 C149,1433,73,1295,69,1109H105 C114,1253,194,1287,252,1287 C333,1287,404,1200,453,936 L25,14H214L512,690L598,302 C630,164,664,79,702,47 C741,15,781,0,823,0 C895,0,1003,48,1003,302Z";
+    var sigmaD = "M 6 5 L 6.406531 20.35309 L 194.7323 255.1056 L 4.31761 481.6469 L 3.767654 495.9135 L 373 494 C 376.606 448.306 386.512 401.054 395 356 L 383 353 C 371.817 378.228 363.867 405.207 340 421.958 C 313.834 440.322 279.304 438 249 438 L 79 438 L 252.2885 228.6811 L 96.04328 33.3622 L 187 32.99999 C 245.309 32.99999 328.257 18.91731 351.329 89.00002 C 355.273 100.98 358.007 113.421 359 126 L 372 126 L 362 5 L 6 5 L 6 5 L 6 5 L 6 5 L 6 5 z";
+
+    var margin = {top: 0, right: 0, bottom: 0, left: 0}
+      , width = 100
+      , height = 100;
+
+    var x = d3.scale.linear()
+      .domain([0, 6 * Math.sqrt(2)])
+      .range([0, width]);
+
+    var y = d3.scale.linear()
+      .domain([0, 6 * Math.sqrt(2)])
+      .range([height, 0]);
+
+//    var chart = d3.select('body')
+//      .append('svg:svg')
+//      .attr('width', width + margin.right + margin.left)
+//      .attr('height', height + margin.top + margin.bottom)
+//      .attr('class', 'chart');
+
+    var chart = d3.select("#" + panelId);
+
+    var main = chart.append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+      .attr('width', width)
+      .attr('height', height)
+      .attr('class', 'main');
+
+    // draw the x axis
+    var xAxis = d3.svg.axis()
+      .scale(x)
+      .ticks(0)
+      .orient('bottom');
+
+    main.append('g')
+      .attr('transform', 'translate(0,' + height + ')')
+      .attr('class', 'main axis date')
+      .call(xAxis);
+
+    // draw the y axis
+    var yAxis = d3.svg.axis()
+      .scale(y)
+      .ticks(0)
+      .orient('left');
+
+    main.append('g')
+      .attr('transform', 'translate(0,0)')
+      .attr('class', 'main axis date')
+      .call(yAxis);
+
+    d3.select("#" + panelId).selectAll(".ellipseeigen")
+      .data([0]).enter()
+      .append("ellipse")
+      .attr("class", "ellipseeigen")
+      .attr("cx", 50)
+      .attr("cy", 50)
+      .attr("rx", 12)
+      .attr("ry", 40)
+      .attr("fill", "none")
+      .attr("stroke", "#f00")
+      .attr("transform", (d, i) => {
+        return "rotate(45,50,50)"
+      });
+
+
+    var defs = d3.select("#mainsvg").append("defs");
+
+    defs.append("marker")
+      .attr({
+        "id": "arrow",
+        "viewBox": "0 -5 10 10",
+        "refX": 5,
+        "refY": 0,
+        "markerWidth": 8,
+        "markerHeight": 8,
+        "orient": "auto"
+      })
+      .append("path")
+      .attr("d", "M0,-5L10,0L0,5")
+      .attr("class", "arrowHead");
+
+
+    var gxline = d3.svg.line()
+      .x(function (d) {
+        return x(d.q);
+      })
+      .y(function (d) {
+        return y(-d.p);
+      });
+
+    var gyline = d3.svg.line()
+      .x(function (d) {
+        return x(d.q);
+      })
+      .y(function (d) {
+        return y(d.p);
+      });
+
+//    drawXGaussian("xgaussian",x,y,gxline);
+    drawXGaussian("brush_ygaussian", x, y, gyline);
+
+
+    d3.select("#" + panelId).append("line")
+      .attr("x1", 50)
+      .attr("y1", 34)
+      .attr("x2", 50)
+      .attr("y2", 67)
+      .attr("stroke-width", 1.5)
+      .attr("stroke", "#00f")
+      .attr("stroke-dasharray", "1, 1")
+    ;
+
+    d3.select("#" + panelId).append("line")
+      .attr("x1", 50)
+      .attr("y1", 67)
+      .attr("x2", 50)
+      .attr("y2", 100)
+      .attr("stroke-width", 0.5)
+      .attr("stroke", "#000")
+    ;
+
+    d3.select("#" + panelId).append("line")
+      .attr("x1", 50)
+      .attr("y1", 34)
+      .attr("x2", 86)
+      .attr("y2", 34)
+      .attr("stroke-width", 0.5)
+      .attr("stroke", "#000")
+      .attr("stroke-dasharray", "1, 1")
+    ;
+
+    d3.select("#" + panelId).append("line")
+      .attr("x1", 50)
+      .attr("y1", 67)
+      .attr("x2", 86)
+      .attr("y2", 67)
+      .attr("stroke-width", 0.5)
+      .attr("stroke", "#000")
+      .attr("stroke-dasharray", "1, 1")
+    ;
+
+
+    d3.select("#" + panelId).append("line")
+      .attr("x1", 90)
+      .attr("y1", 50)
+      .attr("x2", 0)
+      .attr("y2", 50)
+      .attr("stroke-width", 0.5)
+      .attr("stroke", "#000")
+      .attr("stroke-dasharray", "1, 1")
+    ;
+
+    d3.select("#" + panelId).append("text")
+      .attr("x", -15)
+      .attr("y", 50)
+      .attr("font-size", "12")
+      .attr("font-style", "italic")
+      .attr("fill", "#00f")
+
+      .text("μ")
+    ;
+
+    d3.select("#" + panelId).append("text")
+      .attr("x", -7)
+      .attr("y", 53)
+      .attr("font-size", "5")
+      .attr("fill", "#00f")
+      .text("2")
+    ;
+
+
+    d3.select("#" + panelId).append("text")
+      .attr("x", 45)
+      .attr("y", 107)
+      .attr("font-size", "12")
+      .attr("font-style", "italic")
+      .text("μ")
+    ;
+
+    d3.select("#" + panelId).append("text")
+      .attr("x", 53)
+      .attr("y", 109)
+      .attr("font-size", "5")
+      .text("1")
+    ;
+
+    d3.select("#" + panelId).append("path")
+      .attr("d", sigmaD)
+      .attr("fill", "#00f")
+      .attr("transform", "translate(98,47)scale(0.01,0.01)")
+    ;
+
+    d3.select("#" + panelId).append("text")
+      .attr("x", 102)
+      .attr("y", 54)
+      .attr("fill", "#00f")
+      .attr("font-size", "4")
+      .text("2")
+    ;
+
+
+    d3.select("#" + panelId).append("line")
+      .attr("x1", 100)
+      .attr("y1", 45)
+      .attr("x2", 100)
+      .attr("y2", 36)
+      .attr("stroke-width", 0.5)
+      .attr("class", "arrow")
+      .attr("marker-end", "url(#arrow)")
+      .attr("stroke", "#000");
+
+    d3.select("#" + panelId).append("line")
+      .attr("x1", 100)
+      .attr("y1", 55)
+      .attr("x2", 100)
+      .attr("y2", 64)
+      .attr("stroke-width", 0.5)
+      .attr("class", "arrow")
+      .attr("marker-end", "url(#arrow)")
+      .attr("stroke", "#000");
+
+
+  }
+
+
+  function drawXGaussian(panelId, x, y, line) {
+
+    var data = [];
+
+    function getData() {
+
+      for (var i = 0; i < 1000; i++) {
+        var q = normal(); // calc random draw from normal dist
+        var p = gaussian(q); // calc prob of rand draw
+        var el = {
+          "q": q,
+          "p": p
+        };
+        data.push(el);
+      }
+      ;
+
+      // need to sort for plotting
+      //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+      data.sort(function (x, y) {
+        return x.q - y.q;
+      });
+
+      data = data.slice(60, 940);
+    }
+
+    // from http://bl.ocks.org/mbostock/4349187
+    // Sample from a normal distribution with mean 0, stddev 1.
+    function normal() {
+      var x = 0,
+        y = 0,
+        rds, c;
+      do {
+        x = Math.random() * 2 - 1;
+        y = Math.random() * 2 - 1;
+        rds = x * x + y * y;
+      } while (rds == 0 || rds > 1);
+      c = Math.sqrt(-2 * Math.log(rds) / rds); // Box-Muller transform
+      return x * c; // throw away extra sample y * c
+    }
+
+    //taken from Jason Davies science library
+    // https://github.com/jasondavies/science.js/
+    function gaussian(x_) {
+      var gaussianConstant = 1 / Math.sqrt(2 * Math.PI),
+        mean = 0,
+        sigma = 0.4;
+
+      x_ = (x_ - mean) / sigma;
+      return gaussianConstant * Math.exp(-.5 * x_ * x_) / sigma;
+    };
+
+
+    getData();
+
+
+    d3.select("#" + panelId).append("path")
+      .datum(data)
+      .attr("class", "gaussianline")
+      .attr("d", line);
+
+
+  }
+
+
+  $().ready(function () {
+
+    $.getJSON("http://localhost:5000/parcoord/paperplots/data/poscorr/?type=positive", function (data_) {//type:random,negative,positive
+      drawScatter(data_, "poscorr");
+
+    });
+
+    $.getJSON("http://localhost:5000/parcoord/paperplots/data/poscorr/?type=random", function (data_) {//type:random,negative,positive
+      drawScatter(data_, "randomcorr");
+
+    });
+
+    $.getJSON("http://localhost:5000/parcoord/paperplots/data/poscorr/?type=negative", function (data_) {//type:random,negative,positive
+      drawScatter(data_, "negcorr");
+
+    });
+
+    //drawEllipseEigens("ellipseeigen");
+    drawEllipseBrush("ellipsebrush");
+
+
+  });
+
+</script>
+</body>
+</html>

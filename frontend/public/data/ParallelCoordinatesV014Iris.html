@@ -192,10 +192,22 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
   }
 
 
-  .corrbrush_panel .extent {
-    fill: red;
+  /*.corrbrush_panel .extent {*/
+    /*fill: red;*/
 
-    opacity: 0.4;
+    /*opacity: 0.4;*/
+  /*}*/
+
+  .corrbrush_panel .extent {
+    fill: #d95f0e;
+
+    opacity: 0.8;
+  }
+
+  .corrbrush_panel .ellrect{
+    fill:#fff7bc !important;
+
+    opacity: 0.8;
   }
 
 
@@ -268,8 +280,8 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
    */
   var dimscales=null;
   var corrBrushes=null;
-  var estcorrbrush_panels=null;;
-  var estbrushInstance=null;;
+  var estcorrbrush_panels=null;
+  var estbrushInstance=null;
 
   var estcorr_xscale=null;
   var estcorr_yscale=null;
@@ -944,7 +956,7 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
       .attr("y", 0)
       .attr("width", boxWidth)
       .attr("height", boxWidth)
-      .attr("fill", "#dedede");
+      ;//.attr("fill", "#dedede");
 
     newCorrBrushPanel.clusterbrushPanel.datum({"dimName":key_});
 
@@ -988,7 +1000,7 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
       .attr("y", 0)
       .attr("width", boxWidth)
       .attr("height", boxWidth)
-      .attr("fill", "#dedede");
+      ;//.attr("fill", "#dedede");
 
     $.getJSON( remoteUrls.spatialSign+"?var1="+var1+"&var2="+var2, function( data_ ) {
       new VarRadialBrush(newRadialBrushPanel.radialbrushPanel).start(data_, key_, markBrushedLinesCB);
@@ -1076,7 +1088,8 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
       .attr("y", 0)
       .attr("width", 70)
       .attr("height", 70)
-      .attr("fill", "#eeeeee");
+      .attr("class", "ellrect")
+      ;//.attr("fill", "#eeeeee");
 
 
     newCorrBrushPanel.sigmapanel = newCorrBrushPanel.ellpanel.selectAll(".estcorrbrush_sigma_"+key_+"_"+newCorrBrushPanelIdx)
@@ -1135,7 +1148,7 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
     newCorrBrushPanel.ellpanel
       .append("path")
       .attr("class", "estcorrvertpath")
-      .attr("stroke", "blue")
+      .attr("stroke", "#d95f0e")
       .attr("stroke-width", 0.5)
       .attr("fill", "none")
       .attr("d", estcorr_path([{"x":0,"y":-1}, {"x":0,"y":1}]))
@@ -1144,7 +1157,7 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
     newCorrBrushPanel.ellpanel
       .append("path")
       .attr("class", "estcorrhorpath")
-      .attr("stroke", "blue")
+      .attr("stroke", "#d95f0e")
       .attr("stroke-width", 0.5)
       .attr("fill", "none")
       .attr("d", estcorr_path([{"x":-1,"y":0}, {"x":1,"y":0}]))
@@ -1205,7 +1218,7 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
 
     margin = {top: 30, right: 10, bottom: 10, left: 10};
     width = 960 - margin.left - margin.right;
-    height = 450 - margin.top - margin.bottom;
+    height = 200 - margin.top - margin.bottom;
     underHeightLength=250;
     x = null;
     y = null;

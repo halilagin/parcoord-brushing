@@ -71,5 +71,5 @@ class PlotMVN(object):
         
         plt.show()
 
-#plot_= PlotMVN()
-#plot_.start()
+plot_= PlotMVN()
+plot_.start()

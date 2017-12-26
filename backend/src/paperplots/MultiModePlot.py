@@ -107,8 +107,8 @@ class MultiModePlot(object):
             )
         ax.add_patch(rect3)
         
-        #plt.show()
-        plt.savefig("/Users/halil/Downloads/"+filename, format="svg")
+        plt.show()
+        #plt.savefig("/Users/halil/Downloads/"+filename, format="svg")
 #         sns.distplot(samples)
 #         plt.show()
 #         

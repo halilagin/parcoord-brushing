@@ -115,6 +115,6 @@ class BreastCancerDataProvider(object):
         return self.loadJsonData()
         
 
-BreastCancerDataProvider().dumpJsonData()
+#BreastCancerDataProvider().dumpJsonData()
 #sBreastCancerDataProvider().loadJsonData()
 #IrisDataProvider().getData()

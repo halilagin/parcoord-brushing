@@ -158,4 +158,4 @@ class BreastCancerDataEigens(object):
         #print ("eigens", eigens)
         return eigens
 
-print(BreastCancerDataEigens().eigens())
+#print(BreastCancerDataEigens().eigens())

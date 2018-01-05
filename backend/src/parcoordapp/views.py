@@ -287,3 +287,26 @@ class ParCoordPaperPlotsRest(APIView):
         type = request.GET.get('type')
         data = self.genData(type)
         return Response(data.tolist())
+
+
+class ParallelCoordIrisGmmsRest(APIView):
+    pass
+    
+    
+    
+    def getJsonGMMs(self):
+        filePath = "/Users/halil/Yandex.Disk.localized/root/academic/myphd/phd/0070-coding/parcoord-brushing/backend/src/code/parallelcoord/iris.gmms.json"
+        gmms = None
+        with open(filePath, 'r') as infile:
+            gmms = json.load(infile)
+        return gmms 
+
+    
+    def post(self, request):
+        data = self.getJsonGMMs()
+        return Response(data)
+    
+    def get(self, request):
+        data = self.getJsonGMMs()
+        return Response(data)
+

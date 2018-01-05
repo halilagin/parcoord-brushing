@@ -8,10 +8,12 @@ urlpatterns = [
     url(r'^iris/fetchData', views.ParallelCoordIrisDataRest.as_view(), name="ParallelCoordIrisDataRestV3"),
     url(r'^iris/kmeans/oftwovars', views.ParallelCoordIrisKmeansRest.as_view(), name="ParallelCoordIrisKmeansRestV3"),
     url(r'^iris/spatialsign/oftwovars', views.ParallelCoordIrisSpatialSignRest.as_view(), name="ParallelCoordIrisSpatialSignRestV3"),
+    url(r'^iris/gmms', views.ParallelCoordIrisGmmsRest.as_view(), name="ParallelCoordIrisGmmsRestV3"),
     url(r'^breastcancer/eigens', views.ParallelCoordBreastCancerEigensRest.as_view(), name="ParallelCoordBreastCancerEigensRestV3"),
     url(r'^breastcancer/fetchData', views.ParallelCoordBreastCancerDataRest.as_view(), name="ParallelCoordBreasCancerDataRestV3"),
     url(r'^breastcancer/kmeans/oftwovars', views.ParallelCoordBreastCancerKmeansRest.as_view(), name="ParallelCoordBreastCancerKmeansRestV3"),
     url(r'^breastcancer/spatialsign/oftwovars', views.ParallelCoordBreastCancerSpatialSignRest.as_view(), name="ParallelCoordBreastCancerSpatialSignRestV3"),
+    #url(r'^breastcancer/gmms', views.ParallelCoordBreastCancerSpatialSignRest.as_view(), name="ParallelCoordBreastCancerSpatialSignRestV3"),
     url(r'^userints/save', views.ParCoordUserInteractionDataSaveRest.as_view(), name="ParCoordUserInteractionDataSaveRestV3"),
     url(r'^userints/fetchAll', views.ParCoordUserInteractionDataFetchAllRest.as_view(), name="ParCoordUserInteractionDataSaveRestV3"),
     url(r'^userints/fetchParticipant', views.ParCoordUserInteractionDataFetchParticipantRest.as_view(), name="ParCoordUserInteractionDataFetchParticipantRestV3"),
@@ -23,6 +25,4 @@ urlpatterns = [
 
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)
-
-
 

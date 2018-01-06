@@ -56,11 +56,18 @@ class IrisDataGmms(object):
             samples = np.array(samples).reshape(1,-1).T
             gmm.fit(samples)
             
-            gmmVals = {"means": np.array(gmm.means_).ravel().tolist(), 
-              "covs": np.array(np.sqrt(gmm.covariances_)).ravel().tolist()
-              }
-            gmms[str(i+1)] = gmmVals
+
+            gmm_ = np.array([gmm.means_.ravel().tolist(), gmm.covariances_.ravel().tolist()]).T
+            gmm_ = sorted(gmm_, key=lambda a_entry: a_entry[0]) 
+            gmm_ = np.array(gmm_)
             
+            means = gmm_[:,0].tolist()
+            sigmas = gmm_[:,1].tolist()
+            ranges = [ [ means[j]-3*sigmas[j],means[j]+3*sigmas[j] ] for j in range(len(means))]
+            extent = [np.amin(ranges),np.amax(ranges)]
+            gmmVals = {"means": means, "sigmas":sigmas, "ranges":ranges, "extent":extent}
+            gmms[str(i+1)] = gmmVals
+        print (gmms)
         return gmms
     
     def calcIrisEms(self,componentsSize=3):
@@ -97,11 +104,11 @@ class IrisDataGmms(object):
             print (gmms) 
         
 #         
-# IrisDataGmms().saveEms()
+IrisDataGmms().saveEms()
 # print (IrisDataGmms().calcIrisEms())
 
 
-IrisDataGmms().testJsonLoad()
+#IrisDataGmms().testJsonLoad()
 
 
 # class BreastCancerDataEigens(object):

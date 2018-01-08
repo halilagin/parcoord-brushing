@@ -347,7 +347,7 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
     this.dimName=dimName;
     this.dimIdx=dimIdx;
     this.brushIdx = brushIdx;
-    this.judgeOfBrushes = {"corr":false, "circular":false, "radial":false};
+    this.judgeOfBrushes = {"corr":false, "circular":false, "radial":false, "gmmline":false};
     this.display = function (){
 
       var keys_ = Object.keys(this.judgeOfBrushes);
@@ -568,6 +568,33 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
 
   }
 
+
+  function isInGmmLineBrush(rowIdx){
+    //brushedPointIndexes
+    //GmmLineBrushSelectedPointIndexes[dimName]=[];
+    //    if (GmmLineBrushActiveInstances[dimName]===undefined)
+    //    GmmLineBrushActiveInstances[dimName]=true;
+
+    var tf = false;
+    var brushPanels = Object.keys(GmmLineBrushSelectedPointIndexes);//it is a variable in VarClusterBrush.js
+    for (var b=0;b<brushPanels.length;b++){
+      var brushPanelDimName = brushPanels[b];
+      console.log(brushPanelDimName);
+      var brushedPointIndexes =GmmLineBrushSelectedPointIndexes[brushPanelDimName];
+
+      for (var c = 0; GmmLineBrushActiveInstances[brushPanelDimName] && c < brushedPointIndexes.length; c++) {
+        var idxInEMCluster = brushedPointIndexes[c];
+        if (idxInEMCluster == rowIdx) {
+          tf = true;//brushed index in cluster is equal to the rowIdx of x dimension.
+          break;
+        }
+
+      }
+    }
+    return tf;
+
+  }
+
   function isInRadialBrush(rowIdx){
     //brushedPointIndexes
     //ClusterBrushSelectedPointIndexes[clusterBrushPanelDimName]
@@ -594,7 +621,14 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
 
 
   function markBrushedLines(dimidx){
-      if (y[dimidx.dim].brushes[dimidx.idx]["state"]==null || y[dimidx.dim].brushes[dimidx.idx]["state"]==undefined)
+    if (y[dimidx.dim]==undefined || y[dimidx.dim]==null)
+        y[dimidx.dim]={};
+    if (y[dimidx.dim].brushes==undefined || y[dimidx.dim].brushes==null)
+        y[dimidx.dim].brushes=[];
+    if (y[dimidx.dim].brushes[dimidx.idx]==undefined || y[dimidx.dim].brushes[dimidx.idx]==null)
+        y[dimidx.dim].brushes[dimidx.idx]={};
+
+    if (y[dimidx.dim].brushes[dimidx.idx]["state"]==null || y[dimidx.dim].brushes[dimidx.idx]["state"]==undefined)
         y[dimidx.dim].brushes[dimidx.idx]["state"]={};
 
     y[dimidx.dim].brushes[dimidx.idx]["state"]["state"]="moving";
@@ -705,8 +739,9 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
 
 
     markedPaths.forEach((row,idx)=>{
-      row.judgeOfBrushes.radial=isInRadialBrush(idx);
-      row.judgeOfBrushes.circular=isInClusterBrush(idx);
+      row.judgeOfBrushes["radial"]=isInRadialBrush(idx);
+      row.judgeOfBrushes["circular"]=isInClusterBrush(idx);
+      row.judgeOfBrushes["gmmline"]=isInGmmLineBrush(idx);
 
     });
 

@@ -51,22 +51,30 @@ class IrisDataGmms(object):
     def calcEM(self, samples, componentsSize=3):
         pass
         gmms = {}
+        np.random.seed(2017)
         for i in range(componentsSize):
             gmm = GaussianMixture(n_components=i+1)
             samples = np.array(samples).reshape(1,-1).T
             gmm.fit(samples)
             
+            gmmpredict = gmm.predict(samples).tolist()
 
+            emLabelIndexes = np.array([k for k in range(i+1)])
             gmm_ = np.array([gmm.means_.ravel().tolist(), gmm.covariances_.ravel().tolist()]).T
+
+            gmm_ = np.append(gmm_.T,[emLabelIndexes],axis=0).T
+            
             gmm_ = sorted(gmm_, key=lambda a_entry: a_entry[0]) 
             gmm_ = np.array(gmm_)
             
+
             means = gmm_[:,0].tolist()
             sigmas = gmm_[:,1].tolist()
             ranges = [ [ means[j]-3*sigmas[j],means[j]+3*sigmas[j] ] for j in range(len(means))]
             extent = [np.amin(ranges),np.amax(ranges)]
-            gmmVals = {"means": means, "sigmas":sigmas, "ranges":ranges, "extent":extent}
+            gmmVals = {"means": means, "sigmas":sigmas, "gmm":gmm_.tolist(), "predict":gmmpredict, "ranges":ranges, "extent":extent}
             gmms[str(i+1)] = gmmVals
+            print("predict:",gmm.predict(samples))
         print (gmms)
         return gmms
     

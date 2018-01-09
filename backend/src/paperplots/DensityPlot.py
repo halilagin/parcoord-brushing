@@ -74,6 +74,27 @@ class DensityPlot(object):
         mmp = MultiModePlot()
         mmp.start(gmms["means"], gmms["sigmas"],"gmmlines2.svg", saveFile=False)
         
+    def testEMPetalW(self):
+        gmm = GaussianMixture(n_components=3)
+        iris = IrisDataProvider()
+        sepal_len = iris.df[['petal_w']].values
+        gmm.fit(sepal_len)
+        
+        gmm_ = np.array([gmm.means_.ravel().tolist(), gmm.covariances_.ravel().tolist()]).T
+        gmm_ = sorted(gmm_, key=lambda a_entry: a_entry[0]) 
+        gmm_ = np.array(gmm_)
+        
+        means = gmm_[:,0].tolist()
+        sigmas = gmm_[:,1].tolist()
+        
+        gmms = {"means":means,
+          "sigmas":sigmas
+          } 
+        print ("testEMSepalLen.gmms:",gmms)
+
+        mmp = MultiModePlot()
+        mmp.start(gmms["means"], gmms["sigmas"],"gmmlines2.svg", saveFile=False)
+        
     def start(self):
         pass
                 
@@ -99,4 +120,5 @@ class DensityPlot(object):
 
 #DensityPlot().start()
 #DensityPlot().testSepallen()  
-DensityPlot().testEMSepalLen()
+#DensityPlot().testEMSepalLen()
+DensityPlot().testEMPetalW()

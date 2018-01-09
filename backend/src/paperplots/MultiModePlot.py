@@ -75,7 +75,7 @@ class MultiModePlot(object):
         sns.distplot(dists[2], hist=False, color="#7570b3", ax=ax)
 
 
-        plt.ylim([-0.25,0.25])
+        #plt.ylim([-0.25,0.25])
         lines = []
         for i in range(3):
             lines.append({

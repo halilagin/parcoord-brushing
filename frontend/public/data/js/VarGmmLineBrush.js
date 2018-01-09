@@ -23,11 +23,7 @@ function VarGmmLineBrush(container){
   this.DimsBrushIdx=0;//this instance in the brush instance of dimName and it is dimName's DimsBrushIdx brush. see start.
   this.scales={
     "xscale":d3.scale.linear().domain([0,this.xlimit]).range([0,boxWidth]),
-    "yscale":d3.scale.linear().domain([this.ylimit,0]).range([0,boxWidth]),
-    "x":function(){},
-    "y":function(){},
-    "rx":function(){},
-    "ry":function(){}
+    "yscale":d3.scale.linear().domain([this.ylimit,0]).range([0,boxWidth])
 
 
   };
@@ -97,6 +93,15 @@ function VarGmmLineBrush(container){
 
   this.intersectGMMLinesAndBrushExtent = function(gmms, extent_){
 
+    var isArraySorted = function(arr) {
+      //for the array having elements arr[i]<arr[i+1]
+      for (var i=0;i<arr.length-1;i++){
+        if (arr[i]>arr[i+1])
+          return false
+      }
+      return true;
+    };
+
     var hash = {};
     //extent's xy coords.
     var x1 = extent_[0][0];
@@ -113,20 +118,49 @@ function VarGmmLineBrush(container){
       var line_x2_in_extent = line_x2>x1 && line_x2<x2;
       var line_x1_in_extent = (line_x1>x1 && line_x1<x2);
       var line_in_x = line_x1_in_extent || line_x2_in_extent;
-      if (line_in_extentsy && line_in_x) {
-        //determine the gaussian's ranges
-        var gaussianRange;
-        if (line_x1_in_extent && line_x2_in_extent) {
-          gaussianRange= [line_x1,line_x2];
-        } else if (line_x1_in_extent) {
-          gaussianRange= [line_x1,x2];
-        } else {
-          gaussianRange= [x1,line_x2];
-        }
-        hash[i]=gaussianRange;
+
+      var case1 = [x1,line_x1,line_x2,x2];//brush covers all
+      var case2 = [line_x1,x1,line_x2,x2];//brush covers right part
+      var case3 = [x1,line_x1,x2, line_x2];//brush covers left part
+      var case4 = [line_x1, x1,x2, line_x2];//brush covers inside part
+
+      var inCase1 = isArraySorted(case1);
+      var inCase2 = isArraySorted(case2);
+      var inCase3 = isArraySorted(case3);
+      var inCase4 = isArraySorted(case4);
+
+
+      if (line_in_extentsy) {
+        if (inCase1)
+          hash[i] = [line_x1, line_x2];
+        else if (inCase2)
+          hash[i] = [x1, line_x2];
+        else if (inCase3)
+          hash[i] = [line_x1, x2];
+        else if (inCase4)
+          hash[i] = [x1, x2];
       }
+      // if (line_in_extentsy ) {
+      //   if (line_in_x) {
+      //     //determine the gaussian's ranges
+      //     var gaussianRange;
+      //     if (line_x1_in_extent && line_x2_in_extent) {
+      //       gaussianRange = [line_x1, line_x2];
+      //     } else if (line_x1_in_extent) {
+      //       gaussianRange = [line_x1, x2];
+      //     } else {
+      //       gaussianRange = [x1, line_x2];
+      //     }
+      //     hash[i] = gaussianRange;
+      //   }
+      // }
     }
     return hash;
+  };
+
+  this.selectPointsBetweenTheExtent = function(intersectRange, dimName, idx) {
+
+    return null;
   };
 
   this.brushend = function (){
@@ -147,14 +181,29 @@ function VarGmmLineBrush(container){
     console.log("brushend.intersects:",intersects);
     console.log("brushend.intersects.data:",gmms, extent_);
 
-    var classLabel=-1;
-    var emClassIndex = parseInt(Object.keys(intersects)[0]);
-    var emClassLabel = Math.floor(gmms.gmm[emClassIndex][2]); //it is a float number because of np.array
 
+    var intersectedClusterLabels = Object.keys(intersects);
     var emClassBrushedIndexes =[];
-    for (var i=0;i<gmms.predict.length;i++)
-      if (gmms.predict[i]==emClassLabel)
-        emClassBrushedIndexes.push(i);
+    for (var i=0;i<intersectedClusterLabels.length;i++) {
+      var intersectedRange = intersects[intersectedClusterLabels[i]];
+      var emClassIndex = parseInt(intersectedClusterLabels[i]);
+      //third element  stores the class label number:0,1,2,it is a float number because of np.array
+      var emClassLabel = Math.floor(gmms.gmm[emClassIndex][2]);
+      for (var k=0;k<gmms.predict.length;k++) {
+
+        if (gmms.predict[k] == emClassLabel) {//if the gmm line brushed
+          //do selection according to the range of the brush.
+          //intersectrange is the range of the line brush that matches the selected class namely brushed line.
+          console.log("intersectRange:",intersectedRange,emClassLabel);
+          //match the range with the original data.
+          var val = +estcorr_remote_data.csv[k][dimname_];
+          if (val>intersectedRange[0] && val <intersectedRange[1] ) //if it is in the range
+            emClassBrushedIndexes.push(k);//select it
+        }
+      }
+
+    }
+
 
 
 
@@ -179,7 +228,7 @@ function VarGmmLineBrush(container){
 
     //gmms: [{x1:0.8,x:0.9}]
 
-    this.scales.xscale = d3.scale.linear().domain([this.gmms["extent"][0],this.gmms["extent"][1]]).range([0,boxWidth]);
+    this.scales.xscale = d3.scale.linear().domain([this.gmms["extent"][0]-0.1*this.gmms["extent"][0],this.gmms["extent"][1]+0.1*this.gmms["extent"][1]]).range([0,boxWidth]);
 
     //gmms should be sort by array's fist element, x1.
     //ranges denotes the number of lines.
@@ -211,50 +260,13 @@ function VarGmmLineBrush(container){
 
     this.brush.on("brush", this.brushing).on("brushend",this.brushend);
 
-
     this.container
       .append("g")
       .attr("class", "gmmline_rectbrush gmmline_rectbrush_"+(this.dimsBrushIdx+1))
       .datum({"dimName":this.dimName, "brushIdx":this.dimsBrushIdx})
       .call(this.brush)
     ;
-
     this.brushExtent = this.brush.extent();
-    console.log("gmmline.brush.start.extent:",this.brushExtent);
-
-    // gmmLineBrush.b2= g_.append("svg:circle")
-    //   .attr("class", "gmmLine_brush gmmLine_brush_c2")
-    //   .attr('cx', this.brushes[idx].x)
-    //   .attr('cy', this.brushes[idx].y)
-    //   .attr('r', this.brushes[idx].r2)
-    //   .style('fill', "lightgreen")
-    //
-    //   .call(this.drag);
-    //
-    // gmmLineBrush.b1= g_.append("svg:circle")
-    //   .attr("class", "gmmLine_brush gmmLine_brush_c1")
-    //   .attr('cx', this.brushes[idx].x)
-    //   .attr('cy', this.brushes[idx].y)
-    //   .attr('r', this.brushes[idx].r1)
-    //   .style('fill', "white")
-    //
-    //   .call(this.drag);
-    //
-    // gmmLineBrush.b1handle= g_.append("svg:circle")
-    //   .attr("class", "gmmLine_brush_handle cbhandle_"+idx+"_"+0)
-    //   .attr('cx', this.brushes[idx].x+cbConfig.brushes[idx].r1)
-    //   .attr('cy', this.brushes[idx].y)
-    //   .attr('r', 3)
-    //   .call(this.drag);
-    //
-    // gmmLineBrush.b2handle= g_.append("svg:circle")
-    //   .attr("class", "gmmLine_brush_handle cbhandle_"+idx+"_"+1)
-    //   .attr('cx', this.brushes[idx].x+cbConfig.brushes[idx].r2)
-    //   .attr('cy', this.brushes[idx].y)
-    //   .attr('r', 3)
-    //   .call(this.drag);
-
-    //this.brushes[idx].brush = gmmLineBrush;
   };
 
 

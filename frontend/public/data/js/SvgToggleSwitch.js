@@ -32,7 +32,9 @@ var SVGToggleSwitch=function (params_){
 
 
     this.params = params;
+
     this.idClass = $(this.params.container[0][0]).attr("class").split(" ")[1];
+    console.log("tgswitch:",$(this.params.container[0][0]).attr("class"),this.idClass);
     // Define internal variables.
     this.atRight = this.params.value;
 
@@ -86,9 +88,9 @@ var SVGToggleSwitch=function (params_){
 
     // Define result's object.
     var res = {
-      'g' : this,
+      'g' : this.g,
       'getValue': ()=> { return this.atRight; },
-      'getPanelCssClass': ()=> { return this.idClass },
+      'getPanelCssClass': ()=> {return this.idClass; },
 
       'setValue': this.setAtRight,
       'remove': () =>{ this.g.remove(); }

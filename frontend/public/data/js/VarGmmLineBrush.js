@@ -8,7 +8,7 @@
 
 
 
-var GmmLineBrushSelectedPointIndexes = {};
+//var GmmLineBrushSelectedPointIndexes = {};
 var GmmLineBrushActiveInstances = {};
 
 
@@ -71,23 +71,13 @@ function VarGmmLineBrush(container){
   //see: https://bl.ocks.org/mqg/c4f70354e9d05b80f1d4
   this.brushing = function (){
 
-    this.brushExtent = this.brushExtent;
-    var class_ = $(this).parent().attr("class");
-    var dimName = class_.substring("corrbrush_panel  gmmlinebrush_panel_".length, class_.indexOf("___"));
-    var distinguishedClass = class_.substring(class_.indexOf(" ")+2);
-    //console.log("gmmline.brush.extent:",d3.select(this).datum());
-    var dimName = d3.select(this).datum().dimName;
-    var brushIdx = d3.select(this).datum().brushIdx;
-    var dimname_ = dimName.split("___")[0];
+    // this.brushExtent = this.brushExtent;
+    // var class_ = $(this).parent().attr("class");
+    // var dimName = class_.substring("gmmlinebrush_panel gmmlinebrush_panel_".length, class_.indexOf("___"));
+    // var brushIdx = +class_.substring(class_.lastIndexOf("_")+1)-1;
+    // var distinguishedClass = class_.substring(class_.indexOf(" ")+1);
+    // var gmmlineBrushInstance = GmmLineBrushActiveInstances[dimName].brushes[brushIdx].brushInstance;
 
-    var gmmlineBrushInstance = GmmLineBrushActiveInstances[dimname_].brushes[brushIdx];
-    console.log("gmmlineBrushInstance.brush.extent:",gmmlineBrushInstance.brush.extent());
-    // endg
-    //   .data(extent)
-    //   .attr("transform", function(d,i){
-    //     return "translate(" + d[0] + "," + d[1] + ")";
-    //   })
-    // ;
   };
 
 
@@ -164,16 +154,27 @@ function VarGmmLineBrush(container){
   };
 
   this.brushend = function (){
+    // this.brushExtent = this.brushExtent;
+    // var class_ = $(this).parent().attr("class");
+    // var dimName = class_.substring("corrbrush_panel  gmmlinebrush_panel_".length, class_.indexOf("___"));
+    // var distinguishedClass = class_.substring(class_.indexOf(" ")+2);
+    // //console.log("gmmline.brush.extent:",d3.select(this).datum());
+    // var pairName = this.pairName;//d3.select(this).datum().dimName;
+    // var brushIdx = this.brushIdx;//d3.select(this).datum().brushIdx;
+    // var dimname_ = this.dimName;
+
     this.brushExtent = this.brushExtent;
     var class_ = $(this).parent().attr("class");
-    var dimName = class_.substring("corrbrush_panel  gmmlinebrush_panel_".length, class_.indexOf("___"));
-    var distinguishedClass = class_.substring(class_.indexOf(" ")+2);
-    //console.log("gmmline.brush.extent:",d3.select(this).datum());
-    var dimName = d3.select(this).datum().dimName;
-    var brushIdx = d3.select(this).datum().brushIdx;
-    var dimname_ = dimName.split("___")[0];
+    var dimName = class_.substring("gmmlinebrush_panel gmmlinebrush_panel_".length, class_.indexOf("___"));
+    var brushIdx = +class_.substring(class_.lastIndexOf("_")+1)-1;
+    var pairName = class_.substring("gmmlinebrush_panel gmmlinebrush_panel_".length, class_.lastIndexOf("_"));
 
-    var gmmlineBrushInstance = GmmLineBrushActiveInstances[dimname_].brushes[brushIdx];
+    var distinguishedClass = class_.substring(class_.indexOf(" ")+1);
+    console.log("this.brushend:",pairName, dimName, brushIdx);
+
+    var gmmlineBrushInstance = GmmLineBrushActiveInstances[dimName].brushes[brushIdx].brushInstance;
+
+
     var extent_ = gmmlineBrushInstance.brush.extent();
     var gmms = gmmlineBrushInstance.gmms;
     var intersects = gmmlineBrushInstance.intersectGMMLinesAndBrushExtent(gmms, extent_);
@@ -196,7 +197,7 @@ function VarGmmLineBrush(container){
           //intersectrange is the range of the line brush that matches the selected class namely brushed line.
           console.log("intersectRange:",intersectedRange,emClassLabel);
           //match the range with the original data.
-          var val = +estcorr_remote_data.csv[k][dimname_];
+          var val = +estcorr_remote_data.csv[k][dimName];
           if (val>intersectedRange[0] && val <intersectedRange[1] ) //if it is in the range
             emClassBrushedIndexes.push(k);//select it
         }
@@ -207,15 +208,18 @@ function VarGmmLineBrush(container){
 
 
 
-    GmmLineBrushSelectedPointIndexes[dimName]=[];
+    //GmmLineBrushSelectedPointIndexes[dimName].brushes[brushIdx]={"brushInstance":this,"active"};
     if (GmmLineBrushActiveInstances[dimName]===undefined)
-      GmmLineBrushActiveInstances[dimName]=true;
+      GmmLineBrushActiveInstances[dimName]={"brushes":[]};
+    if (GmmLineBrushActiveInstances[dimName].brushes[brushIdx]===undefined)
+      GmmLineBrushActiveInstances[dimName].brushes[brushIdx] = {"brushInstance":this, "active":true};
 
-    if (GmmLineBrushActiveInstances[dimName])
-      GmmLineBrushSelectedPointIndexes[dimName] = emClassBrushedIndexes;
+
+    if (GmmLineBrushActiveInstances[dimName].brushes[brushIdx].active)
+      GmmLineBrushActiveInstances[dimName].brushes[brushIdx]["indexes"] = emClassBrushedIndexes;
 
 
-    var dimidx = {"dim":dimName,"idx":(brushIdx+1)};
+    var dimidx = {"dim":pairName,"idx":(brushIdx+1)};
     gmmlineBrushInstance.markBrushedLinesCB(dimidx);
 
   };
@@ -223,12 +227,34 @@ function VarGmmLineBrush(container){
   this.createGmmLineBrush = function (){//cb:gmmLine brush
     //var cb = this.brushes[idx];
     console.log("createGmmLineBrush:",this.gmms);
-    var g_ = this.container;
+    //var g_ = this.container;
     var yfactor=0.2;
 
     //gmms: [{x1:0.8,x:0.9}]
 
     this.scales.xscale = d3.scale.linear().domain([this.gmms["extent"][0]-0.1*this.gmms["extent"][0],this.gmms["extent"][1]+0.1*this.gmms["extent"][1]]).range([0,boxWidth]);
+
+
+
+
+    //see:https://bl.ocks.org/mqg/c4f70354e9d05b80f1d4
+    this.brush = d3.svg.brush()
+        .x(this.scales.xscale)
+        .y(this.scales.yscale)
+        .extent([[100, 100], [200, 200]]);
+
+    this.brush.on("brush", this.brushing).on("brushend",this.brushend);
+
+    var g_ = this.container.append("g");
+
+      g_.append("rect")
+      .attr("class", "gmmlinebrushpanel_rect")
+      ;
+
+    g_.datum({"dimName":this.dimName, "brushIdx":this.dimsBrushIdx})
+      //.attr("class", "gmmlinebrush_panel gmmlinebrush_panel_"+(this.dimsBrushIdx+1))
+      .call(this.brush)
+    ;
 
     //gmms should be sort by array's fist element, x1.
     //ranges denotes the number of lines.
@@ -252,40 +278,57 @@ function VarGmmLineBrush(container){
 
 
 
-    //see:https://bl.ocks.org/mqg/c4f70354e9d05b80f1d4
-    this.brush = d3.svg.brush()
-        .x(this.scales.xscale)
-        .y(this.scales.yscale)
-        .extent([[100, 100], [200, 200]]);
-
-    this.brush.on("brush", this.brushing).on("brushend",this.brushend);
-
-    this.container
-      .append("g")
-      .attr("class", "gmmline_rectbrush gmmline_rectbrush_"+(this.dimsBrushIdx+1))
-      .datum({"dimName":this.dimName, "brushIdx":this.dimsBrushIdx})
-      .call(this.brush)
-    ;
     this.brushExtent = this.brush.extent();
+
+
+    var toggleOnChange = (res)=>{
+      console.log("SVGToggleSwitch:",res.getValue());
+      var clusterBrushPanelClass = res.getPanelCssClass();
+      console.log("gmmlineBrushPanelClass:",clusterBrushPanelClass);
+
+
+
+
+
+      var class_ = clusterBrushPanelClass;
+      var dimName = class_.substring(class_.indexOf("gmmlinebrush_panel_")+"gmmlinebrush_panel_".length, class_.indexOf("___"));
+      var brushIdx = +class_.substring(class_.lastIndexOf("_")+1)-1;
+
+
+      var gmmlineBrushInstance = GmmLineBrushActiveInstances[dimName].brushes[brushIdx].brushInstance;
+
+
+      GmmLineBrushActiveInstances[dimName].brushes[brushIdx].active=res.getValue();
+      console.log("toogleonchange.dimname:",dimName, brushIdx, "active:",res.getValue());
+
+
+      var dimidx = {"dim":dimName,"idx":(brushIdx+1)};
+      gmmlineBrushInstance.markBrushedLinesCB(dimidx);
+
+
+
+    };
+
+    new SVGToggleSwitch({container:this.container,onChange:toggleOnChange});
   };
 
 
-  this.start = function(data, dimName, markBrushedLinesCB, gmmlineCount) {
+  this.start = function(data, pairName, markBrushedLinesCB, gmmlineCount) {
     console.log("new gmm line brush created");
     this.data = data;
-    this.dimName = dimName;
+    this.pairName = pairName;
+    this.dimName = this.pairName.split("___")[0];
 
     this.markBrushedLinesCB = markBrushedLinesCB;
     this.gmmlineCount = gmmlineCount;
-    var dimname_ = dimName.split("___")[0];
-    this.gmms = data[dimname_][this.gmmlineCount+""];
+    this.gmms = data[this.dimName][this.gmmlineCount+""];
 
-    if (GmmLineBrushActiveInstances[dimname_]==null)
-      GmmLineBrushActiveInstances[dimname_]={"brushes":[]};
+    if (GmmLineBrushActiveInstances[this.dimName]==null)
+      GmmLineBrushActiveInstances[this.dimName]={"brushes":[]};
 
     //this is the dimName's length index of brushes instances.
-    this.dimsBrushIdx=GmmLineBrushActiveInstances[dimname_].brushes.length;
-    GmmLineBrushActiveInstances[dimname_].brushes.push(this);
+    this.dimsBrushIdx=GmmLineBrushActiveInstances[this.dimName].brushes.length;
+    GmmLineBrushActiveInstances[this.dimName].brushes.push({"brushInstance":this, "active":true, "indexes":[]});
 
     this.createGmmLineBrush();
 

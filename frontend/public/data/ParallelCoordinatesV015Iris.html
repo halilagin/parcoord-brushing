@@ -57,6 +57,24 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
     background-color: #f8efc0;
   }
 
+  .clusterbrush_panel .clusterrect{
+    fill:#fff7bc !important;
+
+    opacity: 0.8;
+  }
+
+
+
+  .radialbrush_panel {
+    background-color: #f8efc0;
+  }
+  .radialbrush_panel .radialrect{
+    fill:#fff7bc !important;
+
+    opacity: 0.8;
+  }
+
+
   .axis line,
   .axis path {
     fill: none;
@@ -210,8 +228,14 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
     opacity: 0.8;
   }
 
-  .corrbrush_panel .gmmlinerect{
+  .gmmlinebrush_panel .gmmlinerect{
     fill:#fff7bc !important;
+
+    opacity: 0.8;
+  }
+
+  .gmmlinebrush_panel .extent {
+    fill: #d95f0e;
 
     opacity: 0.8;
   }
@@ -575,23 +599,45 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
     //    if (GmmLineBrushActiveInstances[dimName]===undefined)
     //    GmmLineBrushActiveInstances[dimName]=true;
 
-    var tf = false;
-    var brushPanels = Object.keys(GmmLineBrushSelectedPointIndexes);//it is a variable in VarClusterBrush.js
-    for (var b=0;b<brushPanels.length;b++){
-      var brushPanelDimName = brushPanels[b];
-      console.log(brushPanelDimName);
-      var brushedPointIndexes =GmmLineBrushSelectedPointIndexes[brushPanelDimName];
+//    var tf = false;
+//    var brushPanels = Object.keys(GmmLineBrushSelectedPointIndexes);//it is a variable in VarClusterBrush.js
 
-      for (var c = 0; GmmLineBrushActiveInstances[brushPanelDimName] && c < brushedPointIndexes.length; c++) {
-        var idxInEMCluster = brushedPointIndexes[c];
-        if (idxInEMCluster == rowIdx) {
-          tf = true;//brushed index in cluster is equal to the rowIdx of x dimension.
-          break;
+    if (GmmLineBrushActiveInstances!==undefined){
+      var dimnames = Object.keys(GmmLineBrushActiveInstances);
+      for (var i=0;i<dimnames.length;i++){
+        var dimname = dimnames[i];
+        var dim_ = GmmLineBrushActiveInstances[dimname];
+        for (var k=0;k<dim_.brushes.length;k++){
+            var brush = dim_.brushes[k];
+            if (brush.active){
+                for (var j=0;j<brush.indexes.length;j++){
+                  var idxInEMCluster = brush.indexes[j];
+                  if (idxInEMCluster == rowIdx) {
+                    return true;
+                  }
+                }
+            }
         }
-
       }
     }
-    return tf;
+
+    return false;
+//
+//    for (var b=0;b<brushPanels.length;b++){
+//      var brushPanelDimName = brushPanels[b];
+//      console.log(brushPanelDimName);
+//      var brushedPointIndexes =GmmLineBrushSelectedPointIndexes[brushPanelDimName];
+//
+//      for (var c = 0; GmmLineBrushActiveInstances[brushPanelDimName] && c < brushedPointIndexes.length; c++) {
+//        var idxInEMCluster = brushedPointIndexes[c];
+//        if (idxInEMCluster == rowIdx) {
+//          tf = true;//brushed index in cluster is equal to the rowIdx of x dimension.
+//          break;
+//        }
+//
+//      }
+//    }
+//    return tf;
 
   }
 
@@ -1000,6 +1046,8 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
       .attr("y", 0)
       .attr("width", boxWidth)
       .attr("height", boxWidth)
+      .attr("class","clusterrect")
+
       ;//.attr("fill", "#dedede");
 
     newCorrBrushPanel.clusterbrushPanel.datum({"dimName":key_});
@@ -1044,6 +1092,7 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
       .attr("y", 0)
       .attr("width", boxWidth)
       .attr("height", boxWidth)
+      .attr("class", "radialrect")
       ;//.attr("fill", "#dedede");
 
     $.getJSON( remoteUrls.spatialSign+"?var1="+var1+"&var2="+var2, function( data_ ) {
@@ -1075,7 +1124,7 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
 
     newGmmLineBrushPanel.gmmlinebrushPanel = corrbrushGridG.selectAll(".radialbrush_panel_"+key_+"_"+newGmmLineBrushPanelIdx)
       .data([0]).enter().append("g")
-      .attr("class", "corrbrush_panel  gmmlinebrush_panel_"+key_+"_"+newGmmLineBrushPanelIdx)
+      .attr("class", "gmmlinebrush_panel gmmlinebrush_panel_"+key_+"_"+newGmmLineBrushPanelIdx)
       .attr("transform", function(){return "translate(" + [(x(dimensions[dimIdx])+50),height+corrBrushPanelMargin+10] + ")"; })
     ;
 
@@ -1291,6 +1340,7 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
     new SVGToggleSwitch({container:newCorrBrushPanel.ellpanel,onChange:toggleOnChange, dimension:d});
 
 
+    console.log("halil123");
   }
 
 
@@ -1302,7 +1352,7 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
       var key_ = dimensions[i]+"___"+dimensions[i+1];
       if (corrBrushes[key_]==undefined || corrBrushes[key_]==null)
         corrBrushes[key_]={};
-      corrBrushes[key_]["corrbrush_panels"]=[]
+      corrBrushes[key_]["corrbrush_panels"]=[];
         //dimension brush already created. no need to create again when reorienting.
       createCorrBrushPanel(i);
     }
@@ -1475,7 +1525,6 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
           g.attr("transform", function(d) { return "translate(" + position(d) + ")"; })
         })
         .on("dragend", function(d) {
-          console.log("dragend:",d3.select(this), d, dragging);
 
           delete dragging[d];
           transition(d3.select(this)).attr("transform", "translate(" + x(d) + ")");

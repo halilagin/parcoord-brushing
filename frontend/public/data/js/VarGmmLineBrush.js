@@ -5,7 +5,8 @@
 
 
 
-
+// for multiple brush
+// see:http://bl.ocks.org/ludwigschubert/0236fa8594c4b02711b2606a8f95f605
 
 
 //var GmmLineBrushSelectedPointIndexes = {};
@@ -13,6 +14,7 @@ var GmmLineBrushActiveInstances = {};
 
 
 function VarGmmLineBrush(container){
+  this.subbrushes=[];
   this.container = container;
   this.gmmLineBrushConfig = null;
   this.brushes= [];
@@ -153,6 +155,58 @@ function VarGmmLineBrush(container){
     return null;
   };
 
+
+  this.brushstart = function(){
+
+  };
+
+  this.collectBrushesIntersectedPoints = function() {
+    var gmmlineBrushInstance = this;
+    var gmms = gmmlineBrushInstance.gmms;
+    var dimName = gmmlineBrushInstance.dimName;
+    var brushesExtents = [];
+    brushesExtents.push(gmmlineBrushInstance.brush.extent());
+    for (var i=0;i<gmmlineBrushInstance.subbrushes.length;i++){
+      brushesExtents.push(gmmlineBrushInstance.subbrushes[i].extent())
+    }
+
+    var emClassBrushedIndexes =[];
+    console.log("extents:",brushesExtents);
+
+    for (var j=0;j<brushesExtents.length;j++){
+      var extent_ = brushesExtents[j];
+      if (extent_===undefined)
+        continue;
+      if (extent_[0][0]==0 && extent_[0][1]==0 && extent_[1][0]==0 && extent_[1][1]==0)
+        continue;
+      var intersects = gmmlineBrushInstance.intersectGMMLinesAndBrushExtent(gmms, extent_);
+      console.log("intersects:",intersects);
+
+
+      var intersectedClusterLabels = Object.keys(intersects);
+      for (var i=0;i<intersectedClusterLabels.length;i++) {
+        var intersectedRange = intersects[intersectedClusterLabels[i]];
+        var emClassIndex = parseInt(intersectedClusterLabels[i]);
+        //third element  stores the class label number:0,1,2,it is a float number because of np.array
+        var emClassLabel = Math.floor(gmms.gmm[emClassIndex][2]);
+        for (var k=0;k<gmms.predict.length;k++) {
+
+          if (gmms.predict[k] == emClassLabel) {//if the gmm line brushed
+            //do selection according to the range of the brush.
+            //intersectrange is the range of the line brush that matches the selected class namely brushed line.
+            //match the range with the original data.
+            var val = +estcorr_remote_data.csv[k][dimName];
+            if (val>intersectedRange[0] && val <intersectedRange[1] ) //if it is in the range
+              emClassBrushedIndexes.push(k);//select it
+          }
+        }
+
+      }
+    }
+
+    return emClassBrushedIndexes;
+  };
+
   this.brushend = function (){
     // this.brushExtent = this.brushExtent;
     // var class_ = $(this).parent().attr("class");
@@ -177,35 +231,135 @@ function VarGmmLineBrush(container){
 
     var extent_ = gmmlineBrushInstance.brush.extent();
     var gmms = gmmlineBrushInstance.gmms;
-    var intersects = gmmlineBrushInstance.intersectGMMLinesAndBrushExtent(gmms, extent_);
-    //intersects = {1:[x1,x2],2:[x1,x2]}
-    console.log("brushend.intersects:",intersects);
-    console.log("brushend.intersects.data:",gmms, extent_);
 
 
-    var intersectedClusterLabels = Object.keys(intersects);
-    var emClassBrushedIndexes =[];
-    for (var i=0;i<intersectedClusterLabels.length;i++) {
-      var intersectedRange = intersects[intersectedClusterLabels[i]];
-      var emClassIndex = parseInt(intersectedClusterLabels[i]);
-      //third element  stores the class label number:0,1,2,it is a float number because of np.array
-      var emClassLabel = Math.floor(gmms.gmm[emClassIndex][2]);
-      for (var k=0;k<gmms.predict.length;k++) {
 
-        if (gmms.predict[k] == emClassLabel) {//if the gmm line brushed
-          //do selection according to the range of the brush.
-          //intersectrange is the range of the line brush that matches the selected class namely brushed line.
-          console.log("intersectRange:",intersectedRange,emClassLabel);
-          //match the range with the original data.
-          var val = +estcorr_remote_data.csv[k][dimName];
-          if (val>intersectedRange[0] && val <intersectedRange[1] ) //if it is in the range
-            emClassBrushedIndexes.push(k);//select it
-        }
+    // var intersects = gmmlineBrushInstance.intersectGMMLinesAndBrushExtent(gmms, extent_);
+    // //intersects = {1:[x1,x2],2:[x1,x2]}
+    // console.log("brushend.intersects:",intersects);
+    // console.log("brushend.intersects.data:",gmms, extent_);
+    //
+    //
+    // var intersectedClusterLabels = Object.keys(intersects);
+    // var emClassBrushedIndexes =[];
+    // for (var i=0;i<intersectedClusterLabels.length;i++) {
+    //   var intersectedRange = intersects[intersectedClusterLabels[i]];
+    //   var emClassIndex = parseInt(intersectedClusterLabels[i]);
+    //   //third element  stores the class label number:0,1,2,it is a float number because of np.array
+    //   var emClassLabel = Math.floor(gmms.gmm[emClassIndex][2]);
+    //   for (var k=0;k<gmms.predict.length;k++) {
+    //
+    //     if (gmms.predict[k] == emClassLabel) {//if the gmm line brushed
+    //       //do selection according to the range of the brush.
+    //       //intersectrange is the range of the line brush that matches the selected class namely brushed line.
+    //       console.log("intersectRange:",intersectedRange,emClassLabel);
+    //       //match the range with the original data.
+    //       var val = +estcorr_remote_data.csv[k][dimName];
+    //       if (val>intersectedRange[0] && val <intersectedRange[1] ) //if it is in the range
+    //         emClassBrushedIndexes.push(k);//select it
+    //     }
+    //   }
+    //
+    // }
+
+
+
+
+
+    //multiple brush trial 1
+    // var subbrush = d3.svg.brush();
+    // console.log("gmmlineBrushInstance.subbrush:",subbrush);
+    //
+    //
+    //   subbrush
+    //     .on("brushstart", gmmlineBrushInstance.brushstart)
+    //     .on("brush", gmmlineBrushInstance.brushing)
+    //     .on("brushend", gmmlineBrushInstance.brushend);
+    // gmmlineBrushInstance.subbrushes.push({"id": gmmlineBrushInstance.subbrushes.length, "subbrush": subbrush});
+    //
+    // var lastBrushID = gmmlineBrushInstance.subbrushes[gmmlineBrushInstance.subbrushes.length - 1].id;
+    // console.log("subbrushid:",lastBrushID);
+    // var lastBrush = document.getElementById('brush-' + lastBrushID);
+    // var selection = d3.brushSelection(lastBrush);
+    //
+    // // If it does, that means we need another one
+    // if (selection && selection[0] !== selection[1]) {
+    //   newBrush();
+    // }
+
+
+
+
+    //multiple brush trial 2
+
+    if (true) {
+      var newIdx = gmmlineBrushInstance.subbrushes.length;
+      var firstBrush = gmmlineBrushInstance.subbrushes[0];
+      console.log("gmmlineBrushInstance.newbrush.distinguishedClass:", distinguishedClass);
+
+      var brushSelection = svg.selectAll("."+distinguishedClass)
+        .data([distinguishedClass]);
+
+
+      brushSelection.append("g")
+        .attr("class", "gmmline_subbrush gmmline_subbrush_" + newIdx)
+        .each(function (d) {
+          //multi-brushes
+          console.log("gmmlineBrushInstance.each:", d);
+
+          var brush_ = d3.svg.brush()
+            .x(gmmlineBrushInstance.scales.xscale)
+            .y(gmmlineBrushInstance.scales.yscale)
+            .on("brushstart", gmmlineBrushInstance.brushstart)
+            .on("brush", gmmlineBrushInstance.brushing).on("brushend", gmmlineBrushInstance.brushend);
+          gmmlineBrushInstance.subbrushes.push(brush_);
+          console.log("gmmlineBrushInstance.subbrushes:", gmmlineBrushInstance.subbrushes);
+          d3.select(this).call(brush_);
+        })
+      ;// .selectAll("rect")
+      // .attr("x", -8)
+      // .attr("width", 16);
+
+      var newBrush = gmmlineBrushInstance.subbrushes[gmmlineBrushInstance.subbrushes.length - 1];
+      if (gmmlineBrushInstance.subbrushes.length == 1)
+        firstBrush = gmmlineBrushInstance.subbrushes[0];//redefine firstbrush, if it is the first brush.
+
+      newBrush.extent(firstBrush.extent());
+      firstBrush.extent([[0, 0], [0, 0]]);
+
+      var firstObj = $("." + distinguishedClass).find(".gmmline_subbrush_0").find(".extent");
+
+      var newObj = $("." + distinguishedClass).find(".gmmline_subbrush_" + (gmmlineBrushInstance.subbrushes.length - 1)).find(".extent");
+      var prevObj = $("." + distinguishedClass).find(".gmmline_subbrush_" + (gmmlineBrushInstance.subbrushes.length - 2)).find(".extent");
+
+      newObj.attr("y", firstObj.attr("y"));
+      newObj.attr("height", firstObj.attr("height"));
+      newObj.attr("x", firstObj.attr("x"));
+      newObj.attr("width", firstObj.attr("width"));
+
+      firstObj.attr("y", 0);
+      firstObj.attr("height", 0);
+      firstObj.attr("x", 0);
+      firstObj.attr("width", 0);
+
+
+      //remove pointer-events except last added brush
+      for (var i = 0; i < gmmlineBrushInstance.subbrushes.length; i++) {
+        var pointersEvents_css = "none";
+        if (i == 0)
+          pointersEvents_css = "all";
+        var css_p = $("." + distinguishedClass).find(".gmmline_subbrush_" + i);
+        $("." + distinguishedClass).find(css_p).find(".background").css("pointer-events", pointersEvents_css);
+        $("." + distinguishedClass).find(css_p).css("pointer-events", "all");
+
       }
-
     }
 
 
+
+
+
+    var emClassBrushedIndexes = gmmlineBrushInstance.collectBrushesIntersectedPoints();
 
 
     //GmmLineBrushSelectedPointIndexes[dimName].brushes[brushIdx]={"brushInstance":this,"active"};
@@ -221,6 +375,9 @@ function VarGmmLineBrush(container){
 
     var dimidx = {"dim":pairName,"idx":(brushIdx+1)};
     gmmlineBrushInstance.markBrushedLinesCB(dimidx);
+
+
+
 
   };
 
@@ -242,10 +399,12 @@ function VarGmmLineBrush(container){
         .x(this.scales.xscale)
         .y(this.scales.yscale)
         .extent([[100, 100], [200, 200]]);
+    this.subbrushes.push(this.brush);
 
     this.brush.on("brush", this.brushing).on("brushend",this.brushend);
 
-    var g_ = this.container.append("g");
+    var g_ = this.container.append("g").attr("class", "gmmline_subbrush gmmline_subbrush_"+0)
+      ;
 
       g_.append("rect")
       .attr("class", "gmmlinebrushpanel_rect")

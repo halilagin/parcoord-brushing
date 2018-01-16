@@ -27,6 +27,7 @@ import timeit
 import csv
 import pandas as pd
 from matplotlib.patches import Ellipse
+from matplotlib.backends.backend_pdf import PdfPages
 
 
 import pylab
@@ -37,7 +38,7 @@ class IrisDataPetalLenWGaussianDraw(object):
     pass
 
     def __init__(self):
-        csvFile = "/Users/halil/Yandex.Disk.localized/root/academic/myphd/phd/0070-coding/parallel-coord/frontend/public/data/iris.data.csv"
+        csvFile = "/Users/halil/Yandex.Disk.localized/root/academic/myphd/phd/0070-coding/parcoord-brushing/frontend/public/data/iris.data.csv"
         csvDictReader = csv.DictReader(open(csvFile))
         self.df = pd.read_csv(csvFile)
         
@@ -72,7 +73,7 @@ class IrisDataPetalLenWGaussianDraw(object):
             Z = Z.reshape((xx.shape[0], xx.shape[1], 3))
             plt.imshow(Z, extent=(x_min, x_max, y_min, y_max), origin="lower")
             # Plot also the training points
-            plt.scatter(X[:, 0], X[:, 1], c=np.array(["r", "g", "b"])[y-1],
+            plt.scatter(X[:, 0], X[:, 1], c=np.array(["#7570b3","#af8dc3", "#d95f02", ])[y-1],
             edgecolors=(0, 0, 0))
             plt.xlabel('Petal Length')
             plt.ylabel('Petal Width')
@@ -84,6 +85,11 @@ class IrisDataPetalLenWGaussianDraw(object):
             (titles[i], clf.log_marginal_likelihood(clf.kernel_.theta)))
         
         plt.tight_layout()
+        pp = PdfPages('/Users/halil/Yandex.Disk.localized/root/academic/myphd/phd/0070-coding/parcoord-brushing/frontend/public/paperplots/petal_len_petal_w_gaus_processes.pdf')
+
+        plt.savefig(pp, format='pdf')
+        pp.close()
+
         plt.show()
 
-#print (IrisDataPetalLenWGaussianDraw().start())
+print (IrisDataPetalLenWGaussianDraw().start())

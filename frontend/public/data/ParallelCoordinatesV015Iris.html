@@ -880,7 +880,7 @@ see: https://github.com/topepo/recipes/blob/master/R/spatialsign.R
     //var newstd_origscale = dimscales[key_].ryscale(std);
     //console.log(dimscales[key_].ryscale.domain(), dimscales[key_].ryscale.range());
     //var newvar_origscale = newstd_origscale*newstd_origscale;
-
+    console.log("estcorr_estimateMuVariance:", {"mu":newm2_origscale, "variance":variance});
     //console.log("estcorr_estimateMuVariance:",key_,"m1:",estcorr_remote_data.eigens[key_].m1,"m2:",estcorr_remote_data.eigens[key_].m2,"cov:",cov,"var:",variance,"std",std);
     return {"mu":newm2_origscale, "variance":variance};
   }

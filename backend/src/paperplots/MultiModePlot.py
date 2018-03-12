@@ -115,21 +115,21 @@ class MultiModePlot(object):
 #         
     
 
-##GENERATE GMM LINES BRUSHES FOR ORIGINAL DATA
-# mu = [5, 12, 18]
-# sigma = [2, 3, 3]
-# mmp = MultiModePlot()
-# mmp.start(mu,sigma, "gmmlines1.svg")
+#GENERATE GMM LINES BRUSHES FOR ORIGINAL DATA
+mu = [5, 12, 18]
+sigma = [2, 3, 3]
+mmp = MultiModePlot()
+#mmp.start(mu,sigma, "gmmlines1.svg")
 # 
 # # do em for original data. produces gmm lines from the em clusters. do sorting to make brushes sorted. as in original data.
-# em_mu, em_sigma = mmp.calcEM(mu, sigma)
-# em_zip = np.array([em_mu,em_sigma]).T
-# em_zip1= np.sort(em_zip, axis=0)
-# em_mu1 = em_zip1.T[0].tolist()
-# em_sigma1 = em_zip1.T[1].tolist()
-# print (em_mu1,em_sigma1)   
-# 
-# mmp.start(em_mu1,em_sigma1,"gmmlines2.svg", saveFile=True)
+em_mu, em_sigma = mmp.calcEM(mu, sigma)
+em_zip = np.array([em_mu,em_sigma]).T
+em_zip1= np.sort(em_zip, axis=0)
+em_mu1 = em_zip1.T[0].tolist()
+em_sigma1 = em_zip1.T[1].tolist()
+print (em_mu1,em_sigma1)   
+ 
+mmp.start(em_mu1,em_sigma1,"gmmlines2.svg", saveFile=True)
 
     
         

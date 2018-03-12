@@ -32,10 +32,11 @@ class IndexComparePlot(object):
         pass
         np.random.seed(0)
         size= 40
-        colors1 = np.repeat('black',36)
+        randomSize=36
+        colors1 = np.repeat('black',randomSize)
         colors2 = np.repeat('red',4)
         colors = np.append(colors1,colors2)
-        x, y = np.random.multivariate_normal(mu, cov, 36).T
+        x, y = np.random.multivariate_normal(mu, cov, randomSize).T
         x_ = np.arange(5,5.8,0.2)
         y_ = np.arange(10,10.2,0.05)
         x = np.append(x,x_)
@@ -46,22 +47,23 @@ class IndexComparePlot(object):
 
         
         markers2 = ["x","+",".","s","v"]
-        ax.scatter(x[:36], y[:36], color=colors,marker='.')
+        ax.scatter(x[:randomSize], y[:randomSize], color=colors,marker='.')
         
         for i in range(4):
-            print ([x[36+i]], [y[36+i]])
-            ax.scatter([x[36+i]], [y[36+i]], color=colors[36+i],marker='.')
+            print ([x[randomSize+i]], [y[randomSize+i]])
+            ax.scatter([x[randomSize+i]+0.1*i], [y[randomSize+i]], color=colors[randomSize+i],marker='.')
         
         
         dashes = [2, 1, 2, 1]  # 10 points on, 5 off, 100 on, 5 off
         indexes = [13,17,6,8]
         for i in range(len(indexes)):
-            ax.annotate(r'$x_{'+str(indexes[i])+'}$', xy=(x[36+i]-0.04, 9.5-0.2), xytext=(x[36+i]-0.04, 9.5-0.2), color="red", fontsize=9)
-            line1, = ax.plot([x[36+i],x[36+i]], [y[36+i]-0.06,9.5], '--', linewidth=1, color='black')
+            #ax.annotate(r'$x_{'+str(indexes[i])+'}$', xy=(x[randomSize+i]+0.1*i, 9.5-0.2), xytext=(x[randomSize+i]+0.1*i, 9.5-0.2), color="red", fontsize=15)
+            ax.annotate(str(indexes[i]), xy=(x[randomSize+i]+0.1*i-0.05, 9.5-0.2), xytext=(x[randomSize+i]+0.1*i-0.05, 9.5-0.2), color="red", fontsize=15)
+            line1, = ax.plot([x[randomSize+i]+0.1*i,x[randomSize+i]+0.1*i], [y[randomSize+i]-0.06,9.5], '--', linewidth=1, color='black')
             line1.set_dashes(dashes)
 
         rect1 = patches.Rectangle(
-            (4.8, 9.8),1.0, 0.7 , fill=True, alpha=0.3,  facecolor="#fdbb84",
+            (4.8, 9.8),1.3, 0.7 , fill=True, alpha=0.3,  facecolor="#fdbb84",
             linewidth=None      # Default
             )
         ax.add_patch(rect1)
@@ -88,7 +90,8 @@ class IndexComparePlot(object):
         indexes = [13,17,6,8]
         for i in range(len(indexes)):
             print (indexes[i], 36+i)
-            ax.annotate(r'$x_{'+str(indexes[i])+'}$', xy=(x[36+i], y[36+i]), xytext=(x[36+i], y[36+i]), color="red")
+            #ax.annotate(r'$x_{'+str(indexes[i])+'}$', xy=(x[36+i], y[36+i]), xytext=(x[36+i], y[36+i]), color="red")
+            ax.annotate(str(indexes[i]), xy=(x[36+i], y[36+i]), xytext=(x[36+i]+0.05, y[36+i]), color="red", fontsize=15)
         
         
         if savefig==True:
@@ -123,12 +126,12 @@ class IndexComparePlot(object):
         
     def start(self, savefig=False):
         mu = [5, 12]
-        cov = [[1, 0.7], [0.7, 1]] 
+        cov = [[1, 0.8], [0.8, 1]] 
         self.pca(mu,cov,savefig)
         mu = [3, 3]
         cov = [[1, 0.8], [0.8, 1]] 
         self.samplespace(mu,cov,savefig)
-
+ 
         self.eqIndexical(savefig)
         self.eqNonIndexical(savefig)
         

@@ -65,31 +65,36 @@ class IrisDataPetalLenWGaussianDraw(object):
         titles = ["Isotropic RBF", "Anisotropic RBF"]
         plt.figure(figsize=(10, 5))
         
-        for i, clf in enumerate((gpc_rbf_isotropic, gpc_rbf_anisotropic)):
+        title_font = {'fontname':'Arial', 'size':'16', 'color':'black', 'weight':'bold',
+              'verticalalignment':'bottom'} # Bottom vertical alignment for more space
+        axis_font = {'fontname':'Arial', 'size':'14'}
+
+        
+        for i, clf in enumerate([gpc_rbf_isotropic]): #enumerate((gpc_rbf_isotropic, gpc_rbf_anisotropic))
             # Plot the predicted probabilities. For that, we will assign a color to
             # each point in the mesh [x_min, m_max]x[y_min, y_max].
-            plt.subplot(1, 2, i + 1)
+            plt.subplot(1,1,1)  #plt.subplot(1, 2, i + 1)
             Z = clf.predict_proba(np.c_[xx.ravel(), yy.ravel()])
             Z = Z.reshape((xx.shape[0], xx.shape[1], 3))
             plt.imshow(Z, extent=(x_min, x_max, y_min, y_max), origin="lower")
             # Plot also the training points
             plt.scatter(X[:, 0], X[:, 1], c=np.array(["#7570b3","#af8dc3", "#d95f02", ])[y-1],
             edgecolors=(0, 0, 0))
-            plt.xlabel('Petal Length')
-            plt.ylabel('Petal Width')
+            plt.xlabel('Petal-Length',**title_font)
+            plt.ylabel('Petal-Width',**title_font)
             plt.xlim(xx.min(), xx.max())
             plt.ylim(yy.min(), yy.max())
             plt.xticks(())
             plt.yticks(())
-            plt.title("%s, LML: %.3f" %
-            (titles[i], clf.log_marginal_likelihood(clf.kernel_.theta)))
+            #plt.title("%s, LML: %.3f" %
+            #(titles[i], clf.log_marginal_likelihood(clf.kernel_.theta)))
         
         plt.tight_layout()
         pp = PdfPages('/Users/halil/Yandex.Disk.localized/root/academic/myphd/phd/0070-coding/parcoord-brushing/frontend/public/paperplots/petal_len_petal_w_gaus_processes.pdf')
 
         plt.savefig(pp, format='pdf')
         pp.close()
-
+        plt.savefig("/Users/halil/Yandex.Disk.localized/root/academic/myphd/phd/0070-coding/parcoord-brushing/frontend/public/paperplots/petal_len_petal_w_gaus_processes.svg", format="svg")
         plt.show()
 
 print (IrisDataPetalLenWGaussianDraw().start())

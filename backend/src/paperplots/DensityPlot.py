@@ -109,7 +109,7 @@ class DensityPlot(object):
         plt.xlabel("Petal Length")
         plt.ylabel("Density")
         
-        pp = PdfPages('/Users/halil/Downloads/petallen_densplot.pdf')
+        pp = PdfPages('/Users/halil/Yandex.Disk.localized/root/academic/myphd/phd/0070-coding/parcoord-brushing/frontend/public/paperplots/petallen_densplot.pdf')
 
         plt.savefig(pp, format='pdf')
         pp.close()
@@ -119,6 +119,6 @@ class DensityPlot(object):
 
 
 #DensityPlot().start()
-#DensityPlot().testSepallen()  
+#DensityPlot().testDensityPlotSepallen()  
 #DensityPlot().testEMSepalLen()
-DensityPlot().testEMPetalW()
+#DensityPlot().testEMPetalW()

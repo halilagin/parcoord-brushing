@@ -26,3 +26,7 @@ ESLint with React linting options have been enabled.
 npm run lint
 ```
 
+
+### start parameter space brushing server
+
+http://localhost:5002/public/data/ParallelCoordinatesV015Iris.html

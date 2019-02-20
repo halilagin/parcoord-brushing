@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+
+
+    svg {
+      font: 10px sans-serif;
+    }
+
+    .background path {
+      fill: none;
+      stroke: #ddd;
+      shape-rendering: crispEdges;
+    }
+
+    .foreground path {
+      fill: none;
+      stroke: steelblue;
+    }
+
+    .brush .extent {
+      fill-opacity: .3;
+      stroke: #fff;
+      shape-rendering: crispEdges;
+    }
+
+    .clusterbrush_panel {
+      background-color: #f8efc0;
+    }
+
+    .clusterbrush_panel .clusterrect{
+      fill:#fff7bc !important;
+
+      opacity: 0.8;
+    }
+
+
+
+    .radialbrush_panel {
+      background-color: #f8efc0;
+    }
+    .radialbrush_panel .radialrect{
+      fill:#fff7bc !important;
+
+      opacity: 0.8;
+    }
+
+
+    .axis line,
+    .axis path {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+
+    .axis text {
+      text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+      cursor: move;
+    }
+
+    .cluster_brush_c2{
+      opacity: 0.6;
+      fill:green;
+      background-color: #f8efc0;
+    }
+
+    .cluster_brush_c1{
+      opacity: 0.8;
+      fill:green;
+      background-color: #f8efc0;
+    }
+
+    .radial_brush_b{
+      opacity: 0.2;
+      background-color: #f8efc0;
+      fill:green;
+    }
+
+    .radial_brush_h2 {
+      opacity: 0.2;
+      fill:green;
+      background-color: #f8efc0;
+
+    }
+    .radial_brush_h1 {
+      opacity: 0.2;
+      fill:green;
+      background-color: #f8efc0;
+
+    }
+
+
+    .ss_point_active{
+      background-color: red;
+      fill:red !important;
+    }
+
+
+    .OA_buttons {
+      height: 30px;
+      background-color: #f8efc0;
+      -moz-border-radius: 20px;
+      -webkit-border-radius: 20px;
+      -khtml-border-radius: 20px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      overflow:hidden;
+    }
+
+    .OA_button {
+      display:table;
+      margin: 3px;
+
+
+    }
+
+
+
+    .OA_twowayselect_container{
+      display:flex;
+    }
+    .OA_twowayselect_container > div{
+      flex:1;
+    }
+
+
+    .OA_twowayselect_left{
+      width: 150px !important;
+      min-width: 150px;
+
+    }
+
+
+    .OA_twowayselect_right{
+      width: 150px !important;
+      min-width: 150px;
+
+    }
+
+    .OA_twowayselect_middle{
+      width: 30px !important;
+      max-width: 30px;
+      margin:auto;
+    }
+
+
+
+    .debrmanager_dialog_q{
+      margin-top:30px;
+    }
+
+    .debrmanager_dialog_q_text{
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .debrmanager_dialog_q_choice{
+      margin-top:7px;
+    }
+
+    .debrmanager_dialog_container{
+      background-color: #f8efc0;
+    }
+
+
+    .sslmanager_dialog_container{
+      background-color: #f8efc0;
+    }
+
+    .sslmanager_dialog_q{
+      margin-top:30px;
+    }
+
+    .sslmanager_dialog_q_text{
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .sslmanager_dialog_q_choice{
+      margin-top:7px;
+    }
+
+
+    /*.corrbrush_panel .extent {*/
+    /*fill: red;*/
+
+    /*opacity: 0.4;*/
+    /*}*/
+
+    .corrbrush_panel .extent {
+      fill: #d95f0e;
+
+      opacity: 0.8;
+    }
+
+    .corrbrush_panel .ellrect{
+      fill:#fff7bc !important;
+
+      opacity: 0.8;
+    }
+
+    .gmmlinebrush_panel .gmmlinerect{
+      fill:#fff7bc !important;
+
+      opacity: 0.8;
+    }
+
+    .gmmlinebrush_panel .extent {
+      fill: #d95f0e;
+
+      opacity: 0.8;
+    }
+
+
+
+  </style>
+
+  <link href="/public/js/jqueryui1121/jquery-ui.css" rel="stylesheet">
+  <script src="/public/js/jquery-3.2.1.min.js"></script>
+  <script src="/public/js/jqueryui1121/jquery-ui.js"></script>
+
+</head>
+<body class="body_">
+
+
+<script type="text/javascript">
+  var remoteHost = true ? "localhost" : "34.235.8.207";
+  var remoteUrls = {
+    "fetcData": "http://" + remoteHost + ":5000/parcoord/iris/fetchData",
+    "kmeans": "http://" + remoteHost + ":5000/parcoord/iris/kmeans/oftwovars",
+    "spatialSign": "http://" + remoteHost + ":5000/parcoord/iris/spatialsign/oftwovars",
+
+    "userintsSave": "http://" + remoteHost + ":5000/parcoord/userints/save",
+    "userintsFetchAll": "http://" + remoteHost + ":5000/parcoord/userints/save",
+
+  };
+</script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<svg width="300" height="450">
+  <g transform="translate(10,30)">
+    <g class="corrbrushgrid" width="300" height="400" transform="translate(0,10)">
+      <g class="corrbrush_panel estcorrbrush_panel_sepal_len___t_set_ver_vir_0" transform="translate(120,170)">
+        <rect y="0" width="70" height="70" class="ellrect"></rect>
+        <g class="estcorrbrush_sigma_sepal_len___t_set_ver_vir_0" transform="translate(0,90)">
+          <g class="estcorrbrush_sslider_sepal_len___t_set_ver_vir_0" transform="translate(0,0)"
+             style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+            <rect class="background" x="0" width="70" style="visibility: hidden; cursor: crosshair;"></rect>
+            <rect class="extent" x="23.333333333333332" width="10" height="10" style="cursor: move;"></rect>
+            <g class="resize e" transform="translate(32.666666666666664,0)" style="cursor: ew-resize;">
+              <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+            </g>
+            <g class="resize w" transform="translate(23.333333333333332,0)" style="cursor: ew-resize;">
+              <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+            </g>
+          </g>
+          <g class="axis" style="font-size: 7px;">
+            <g class="tick" transform="translate(0,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">0</text>
+            </g>
+            <g class="tick" transform="translate(11.666666666666666,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">0.5</text>
+            </g>
+            <g class="tick" transform="translate(23.333333333333332,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">1</text>
+            </g>
+            <g class="tick" transform="translate(35,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">1.5</text>
+            </g>
+            <g class="tick" transform="translate(46.666666666666664,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">2</text>
+            </g>
+            <g class="tick" transform="translate(58.333333333333336,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">2.5</text>
+            </g>
+            <g class="tick" transform="translate(70,0)" style="opacity: 1;">
+              <line y2="6" x2="0"></line>
+              <text dy=".71em" y="9" x="0" style="text-anchor: middle;">3</text>
+            </g>
+            <path class="domain" d="M0,6V0H70V6"></path>
+          </g>
+        </g>
+        <g class="estcorrbrush_slider_sepal_len___t_set_ver_vir_0" transform="translate(0,70)"
+           style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+          <rect class="background" x="0" width="70" style="visibility: hidden; cursor: crosshair;"></rect>
+          <rect class="extent" x="31.5" width="10" height="10" style="cursor: move;"></rect>
+          <g class="resize e" transform="translate(38.5,0)" style="cursor: ew-resize;">
+            <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize w" transform="translate(31.5,0)" style="cursor: ew-resize;">
+            <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+          </g>
+        </g>
+        <path class="estcorrvertpath" stroke="#d95f0e" stroke-width="0.5" fill="none" d="M35,70L35,0"></path>
+        <path class="estcorrhorpath" stroke="#d95f0e" stroke-width="0.5" fill="none" d="M0,35L70,35"></path>
+        <ellipse class="estcorrbrush_ellipse_sepal_len_0" cx="35" cy="35" rx="46.729407325230966" ry="16.32061552248108"
+                 fill="none" stroke="#000" transform="rotate(-45,35,35)"></ellipse>
+        <g width="32" height="20" transform="translate(70,10)">
+          <g width="32" height="20" transform="rotate(90,32,20)" style="cursor: pointer;">
+            <rect x="0" y="0" rx="10" ry="10" width="32" height="20" style="fill: rgb(34, 170, 34);"></rect>
+            <circle cx="22" cy="10" r="6" style="fill: white;"></circle>
+          </g>
+        </g>
+      </g>
+      <g class="gmmlinebrush_panel gmmlinebrush_panel_sepal_len___t_set_ver_vir_1" transform="translate(120,280)">
+        <rect y="0" class="gmmlinerect" width="100" height="100"></rect>
+        <g class="gmmline_subbrush gmmline_subbrush_0"
+           style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+          <rect class="gmmlinebrushpanel_rect"></rect>
+          <rect class="background" x="0" width="100" y="0" height="100"
+                style="visibility: hidden; cursor: crosshair; pointer-events: all;"></rect>
+          <rect class="extent" x="0" width="0" y="0" height="0" style="cursor: move;"></rect>
+          <g class="resize n" transform="translate(37,34)" style="cursor: ns-resize;">
+            <rect y="-3" width="24" height="6" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize e" transform="translate(61,34)" style="cursor: ew-resize;">
+            <rect x="-3" width="6" height="14" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize s" transform="translate(37,48)" style="cursor: ns-resize;">
+            <rect y="-3" width="24" height="6" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize w" transform="translate(37,34)" style="cursor: ew-resize;">
+            <rect x="-3" width="6" height="14" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize nw" transform="translate(37,34)" style="cursor: nwse-resize;">
+            <rect x="-3" y="-3" width="6" height="6" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize ne" transform="translate(61,34)" style="cursor: nesw-resize;">
+            <rect x="-3" y="-3" width="6" height="6" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize se" transform="translate(61,48)" style="cursor: nwse-resize;">
+            <rect x="-3" y="-3" width="6" height="6" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize sw" transform="translate(37,48)" style="cursor: nesw-resize;">
+            <rect x="-3" y="-3" width="6" height="6" style="visibility: hidden;"></rect>
+          </g>
+          <line class="gmmline_line gmmline_line0" y1="20" y2="20" x1="11.229017353180664" x2="23.032297067961892"
+                stroke-width="1" stroke="black"></line>
+          <line class="gmmline_line gmmline_line1" y1="39.99999999999999" y2="39.99999999999999" x1="28.31417559000181"
+                x2="47.258056999010314" stroke-width="1" stroke="black"></line>
+          <line class="gmmline_line gmmline_line2" y1="60" y2="60" x1="33.60365819445608" x2="81.72171307467039"
+                stroke-width="1" stroke="black"></line>
+        </g>
+        <g width="32" height="20" transform="translate(70,10)">
+          <g width="32" height="20" transform="rotate(90,32,20)" style="cursor: pointer;">
+            <rect x="0" y="0" rx="10" ry="10" width="32" height="20" style="fill: rgb(34, 170, 34);"></rect>
+            <circle cx="22" cy="10" r="6" style="fill: white;"></circle>
+          </g>
+        </g>
+        <g class="gmmline_subbrush gmmline_subbrush_1"
+           style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+          <rect class="background" x="0" width="100" y="0" height="100"
+                style="visibility: hidden; cursor: crosshair; pointer-events: none;"></rect>
+          <rect class="extent" x="26.999999999999993" width="24.000000000000007" y="34" height="14"
+                style="cursor: move;"></rect>
+          <g class="resize n" transform="translate(26.999999999999993,34)" style="cursor: ns-resize;">
+            <rect y="-3" width="24.000000000000007" height="6" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize e" transform="translate(51,34)" style="cursor: ew-resize;">
+            <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize s" transform="translate(26.999999999999993,48)" style="cursor: ns-resize;">
+            <rect y="-3" width="24.000000000000007" height="6" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize w" transform="translate(26.999999999999993,34)" style="cursor: ew-resize;">
+            <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize nw" transform="translate(26.999999999999993,34)" style="cursor: nwse-resize;">
+            <rect x="-3" y="-3" width="6" height="6" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize ne" transform="translate(51,34)" style="cursor: nesw-resize;">
+            <rect x="-3" y="-3" width="6" height="6" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize se" transform="translate(51,48)" style="cursor: nwse-resize;">
+            <rect x="-3" y="-3" width="6" height="6" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize sw" transform="translate(26.999999999999993,48)" style="cursor: nesw-resize;">
+            <rect x="-3" y="-3" width="6" height="6" style="visibility: hidden;"></rect>
+          </g>
+        </g>
+        <g class="gmmline_subbrush gmmline_subbrush_2"
+           style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+          <rect class="background" x="0" width="100" y="0" height="100"
+                style="visibility: hidden; cursor: crosshair; pointer-events: none;"></rect>
+          <rect class="extent" x="0" width="0" y="0" height="0" style="cursor: move;"></rect>
+          <g class="resize n" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+            <rect y="-3" width="0" height="6" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize e" transform="translate(0,0)" style="cursor: ew-resize; display: none;">
+            <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize s" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+            <rect y="-3" width="0" height="6" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize w" transform="translate(0,0)" style="cursor: ew-resize; display: none;">
+            <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize nw" transform="translate(0,0)" style="cursor: nwse-resize; display: none;">
+            <rect x="-3" y="-3" width="6" height="6" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize ne" transform="translate(0,0)" style="cursor: nesw-resize; display: none;">
+            <rect x="-3" y="-3" width="6" height="6" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize se" transform="translate(0,0)" style="cursor: nwse-resize; display: none;">
+            <rect x="-3" y="-3" width="6" height="6" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize sw" transform="translate(0,0)" style="cursor: nesw-resize; display: none;">
+            <rect x="-3" y="-3" width="6" height="6" style="visibility: hidden;"></rect>
+          </g>
+        </g>
+        <g class="gmmline_subbrush gmmline_subbrush_3"
+           style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+          <rect class="background" x="0" width="100" y="0" height="100"
+                style="visibility: hidden; cursor: crosshair; pointer-events: none;"></rect>
+          <rect class="extent" x="0" width="0" y="0" height="0" style="cursor: move;"></rect>
+          <g class="resize n" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+            <rect y="-3" width="0" height="6" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize e" transform="translate(0,0)" style="cursor: ew-resize; display: none;">
+            <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize s" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+            <rect y="-3" width="0" height="6" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize w" transform="translate(0,0)" style="cursor: ew-resize; display: none;">
+            <rect x="-3" width="6" height="0" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize nw" transform="translate(0,0)" style="cursor: nwse-resize; display: none;">
+            <rect x="-3" y="-3" width="6" height="6" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize ne" transform="translate(0,0)" style="cursor: nesw-resize; display: none;">
+            <rect x="-3" y="-3" width="6" height="6" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize se" transform="translate(0,0)" style="cursor: nwse-resize; display: none;">
+            <rect x="-3" y="-3" width="6" height="6" style="visibility: hidden;"></rect>
+          </g>
+          <g class="resize sw" transform="translate(0,0)" style="cursor: nesw-resize; display: none;">
+            <rect x="-3" y="-3" width="6" height="6" style="visibility: hidden;"></rect>
+          </g>
+        </g>
+      </g>
+    </g>
+    <g class="background">
+      <path d="M70,124.44444444444446L210,160"></path>
+      <path d="M70,133.33333333333331L210,160"></path>
+      <path d="M70,142.22222222222223L210,160"></path>
+      <path d="M70,146.66666666666669L210,160"></path>
+      <path d="M70,128.88888888888889L210,160"></path>
+      <path d="M70,111.11111111111111L210,160"></path>
+      <path d="M70,146.66666666666669L210,160"></path>
+      <path d="M70,128.88888888888889L210,160"></path>
+      <path d="M70,155.55555555555554L210,160"></path>
+      <path d="M70,133.33333333333331L210,160"></path>
+      <path d="M70,111.11111111111111L210,160"></path>
+      <path d="M70,137.77777777777777L210,160"></path>
+      <path d="M70,137.77777777777777L210,160"></path>
+      <path d="M70,160L210,160"></path>
+      <path d="M70,93.33333333333334L210,160"></path>
+      <path d="M70,97.77777777777777L210,160"></path>
+      <path d="M70,111.11111111111111L210,160"></path>
+      <path d="M70,124.44444444444446L210,160"></path>
+      <path d="M70,97.77777777777777L210,160"></path>
+      <path d="M70,124.44444444444446L210,160"></path>
+      <path d="M70,111.11111111111111L210,160"></path>
+      <path d="M70,124.44444444444446L210,160"></path>
+      <path d="M70,146.66666666666669L210,160"></path>
+      <path d="M70,124.44444444444446L210,160"></path>
+      <path d="M70,137.77777777777777L210,160"></path>
+      <path d="M70,128.88888888888889L210,160"></path>
+      <path d="M70,128.88888888888889L210,160"></path>
+      <path d="M70,120L210,160"></path>
+      <path d="M70,120L210,160"></path>
+      <path d="M70,142.22222222222223L210,160"></path>
+      <path d="M70,137.77777777777777L210,160"></path>
+      <path d="M70,111.11111111111111L210,160"></path>
+      <path d="M70,120L210,160"></path>
+      <path d="M70,106.66666666666669L210,160"></path>
+      <path d="M70,133.33333333333331L210,160"></path>
+      <path d="M70,128.88888888888889L210,160"></path>
+      <path d="M70,106.66666666666669L210,160"></path>
+      <path d="M70,133.33333333333331L210,160"></path>
+      <path d="M70,155.55555555555554L210,160"></path>
+      <path d="M70,124.44444444444446L210,160"></path>
+      <path d="M70,128.88888888888889L210,160"></path>
+      <path d="M70,151.11111111111111L210,160"></path>
+      <path d="M70,155.55555555555554L210,160"></path>
+      <path d="M70,128.88888888888889L210,160"></path>
+      <path d="M70,124.44444444444446L210,160"></path>
+      <path d="M70,137.77777777777777L210,160"></path>
+      <path d="M70,124.44444444444446L210,160"></path>
+      <path d="M70,146.66666666666669L210,160"></path>
+      <path d="M70,115.55555555555557L210,160"></path>
+      <path d="M70,128.88888888888889L210,160"></path>
+      <path d="M70,40.000000000000014L210,80"></path>
+      <path d="M70,66.66666666666666L210,80"></path>
+      <path d="M70,44.44444444444444L210,80"></path>
+      <path d="M70,106.66666666666669L210,80"></path>
+      <path d="M70,62.22222222222223L210,80"></path>
+      <path d="M70,97.77777777777777L210,80"></path>
+      <path d="M70,71.11111111111113L210,80"></path>
+      <path d="M70,133.33333333333331L210,80"></path>
+      <path d="M70,57.7777777777778L210,80"></path>
+      <path d="M70,120L210,80"></path>
+      <path d="M70,128.88888888888889L210,80"></path>
+      <path d="M70,88.88888888888887L210,80"></path>
+      <path d="M70,84.44444444444444L210,80"></path>
+      <path d="M70,80.00000000000001L210,80"></path>
+      <path d="M70,102.22222222222226L210,80"></path>
+      <path d="M70,53.33333333333334L210,80"></path>
+      <path d="M70,102.22222222222226L210,80"></path>
+      <path d="M70,93.33333333333334L210,80"></path>
+      <path d="M70,75.55555555555556L210,80"></path>
+      <path d="M70,102.22222222222226L210,80"></path>
+      <path d="M70,88.88888888888887L210,80"></path>
+      <path d="M70,80.00000000000001L210,80"></path>
+      <path d="M70,71.11111111111113L210,80"></path>
+      <path d="M70,80.00000000000001L210,80"></path>
+      <path d="M70,66.66666666666666L210,80"></path>
+      <path d="M70,57.7777777777778L210,80"></path>
+      <path d="M70,48.888888888888914L210,80"></path>
+      <path d="M70,53.33333333333334L210,80"></path>
+      <path d="M70,84.44444444444444L210,80"></path>
+      <path d="M70,97.77777777777777L210,80"></path>
+      <path d="M70,106.66666666666669L210,80"></path>
+      <path d="M70,106.66666666666669L210,80"></path>
+      <path d="M70,93.33333333333334L210,80"></path>
+      <path d="M70,84.44444444444444L210,80"></path>
+      <path d="M70,111.11111111111111L210,80"></path>
+      <path d="M70,84.44444444444444L210,80"></path>
+      <path d="M70,53.33333333333334L210,80"></path>
+      <path d="M70,71.11111111111113L210,80"></path>
+      <path d="M70,102.22222222222226L210,80"></path>
+      <path d="M70,106.66666666666669L210,80"></path>
+      <path d="M70,106.66666666666669L210,80"></path>
+      <path d="M70,80.00000000000001L210,80"></path>
+      <path d="M70,93.33333333333334L210,80"></path>
+      <path d="M70,128.88888888888889L210,80"></path>
+      <path d="M70,102.22222222222226L210,80"></path>
+      <path d="M70,97.77777777777777L210,80"></path>
+      <path d="M70,97.77777777777777L210,80"></path>
+      <path d="M70,75.55555555555556L210,80"></path>
+      <path d="M70,124.44444444444446L210,80"></path>
+      <path d="M70,97.77777777777777L210,80"></path>
+      <path d="M70,71.11111111111113L210,0"></path>
+      <path d="M70,93.33333333333334L210,0"></path>
+      <path d="M70,35.555555555555586L210,0"></path>
+      <path d="M70,71.11111111111113L210,0"></path>
+      <path d="M70,62.22222222222223L210,0"></path>
+      <path d="M70,13.333333333333357L210,0"></path>
+      <path d="M70,133.33333333333331L210,0"></path>
+      <path d="M70,26.66666666666668L210,0"></path>
+      <path d="M70,53.33333333333334L210,0"></path>
+      <path d="M70,31.111111111111107L210,0"></path>
+      <path d="M70,62.22222222222223L210,0"></path>
+      <path d="M70,66.66666666666666L210,0"></path>
+      <path d="M70,48.888888888888914L210,0"></path>
+      <path d="M70,97.77777777777777L210,0"></path>
+      <path d="M70,93.33333333333334L210,0"></path>
+      <path d="M70,66.66666666666666L210,0"></path>
+      <path d="M70,62.22222222222223L210,0"></path>
+      <path d="M70,8.888888888888893L210,0"></path>
+      <path d="M70,8.888888888888893L210,0"></path>
+      <path d="M70,84.44444444444444L210,0"></path>
+      <path d="M70,44.44444444444444L210,0"></path>
+      <path d="M70,102.22222222222226L210,0"></path>
+      <path d="M70,8.888888888888893L210,0"></path>
+      <path d="M70,71.11111111111113L210,0"></path>
+      <path d="M70,53.33333333333334L210,0"></path>
+      <path d="M70,31.111111111111107L210,0"></path>
+      <path d="M70,75.55555555555556L210,0"></path>
+      <path d="M70,80.00000000000001L210,0"></path>
+      <path d="M70,66.66666666666666L210,0"></path>
+      <path d="M70,31.111111111111107L210,0"></path>
+      <path d="M70,22.222222222222214L210,0"></path>
+      <path d="M70,0L210,0"></path>
+      <path d="M70,66.66666666666666L210,0"></path>
+      <path d="M70,71.11111111111113L210,0"></path>
+      <path d="M70,80.00000000000001L210,0"></path>
+      <path d="M70,8.888888888888893L210,0"></path>
+      <path d="M70,71.11111111111113L210,0"></path>
+      <path d="M70,66.66666666666666L210,0"></path>
+      <path d="M70,84.44444444444444L210,0"></path>
+      <path d="M70,44.44444444444444L210,0"></path>
+      <path d="M70,53.33333333333334L210,0"></path>
+      <path d="M70,44.44444444444444L210,0"></path>
+      <path d="M70,93.33333333333334L210,0"></path>
+      <path d="M70,48.888888888888914L210,0"></path>
+      <path d="M70,53.33333333333334L210,0"></path>
+      <path d="M70,53.33333333333334L210,0"></path>
+      <path d="M70,71.11111111111113L210,0"></path>
+      <path d="M70,62.22222222222223L210,0"></path>
+      <path d="M70,75.55555555555556L210,0"></path>
+      <path d="M70,88.88888888888887L210,0"></path>
+    </g>
+    <g class="foreground">
+      <path d="M70,124.44444444444446L210,160" style="display: none;"></path>
+      <path d="M70,133.33333333333331L210,160" style="display: none;"></path>
+      <path d="M70,142.22222222222223L210,160" style="display: none;"></path>
+      <path d="M70,146.66666666666669L210,160" style="display: none;"></path>
+      <path d="M70,128.88888888888889L210,160" style="display: none;"></path>
+      <path d="M70,111.11111111111111L210,160" style=""></path>
+      <path d="M70,146.66666666666669L210,160" style="display: none;"></path>
+      <path d="M70,128.88888888888889L210,160" style="display: none;"></path>
+      <path d="M70,155.55555555555554L210,160" style="display: none;"></path>
+      <path d="M70,133.33333333333331L210,160" style="display: none;"></path>
+      <path d="M70,111.11111111111111L210,160" style=""></path>
+      <path d="M70,137.77777777777777L210,160" style="display: none;"></path>
+      <path d="M70,137.77777777777777L210,160" style="display: none;"></path>
+      <path d="M70,160L210,160" style="display: none;"></path>
+      <path d="M70,93.33333333333334L210,160"></path>
+      <path d="M70,97.77777777777777L210,160" style=""></path>
+      <path d="M70,111.11111111111111L210,160" style=""></path>
+      <path d="M70,124.44444444444446L210,160" style="display: none;"></path>
+      <path d="M70,97.77777777777777L210,160" style=""></path>
+      <path d="M70,124.44444444444446L210,160" style="display: none;"></path>
+      <path d="M70,111.11111111111111L210,160" style=""></path>
+      <path d="M70,124.44444444444446L210,160" style="display: none;"></path>
+      <path d="M70,146.66666666666669L210,160" style="display: none;"></path>
+      <path d="M70,124.44444444444446L210,160" style="display: none;"></path>
+      <path d="M70,137.77777777777777L210,160" style="display: none;"></path>
+      <path d="M70,128.88888888888889L210,160" style="display: none;"></path>
+      <path d="M70,128.88888888888889L210,160" style="display: none;"></path>
+      <path d="M70,120L210,160" style="display: none;"></path>
+      <path d="M70,120L210,160" style="display: none;"></path>
+      <path d="M70,142.22222222222223L210,160" style="display: none;"></path>
+      <path d="M70,137.77777777777777L210,160" style="display: none;"></path>
+      <path d="M70,111.11111111111111L210,160" style=""></path>
+      <path d="M70,120L210,160" style="display: none;"></path>
+      <path d="M70,106.66666666666669L210,160" style=""></path>
+      <path d="M70,133.33333333333331L210,160" style="display: none;"></path>
+      <path d="M70,128.88888888888889L210,160" style="display: none;"></path>
+      <path d="M70,106.66666666666669L210,160" style=""></path>
+      <path d="M70,133.33333333333331L210,160" style="display: none;"></path>
+      <path d="M70,155.55555555555554L210,160" style="display: none;"></path>
+      <path d="M70,124.44444444444446L210,160" style="display: none;"></path>
+      <path d="M70,128.88888888888889L210,160" style="display: none;"></path>
+      <path d="M70,151.11111111111111L210,160" style="display: none;"></path>
+      <path d="M70,155.55555555555554L210,160" style="display: none;"></path>
+      <path d="M70,128.88888888888889L210,160" style="display: none;"></path>
+      <path d="M70,124.44444444444446L210,160" style="display: none;"></path>
+      <path d="M70,137.77777777777777L210,160" style="display: none;"></path>
+      <path d="M70,124.44444444444446L210,160" style="display: none;"></path>
+      <path d="M70,146.66666666666669L210,160" style="display: none;"></path>
+      <path d="M70,115.55555555555557L210,160" style="display: none;"></path>
+      <path d="M70,128.88888888888889L210,160" style="display: none;"></path>
+      <path d="M70,40.000000000000014L210,80" style="display: none;"></path>
+      <path d="M70,66.66666666666666L210,80" style="display: none;"></path>
+      <path d="M70,44.44444444444444L210,80" style="display: none;"></path>
+      <path d="M70,106.66666666666669L210,80" style=""></path>
+      <path d="M70,62.22222222222223L210,80" style="display: none;"></path>
+      <path d="M70,97.77777777777777L210,80" style=""></path>
+      <path d="M70,71.11111111111113L210,80" style="display: none;"></path>
+      <path d="M70,133.33333333333331L210,80" style="display: none;"></path>
+      <path d="M70,57.7777777777778L210,80" style="display: none;"></path>
+      <path d="M70,120L210,80" style="display: none;"></path>
+      <path d="M70,128.88888888888889L210,80" style="display: none;"></path>
+      <path d="M70,88.88888888888887L210,80"></path>
+      <path d="M70,84.44444444444444L210,80"></path>
+      <path d="M70,80.00000000000001L210,80"></path>
+      <path d="M70,102.22222222222226L210,80" style=""></path>
+      <path d="M70,53.33333333333334L210,80" style="display: none;"></path>
+      <path d="M70,102.22222222222226L210,80" style=""></path>
+      <path d="M70,93.33333333333334L210,80"></path>
+      <path d="M70,75.55555555555556L210,80" style="display: none;"></path>
+      <path d="M70,102.22222222222226L210,80" style=""></path>
+      <path d="M70,88.88888888888887L210,80"></path>
+      <path d="M70,80.00000000000001L210,80"></path>
+      <path d="M70,71.11111111111113L210,80" style="display: none;"></path>
+      <path d="M70,80.00000000000001L210,80"></path>
+      <path d="M70,66.66666666666666L210,80" style="display: none;"></path>
+      <path d="M70,57.7777777777778L210,80" style="display: none;"></path>
+      <path d="M70,48.888888888888914L210,80" style="display: none;"></path>
+      <path d="M70,53.33333333333334L210,80" style="display: none;"></path>
+      <path d="M70,84.44444444444444L210,80"></path>
+      <path d="M70,97.77777777777777L210,80" style=""></path>
+      <path d="M70,106.66666666666669L210,80" style=""></path>
+      <path d="M70,106.66666666666669L210,80" style=""></path>
+      <path d="M70,93.33333333333334L210,80"></path>
+      <path d="M70,84.44444444444444L210,80"></path>
+      <path d="M70,111.11111111111111L210,80" style=""></path>
+      <path d="M70,84.44444444444444L210,80"></path>
+      <path d="M70,53.33333333333334L210,80" style="display: none;"></path>
+      <path d="M70,71.11111111111113L210,80" style="display: none;"></path>
+      <path d="M70,102.22222222222226L210,80" style=""></path>
+      <path d="M70,106.66666666666669L210,80" style=""></path>
+      <path d="M70,106.66666666666669L210,80" style=""></path>
+      <path d="M70,80.00000000000001L210,80"></path>
+      <path d="M70,93.33333333333334L210,80"></path>
+      <path d="M70,128.88888888888889L210,80" style="display: none;"></path>
+      <path d="M70,102.22222222222226L210,80" style=""></path>
+      <path d="M70,97.77777777777777L210,80" style=""></path>
+      <path d="M70,97.77777777777777L210,80" style=""></path>
+      <path d="M70,75.55555555555556L210,80" style="display: none;"></path>
+      <path d="M70,124.44444444444446L210,80" style="display: none;"></path>
+      <path d="M70,97.77777777777777L210,80" style=""></path>
+      <path d="M70,71.11111111111113L210,0" style="display: none;"></path>
+      <path d="M70,93.33333333333334L210,0"></path>
+      <path d="M70,35.555555555555586L210,0" style="display: none;"></path>
+      <path d="M70,71.11111111111113L210,0" style="display: none;"></path>
+      <path d="M70,62.22222222222223L210,0" style="display: none;"></path>
+      <path d="M70,13.333333333333357L210,0" style="display: none;"></path>
+      <path d="M70,133.33333333333331L210,0" style="display: none;"></path>
+      <path d="M70,26.66666666666668L210,0" style="display: none;"></path>
+      <path d="M70,53.33333333333334L210,0" style="display: none;"></path>
+      <path d="M70,31.111111111111107L210,0" style="display: none;"></path>
+      <path d="M70,62.22222222222223L210,0" style="display: none;"></path>
+      <path d="M70,66.66666666666666L210,0" style="display: none;"></path>
+      <path d="M70,48.888888888888914L210,0" style="display: none;"></path>
+      <path d="M70,97.77777777777777L210,0" style=""></path>
+      <path d="M70,93.33333333333334L210,0"></path>
+      <path d="M70,66.66666666666666L210,0" style="display: none;"></path>
+      <path d="M70,62.22222222222223L210,0" style="display: none;"></path>
+      <path d="M70,8.888888888888893L210,0" style="display: none;"></path>
+      <path d="M70,8.888888888888893L210,0" style="display: none;"></path>
+      <path d="M70,84.44444444444444L210,0"></path>
+      <path d="M70,44.44444444444444L210,0" style="display: none;"></path>
+      <path d="M70,102.22222222222226L210,0" style=""></path>
+      <path d="M70,8.888888888888893L210,0" style="display: none;"></path>
+      <path d="M70,71.11111111111113L210,0" style="display: none;"></path>
+      <path d="M70,53.33333333333334L210,0" style="display: none;"></path>
+      <path d="M70,31.111111111111107L210,0" style="display: none;"></path>
+      <path d="M70,75.55555555555556L210,0" style="display: none;"></path>
+      <path d="M70,80.00000000000001L210,0"></path>
+      <path d="M70,66.66666666666666L210,0" style="display: none;"></path>
+      <path d="M70,31.111111111111107L210,0" style="display: none;"></path>
+      <path d="M70,22.222222222222214L210,0" style="display: none;"></path>
+      <path d="M70,0L210,0" style="display: none;"></path>
+      <path d="M70,66.66666666666666L210,0" style="display: none;"></path>
+      <path d="M70,71.11111111111113L210,0" style="display: none;"></path>
+      <path d="M70,80.00000000000001L210,0"></path>
+      <path d="M70,8.888888888888893L210,0" style="display: none;"></path>
+      <path d="M70,71.11111111111113L210,0" style="display: none;"></path>
+      <path d="M70,66.66666666666666L210,0" style="display: none;"></path>
+      <path d="M70,84.44444444444444L210,0"></path>
+      <path d="M70,44.44444444444444L210,0" style="display: none;"></path>
+      <path d="M70,53.33333333333334L210,0" style="display: none;"></path>
+      <path d="M70,44.44444444444444L210,0" style="display: none;"></path>
+      <path d="M70,93.33333333333334L210,0"></path>
+      <path d="M70,48.888888888888914L210,0" style="display: none;"></path>
+      <path d="M70,53.33333333333334L210,0" style="display: none;"></path>
+      <path d="M70,53.33333333333334L210,0" style="display: none;"></path>
+      <path d="M70,71.11111111111113L210,0" style="display: none;"></path>
+      <path d="M70,62.22222222222223L210,0" style="display: none;"></path>
+      <path d="M70,75.55555555555556L210,0" style="display: none;"></path>
+      <path d="M70,88.88888888888887L210,0"></path>
+    </g>
+    <g class="dimension dimension_sepal_len" transform="translate(70)">
+      <g class="axis axis_sepal_len">
+        <g class="tick" transform="translate(0,151.11111111111111)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">4.5</text>
+        </g>
+        <g class="tick" transform="translate(0,128.88888888888889)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">5.0</text>
+        </g>
+        <g class="tick" transform="translate(0,106.66666666666669)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">5.5</text>
+        </g>
+        <g class="tick" transform="translate(0,84.44444444444444)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">6.0</text>
+        </g>
+        <g class="tick" transform="translate(0,62.22222222222223)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">6.5</text>
+        </g>
+        <g class="tick" transform="translate(0,40.000000000000014)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">7.0</text>
+        </g>
+        <g class="tick" transform="translate(0,17.777777777777786)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">7.5</text>
+        </g>
+        <path class="domain" d="M-6,0H0V160H-6"></path>
+        <text y="-9" style="text-anchor: middle;">sepal_len</text>
+      </g>
+      <g class="brush dimension_brush_sepal_len_0"
+         style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+        <rect class="background" y="0" height="160" x="-8" width="16"
+              style="visibility: hidden; cursor: crosshair; pointer-events: all;"></rect>
+        <rect class="extent" y="0" height="0" x="-8" width="16" style="cursor: move;"></rect>
+        <g class="resize n" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+        <g class="resize s" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+      </g>
+      <g class="brush dimension_brush_sepal_len_1"
+         style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+        <rect class="background" y="0" height="160" x="-8" width="16"
+              style="visibility: hidden; cursor: crosshair; pointer-events: none;"></rect>
+        <rect class="extent" y="0" height="0" x="-8" width="16" style="cursor: move;"></rect>
+        <g class="resize n" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+        <g class="resize s" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+      </g>
+      <g class="dimension_buttonpanel dimension_buttonpanel_sepal_len" transform="translate(-5,165)">
+        <rect y="0" width="10" height="10" fill="red"></rect>
+      </g>
+    </g>
+    <g class="dimension dimension_t_set_ver_vir" transform="translate(210)">
+      <g class="axis axis_t_set_ver_vir">
+        <g class="tick" transform="translate(0,160)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">1.0</text>
+        </g>
+        <g class="tick" transform="translate(0,144)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">1.2</text>
+        </g>
+        <g class="tick" transform="translate(0,128)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">1.4</text>
+        </g>
+        <g class="tick" transform="translate(0,112)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">1.6</text>
+        </g>
+        <g class="tick" transform="translate(0,96)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">1.8</text>
+        </g>
+        <g class="tick" transform="translate(0,80)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">2.0</text>
+        </g>
+        <g class="tick" transform="translate(0,63.999999999999986)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">2.2</text>
+        </g>
+        <g class="tick" transform="translate(0,48.00000000000001)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">2.4</text>
+        </g>
+        <g class="tick" transform="translate(0,31.999999999999993)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">2.6</text>
+        </g>
+        <g class="tick" transform="translate(0,16.000000000000014)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">2.8</text>
+        </g>
+        <g class="tick" transform="translate(0,0)" style="opacity: 1;">
+          <line x2="-6" y2="0"></line>
+          <text dy=".32em" x="-9" y="0" style="text-anchor: end;">3.0</text>
+        </g>
+        <path class="domain" d="M-6,0H0V160H-6"></path>
+        <text y="-9" style="text-anchor: middle;">t_set_ver_vir</text>
+      </g>
+      <g class="brush dimension_brush_t_set_ver_vir_0"
+         style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+        <rect class="background" y="0" height="160" x="-8" width="16"
+              style="visibility: hidden; cursor: crosshair; pointer-events: all;"></rect>
+        <rect class="extent" y="0" height="0" x="-8" width="16" style="cursor: move;"></rect>
+        <g class="resize n" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+        <g class="resize s" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+      </g>
+      <g class="brush dimension_brush_t_set_ver_vir_1"
+         style="pointer-events: all; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+        <rect class="background" y="0" height="160" x="-8" width="16"
+              style="visibility: hidden; cursor: crosshair; pointer-events: none;"></rect>
+        <rect class="extent" y="0" height="0" x="-8" width="16" style="cursor: move;"></rect>
+        <g class="resize n" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+        <g class="resize s" transform="translate(0,0)" style="cursor: ns-resize; display: none;">
+          <rect y="-3" width="16" height="6" x="-8" style="visibility: hidden;"></rect>
+        </g>
+      </g>
+      <g class="dimension_buttonpanel dimension_buttonpanel_t_set_ver_vir" transform="translate(-5,165)">
+        <rect y="0" width="10" height="10" fill="red"></rect>
+      </g>
+    </g>
+  </g>
+</svg>
+
+
+<script type="application/javascript">
+
+
+  $().ready(function () {
+
+
+  });
+
+</script>
+</body>
+</html>

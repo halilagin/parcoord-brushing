@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+
+    svg {
+      font: 10px sans-serif;
+    }
+
+    .background path {
+      fill: none;
+      stroke: #ddd;
+      shape-rendering: crispEdges;
+    }
+
+    .foreground path {
+      fill: none;
+      stroke: steelblue;
+    }
+
+    .brush .extent {
+      fill-opacity: .3;
+      stroke: #fff;
+      shape-rendering: crispEdges;
+    }
+
+    .clusterbrush_panel {
+      background-color: #f8efc0;
+    }
+
+    .axis line,
+    .axis path {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+
+    .axis text {
+      text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+      cursor: move;
+    }
+
+    .cluster_brush_c2 {
+      opacity: 0.6;
+      fill: green;
+      background-color: #f8efc0;
+    }
+
+    .cluster_brush_c1 {
+      opacity: 0.8;
+      fill: green;
+      background-color: #f8efc0;
+    }
+
+    .radial_brush_b {
+      opacity: 0.2;
+      background-color: #f8efc0;
+      fill: green;
+    }
+
+    .radial_brush_h2 {
+      opacity: 0.2;
+      fill: green;
+      background-color: #f8efc0;
+
+    }
+
+    .radial_brush_h1 {
+      opacity: 0.2;
+      fill: green;
+      background-color: #f8efc0;
+
+    }
+
+    .ss_point_active {
+      background-color: red;
+      fill: red !important;
+    }
+
+    .OA_buttons {
+      height: 30px;
+      background-color: #f8efc0;
+      -moz-border-radius: 20px;
+      -webkit-border-radius: 20px;
+      -khtml-border-radius: 20px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .OA_button {
+      display: table;
+      margin: 3px;
+
+    }
+
+    .OA_twowayselect_container {
+      display: flex;
+    }
+
+    .OA_twowayselect_container > div {
+      flex: 1;
+    }
+
+    .OA_twowayselect_left {
+      width: 150px !important;
+      min-width: 150px;
+
+    }
+
+    .OA_twowayselect_right {
+      width: 150px !important;
+      min-width: 150px;
+
+    }
+
+    .OA_twowayselect_middle {
+      width: 30px !important;
+      max-width: 30px;
+      margin: auto;
+    }
+
+    .debrmanager_dialog_q {
+      margin-top: 30px;
+    }
+
+    .debrmanager_dialog_q_text {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .debrmanager_dialog_q_choice {
+      margin-top: 7px;
+    }
+
+    .debrmanager_dialog_container {
+      background-color: #f8efc0;
+    }
+
+    .sslmanager_dialog_container {
+      background-color: #f8efc0;
+    }
+
+    .sslmanager_dialog_q {
+      margin-top: 30px;
+    }
+
+    .sslmanager_dialog_q_text {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .sslmanager_dialog_q_choice {
+      margin-top: 7px;
+    }
+
+    .corrbrush_panel .extent {
+      fill: #d95f0e;
+
+      opacity: 0.8;
+    }
+
+    .body_ {
+      width: 150px;
+      height: 150px;
+
+    }
+
+    .panelbackground {
+      fill: #ffffbf;
+    }
+
+    .ellipseline {
+      stroke: #fc8d59;
+      stroke-width: 1.5px;
+    }
+
+    .arrow {
+      stroke-width: 0.5;
+      stroke: #000;
+
+    }
+
+    #arrow {
+      stroke-width: 0.5;
+    }
+
+    .gaussianline {
+      stroke: #00f;
+      fill: none;
+    }
+
+    .gmmline {
+      stroke: #00f;
+      fill: none;
+    }
+
+    .gmmbrushpanel {
+      fill:#fff7bc ;
+
+    }
+
+    .gmmbrushrect {
+      opacity:0.4;
+      fill:#e34a33;
+    }
+
+  </style>
+
+  <link href="/public/js/jqueryui1121/jquery-ui.css" rel="stylesheet">
+  <script src="/public/js/jquery-3.2.1.min.js"></script>
+  <script src="/public/js/jqueryui1121/jquery-ui.js"></script>
+
+</head>
+<body class="body_">
+
+<script type="text/javascript">
+  var remoteHost = true ? "localhost" : "34.235.8.207";
+  var remoteUrls = {
+    "fetcData": "http://" + remoteHost + ":5000/parcoord/iris/fetchData",
+    "kmeans": "http://" + remoteHost + ":5000/parcoord/iris/kmeans/oftwovars",
+    "spatialSign": "http://" + remoteHost + ":5000/parcoord/iris/spatialsign/oftwovars",
+
+    "userintsSave": "http://" + remoteHost + ":5000/parcoord/userints/save",
+    "userintsFetchAll": "http://" + remoteHost + ":5000/parcoord/userints/save",
+
+  };
+</script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+
+<svg id="mainsvg" width="120" height="120">
+  <g id="gmmbrushpanel"  transform="translate(20,0)">
+    <rect y="0" width="70" height="70" class="gmmbrushpanel"></rect>
+
+  </g>
+
+</svg>
+
+<script type="application/javascript">
+  //petal-len petal-w spatial sign. point 59 outlier
+  function drawMetricsOfRadialBrush(panel) {
+
+    panel.append("line")
+      .attr("x1", 50)
+      .attr("y1", 0)
+      .attr("x2", 50)
+      .attr("y2", 20)
+      .attr("stroke-dasharray", "1,1")
+
+      .attr("stroke", "#00f")
+      .attr("stroke-width", 0.5);
+
+    panel.append("text")
+      .attr("x", 51)
+      .attr("y", 5)
+      .attr("font-size", 9)
+      .text("r");
+
+    panel.append("text")
+      .attr("x", 52.5)
+      .attr("y", 7)
+      .attr("font-size", 6)
+      .attr("font-style", "italic")
+      .text("0");
+
+    panel.append("line")
+      .attr("x1", 95)
+      .attr("y1", 12)
+      .attr("x2", 74)
+      .attr("y2", 30.5)
+      .attr("stroke-dasharray", "1,1")
+      .attr("stroke", "#00f")
+      .attr("stroke-width", 0.5);
+
+    panel.append("text")
+      .attr("x", 95)
+      .attr("y", 12)
+      .attr("font-size", 9)
+      .text("r");
+
+    panel.append("text")
+      .attr("x", 97)
+      .attr("y", 13)
+      .attr("font-style", "italic")
+      .attr("font-size", 5)
+      .text("min");
+
+    panel.append("line")
+      .attr("x1", 112)
+      .attr("y1", 57)
+      .attr("x2", 82)
+      .attr("y2", 53)
+      .attr("stroke-dasharray", "1,1")
+      .attr("stroke", "#00f")
+      .attr("stroke-width", 0.5);
+
+    panel.append("text")
+      .attr("x", 110)
+      .attr("y", 57)
+      .attr("font-size", 9)
+      .text("r");
+
+    panel.append("text")
+      .attr("x", 112)
+      .attr("y", 58)
+      .attr("font-size", 4)
+      .attr("font-style", "italic")
+      .text("max");
+  }
+
+
+  function drawGmmBrush(data, panelId) {
+    //var data = [[5,3], [10,17], [15,4], [2,8]];
+
+    var margin = {top: 0, right: 0, bottom: 0, left: 0}
+      , width = 70
+      , height = 70;
+
+    var x = d3.scale.linear()
+      .domain([0, 6 * Math.sqrt(2)])
+      .range([0, width]);
+
+    var y = d3.scale.linear()
+      .domain([0, 6 * Math.sqrt(2)])
+      .range([height, 0]);
+
+//    var chart = d3.select('body')
+//      .append('svg:svg')
+//      .attr('width', width + margin.right + margin.left)
+//      .attr('height', height + margin.top + margin.bottom)
+//      .attr('class', 'chart');
+
+    var chart = d3.select("#" + panelId);
+
+    var main = chart.append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+      .attr('width', width)
+      .attr('height', height)
+      .attr('class', 'main');
+
+    // draw the x axis
+//    var xAxis = d3.svg.axis()
+//      .scale(x)
+//      .orient('bottom');
+//
+//    main.append('g')
+//      .attr('transform', 'translate(0,' + height + ')')
+//      .attr('class', 'main axis date')
+//      .call(xAxis);
+
+
+    main.append("line")
+      .attr("x1",1)
+      .attr("y1",30)
+      .attr("x2",40)
+      .attr("y2",30)
+      .attr("stroke","black")
+      .attr("stroke-width",1)
+      ;
+
+    main.append("line")
+      .attr("x1",20)
+      .attr("y1",40)
+      .attr("x2",60)
+      .attr("y2",40)
+      .attr("stroke","black")
+      .attr("stroke-width",1)
+    ;
+
+    main.append("line")
+      .attr("x1",50)
+      .attr("y1",50)
+      .attr("x2",70)
+      .attr("y2",50)
+      .attr("stroke","black")
+      .attr("stroke-width",1)
+    ;
+
+    //e34a33
+
+
+    main.append("rect")
+      .attr("x",5)
+      .attr("y",25)
+      .attr("width",10)
+      .attr("height",15)
+      .attr("class", "gmmbrushrect")
+    ;
+
+    main.append("rect")
+      .attr("x",25)
+      .attr("y",25)
+      .attr("width",10)
+      .attr("height",25)
+      .attr("class", "gmmbrushrect")
+    ;
+
+    main.append("rect")
+      .attr("x",50)
+      .attr("y",35)
+      .attr("width",10)
+      .attr("height",25)
+      .attr("class", "gmmbrushrect")
+    ;
+
+
+
+  }
+
+
+  $().ready(function () {
+
+
+    drawMetricsOfRadialBrush(d3.select("#radialcontainer"));
+//    $.getJSON("http://localhost:5000/parcoord/paperplots/data/poscorr/?type=positive", function (data_) {//type:random,negative,positive
+//      drawScatter(data_, "poscorr");
+//
+//    });
+
+
+    $.getJSON("http://localhost:5000/parcoord/iris/fetchData", function (data_) {//type:random,negative,positive
+      console.log(data_);
+      var newdata=[];
+      for (var i=0;i<data_.csv.length;i++){
+          newdata.push([data_.csv[i].petal_len,data_.csv[i].petal_w]);
+      }
+      drawGmmBrush(newdata, "gmmbrushpanel");
+
+    });
+
+
+  });
+
+</script>
+</body>
+</html>

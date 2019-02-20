@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+
+
+    svg {
+      font: 10px sans-serif;
+    }
+
+    .background path {
+      fill: none;
+      stroke: #ddd;
+      shape-rendering: crispEdges;
+    }
+
+    .foreground path {
+      fill: none;
+      stroke: steelblue;
+    }
+
+    .brush .extent {
+      fill-opacity: .3;
+      stroke: #fff;
+      shape-rendering: crispEdges;
+    }
+
+    .clusterbrush_panel {
+      background-color: #f8efc0;
+    }
+
+    .clusterbrush_panel .clusterrect {
+      fill: #fff7bc !important;
+
+      opacity: 0.8;
+    }
+
+    .radialbrush_panel {
+      background-color: #f8efc0;
+    }
+
+    .radialbrush_panel .radialrect {
+      fill: #fff7bc !important;
+
+      opacity: 0.8;
+    }
+
+    .axis line,
+    .axis path {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+
+    .axis text {
+      text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+      cursor: move;
+    }
+
+    .cluster_brush_c2 {
+      opacity: 0.6;
+      fill: green;
+      background-color: #f8efc0;
+    }
+
+    .cluster_brush_c1 {
+      opacity: 0.8;
+      fill: green;
+      background-color: #f8efc0;
+    }
+
+    .radial_brush_b {
+      opacity: 0.2;
+      background-color: #f8efc0;
+      fill: green;
+    }
+
+    .radial_brush_h2 {
+      opacity: 0.2;
+      fill: green;
+      background-color: #f8efc0;
+
+    }
+
+    .radial_brush_h1 {
+      opacity: 0.2;
+      fill: green;
+      background-color: #f8efc0;
+
+    }
+
+    .ss_point_active {
+      background-color: red;
+      fill: red !important;
+    }
+
+    .OA_buttons {
+      height: 30px;
+      background-color: #f8efc0;
+      -moz-border-radius: 20px;
+      -webkit-border-radius: 20px;
+      -khtml-border-radius: 20px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .OA_button {
+      display: table;
+      margin: 3px;
+
+    }
+
+    .OA_twowayselect_container {
+      display: flex;
+    }
+
+    .OA_twowayselect_container > div {
+      flex: 1;
+    }
+
+    .OA_twowayselect_left {
+      width: 150px !important;
+      min-width: 150px;
+
+    }
+
+    .OA_twowayselect_right {
+      width: 150px !important;
+      min-width: 150px;
+
+    }
+
+    .OA_twowayselect_middle {
+      width: 30px !important;
+      max-width: 30px;
+      margin: auto;
+    }
+
+    .debrmanager_dialog_q {
+      margin-top: 30px;
+    }
+
+    .debrmanager_dialog_q_text {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .debrmanager_dialog_q_choice {
+      margin-top: 7px;
+    }
+
+    .debrmanager_dialog_container {
+      background-color: #f8efc0;
+    }
+
+    .sslmanager_dialog_container {
+      background-color: #f8efc0;
+    }
+
+    .sslmanager_dialog_q {
+      margin-top: 30px;
+    }
+
+    .sslmanager_dialog_q_text {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .sslmanager_dialog_q_choice {
+      margin-top: 7px;
+    }
+
+    /*.corrbrush_panel .extent {*/
+    /*fill: red;*/
+
+    /*opacity: 0.4;*/
+    /*}*/
+
+    .corrbrush_panel .extent {
+      fill: #d95f0e;
+
+      opacity: 0.8;
+    }
+
+    .corrbrush_panel .ellrect {
+      fill: #fff7bc !important;
+
+      opacity: 0.8;
+    }
+
+    .gmmlinebrush_panel .gmmlinerect {
+      fill: #fff7bc !important;
+
+      opacity: 0.8;
+    }
+
+    .gmmlinebrush_panel .extent {
+      fill: #d95f0e;
+
+      opacity: 0.8;
+    }
+
+
+  </style>
+
+  <link href="/public/js/jqueryui1121/jquery-ui.css" rel="stylesheet">
+  <script src="/public/js/jquery-3.2.1.min.js"></script>
+  <script src="/public/js/jqueryui1121/jquery-ui.js"></script>
+
+</head>
+<body class="body_">
+
+
+<script type="text/javascript">
+  var remoteHost = true ? "localhost" : "34.235.8.207";
+  var remoteUrls = {
+    "fetcData": "http://" + remoteHost + ":5000/parcoord/iris/fetchData",
+    "kmeans": "http://" + remoteHost + ":5000/parcoord/iris/kmeans/oftwovars",
+    "spatialSign": "http://" + remoteHost + ":5000/parcoord/iris/spatialsign/oftwovars",
+
+    "userintsSave": "http://" + remoteHost + ":5000/parcoord/userints/save",
+    "userintsFetchAll": "http://" + remoteHost + ":5000/parcoord/userints/save",
+
+  };
+</script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+
+<svg width="650" height="300">
+  <g xmlns="http://www.w3.org/2000/svg" transform="translate(-30,30)">
+    <g class="corrbrushgrid" width="750" height="400" transform="translate(0,10)">
+      <g class="radialbrush_panel radialbrush_panel_sepal_w___petal_len_1" transform="translate(240,160)">
+        <rect y="0" width="100" height="100" class="radialrect"/>
+        <circle class="radial_brush radial_brush_c radial_brush_c___sepal_w___petal_len_0" cx="50" cy="50" r="40" style="fill: none; stroke-width: 1; stroke: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_0" cx="66.60294173856593" cy="86.39151447282435" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_1" cx="38.360321248959785" cy="88.2690198276959" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_2" cx="50" cy="90" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_3" cx="43.746482151387" cy="89.50814491363874" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_4" cx="70.78821518932197" cy="84.17382198763322" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_5" cx="80.79651161199948" cy="75.52596467387632" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_6" cx="61.639678751040215" cy="88.2690198276959" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_7" cx="62.072267097054755" cy="88.13476585921788" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_8" cx="33.39705826143406" cy="86.39151447282435" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_9" cx="43.746482151387" cy="89.50814491363874" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_10" cx="74.82338740088984" cy="81.36557727741265" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_11" cx="62.536452586490334" cy="87.98469897928219" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_12" cx="38.360321248959785" cy="88.2690198276959" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_13" cx="39.49647934037809" cy="88.59632176455285" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_14" cx="79.93306069517074" cy="76.53322214543918" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_15" cx="85.3943487071104" cy="68.63437897005086" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_16" cx="78.62266504788676" cy="77.94177957032231" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_17" cx="66.60294173856593" cy="86.39151447282435" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_18" cx="78.75471439984932" cy="77.80586987999294" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_19" cx="77.5454901613389" cy="79.00424058256968" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_20" cx="63.035584325318" cy="87.81631316373297" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_21" cx="74.82338740088984" cy="81.36557727741265" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_22" cx="68.61626888811895" cy="85.40387736795583" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_23" cx="56.79398703375064" cy="89.41879932450034" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_24" cx="64.15436275668307" cy="87.41195016237756" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_25" cx="37.463547413509666" cy="87.98469897928219" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_26" cx="62.536452586490334" cy="87.98469897928219" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_27" cx="67.1579330263541" cy="86.13316114406746" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_28" cx="61.639678751040215" cy="88.2690198276959" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_29" cx="50" cy="90" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_30" cx="43.48728910882683" cy="89.46624629791886" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_31" cx="62.072267097054755" cy="88.13476585921788" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_32" cx="82.73891879360195" cy="72.9818014138565" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_33" cx="83.4217970727348" cy="71.97688513936713" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_34" cx="43.746482151387" cy="89.50814491363874" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_35" cx="50" cy="90" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_36" cx="66.07930983607513" cy="86.6258896846957" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_37" cx="43.746482151387" cy="89.50814491363874" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_38" cx="38.764274529524016" cy="88.38956203386668" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_39" cx="62.072267097054755" cy="88.13476585921788" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_40" cx="66.07930983607513" cy="86.6258896846957" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_41 ss_point_active" cx="18.142400234668628" cy="74.18870267691013" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_42" cx="50" cy="90" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_43" cx="67.74671383548677" cy="85.84765191810118" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_44" cx="80.01296042704071" cy="76.44281010794593" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_45" cx="38.360321248959785" cy="88.2690198276959" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_46" cx="78.14348666723656" cy="78.42435853649256" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_47" cx="50" cy="90" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_48" cx="74.82338740088984" cy="81.36557727741265" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_49" cx="56.01393579769376" cy="89.54532306381144" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_50" cx="50" cy="9.999999999999998" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_51" cx="50" cy="9.999999999999998" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_52" cx="34.882738123451965" cy="12.966658355532278" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_53" cx="10.004104029397409" cy="49.427020498852016" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_54" cx="13.108008139918514" cy="34.54099173311298" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_55" cx="12.299668238780043" cy="36.6326896836368" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_56" cx="68.37188675347254" cy="14.468693000150123" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_57" cx="10.850062066274374" cy="58.202582507078574" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_58" cx="15.080607412233526" cy="30.490104528690054" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_59" cx="10.013292473152951" cy="51.031126162209816" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_60" cx="10.185717160252583" cy="53.850049604433046" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_61" cx="11.928913138322233" cy="37.72839272260611" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_62" cx="10.00332436101723" cy="49.48430839642042" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_63" cx="16.380582510585263" cy="28.32663460206435" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_64" cx="11.695869554576266" cy="61.523610146996596" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_65" cx="23.887613884351122" cy="19.699120617591515" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_66" cx="17.371361490399252" cy="26.86189400556306" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_67" cx="10.119157352116604" cy="46.914811238389966" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_68" cx="10.396328675795763" cy="44.38313097496454" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_69" cx="10.00678353010076" cy="50.73663857608801" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_70" cx="50" cy="9.999999999999998" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_71" cx="10.020763668242028" cy="48.711333119288234" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_72" cx="12.245226351792947" cy="36.787238488012775" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_73" cx="13.988408777399641" cy="32.58835741188291" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_74" cx="11.695869554576266" cy="38.476389853003404" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_75" cx="15.4017750900731" cy="29.926065829486394" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_76" cx="14.921305454410449" cy="30.77800247171939" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_77" cx="26.23414862846326" cy="17.82571976584363" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_78" cx="13.837519037353186" cy="32.90394868321322" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_79" cx="10.727722310760246" cy="57.5952751825883" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_80" cx="10.046672839777804" cy="51.931747609873234" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_81" cx="10.129244923567466" cy="53.21292540142611" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_82" cx="10.013292473152951" cy="51.031126162209816" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_83" cx="15.595916305053587" cy="29.595122516635332" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_84" cx="17.371361490399252" cy="26.86189400556306" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_85" cx="82.62863850960075" cy="26.86189400556306" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_86" cx="31.628113246527377" cy="14.468693000150168" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_87" cx="10.328388852248471" cy="44.88499570463554" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_88" cx="10.727722310760246" cy="42.40472481741171" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_89" cx="10.00678353010076" cy="49.263361423912" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_90" cx="10.727722310760246" cy="42.4047248174117" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_91" cx="19.342662252448307" cy="24.30705072918755" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_92" cx="10.009232290168324" cy="49.14064094914588" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_93" cx="10.676148845083544" cy="57.32357360487184" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_94" cx="10.328388852248471" cy="44.88499570463554" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_95" cx="11.928913138322233" cy="37.72839272260611" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_96" cx="10.892746496172295" cy="41.59626729438898" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_97" cx="11.695869554576266" cy="38.476389853003404" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_98" cx="12.245226351792947" cy="63.212761511987225" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_99" cx="10.185717160252594" cy="46.14995039556696" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_100" cx="57.43490082838233" cy="10.697045280639273" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_101" cx="15.595916305053587" cy="29.595122516635332" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_102" cx="35.21681595264784" cy="12.832037055790725" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_103" cx="26.950084459343604" cy="17.309001337239515" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_104" cx="34.53455409284311" cy="13.110706392059978" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_105" cx="38.76427452952401" cy="11.610437966133325" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_106" cx="10.796573230762824" cy="42.05699492955859" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_107" cx="32.25328616451323" cy="14.152348081898836" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_108" cx="16.946108173897777" cy="27.47356585812274" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_109" cx="73.40383426848143" cy="17.56143434839551" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_110" cx="50" cy="9.999999999999998" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_111" cx="17.17286411477717" cy="27.144384725562166" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_112" cx="32.100510082076575" cy="14.228387502404116" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_113" cx="12.693560703787421" cy="35.56983759488459" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_114" cx="17.867359791593028" cy="26.177879329558674" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_115" cx="50" cy="9.999999999999998" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_116" cx="32.100510082076575" cy="14.228387502404116" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_117" cx="75.83675576192296" cy="19.46375838943597" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_118" cx="25.228453929197276" cy="18.593463972254142" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_119" cx="11.390236574941603" cy="39.545997500429685" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_120" cx="50" cy="9.999999999999998" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_121" cx="15.88883099286948" cy="29.109137189503688" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_122" cx="30.348077198932323" cy="15.160339694238168" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_123" cx="14.079646267949537" cy="32.400903779899124" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_124" cx="58.6539855744166" cy="10.947362013843541" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_125" cx="50" cy="9.999999999999998" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_126" cx="14.921305454410449" cy="30.77800247171939" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_127" cx="24.703321464214888" cy="19.01487364787503" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_128" cx="22.6018570668152" cy="20.856531369571396" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_129" cx="34.53455409284311" cy="13.110706392059978" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_130" cx="26.596165731518575" cy="17.56143434839551" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_131" cx="77.5454901613389" cy="20.995759417430328" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_132" cx="22.6018570668152" cy="20.856531369571396" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_133" cx="17.867359791593028" cy="26.177879329558674" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_134" cx="17.371361490399238" cy="26.86189400556307" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_135" cx="36.426545286903064" cy="12.373396018887028" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_136" cx="67.01611533239023" cy="13.799836754583627" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_137" cx="40.29158991972804" cy="11.196046931874658" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_138" cx="23.038592751424712" cy="20.452030202119264" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_139" cx="39.66538709707651" cy="11.358108533008803" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_140" cx="40.84823988808668" cy="11.06100557469425" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_141" cx="37.218575752916784" cy="12.097029216483923" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_142" cx="15.595916305053587" cy="29.595122516635332" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_143" cx="50" cy="9.999999999999998" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_144" cx="58.6539855744166" cy="10.947362013843541" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_145" cx="28.910768903778916" cy="16.01111458476194" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_146" cx="12.693560703787421" cy="35.56983759488459" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_147" cx="28.910768903778916" cy="16.01111458476194" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_148" cx="68.86630797858135" cy="14.728730909459497" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_sepal_w___petal_len_point_149" cx="27.6341048428569" cy="16.837268902883118" r="2" style="fill: black;"/>
+        <circle class="radial_brush radial_brush_h1 radial_brush_h1___sepal_w___petal_len_0" cx="33.20909923825412" cy="86.30517389586781" r="5" style="fill: black;"/>
+        <circle class="radial_brush radial_brush_h2 radial_brush_h2___sepal_w___petal_len_0" cx="12.257929157942073" cy="63.24900330413878" r="5" style="fill: black;"/>
+        <path d="M-20.14908091409506,43.56620867504137A48,48 0 0,1 -45.290485010469524,15.89880396496654L-30.19365667364635,10.599202643311026A32,32 0 0,0 -13.432720609396707,29.04413911669425Z" class="radial_brush radial_brush_b radial_brush_b___sepal_w___petal_len_0" transform="translate(50,50)"/>
+
+      </g>
+      <g class="radialbrush_panel radialbrush_panel_petal_len___petal_w_1" transform="translate(390,160)">
+        <rect y="0" width="100" height="100" class="radialrect"/>
+        <circle class="radial_brush radial_brush_c radial_brush_c___petal_len___petal_w_0" cx="50" cy="50" r="40" style="fill: none; stroke-width: 1; stroke: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_0" cx="21.636830831121618" cy="78.20515262673804" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_1" cx="21.636830831121618" cy="78.20515262673804" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_2" cx="21.099832938929335" cy="77.65466224422578" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_3" cx="22.206547319451246" cy="78.76671667212123" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_4" cx="21.636830831121618" cy="78.20515262673804" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_5" cx="20.59364671231969" cy="77.11579588210779" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_6" cx="20.3277105760074" cy="76.82452684277612" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_7" cx="22.206547319451246" cy="78.76671667212123" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_8" cx="21.636830831121618" cy="78.20515262673804" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_9" cx="23.47961702525334" cy="79.94443665979989" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_10" cx="22.206547319451246" cy="78.76671667212123" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_11" cx="22.810954447814417" cy="79.33864008370493" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_12" cx="22.889044880987967" cy="79.41081625074209" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_13" cx="21.29749552530859" cy="77.85976017269925" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_14" cx="20.593646712319696" cy="77.11579588210779" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_15" cx="19.47476913277182" cy="75.84976364500109" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_16" cx="18.504571389310478" cy="74.65842607769116" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_17" cx="20.3277105760074" cy="76.82452684277612" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_18" cx="22.06094398849057" cy="78.62532356473442" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_19" cx="20.868347610738212" cy="77.41070646793362" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_20" cx="23.452076506075908" cy="79.92002269652805" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_21" cx="19.47476913277182" cy="75.84976364500109" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_22" cx="19.66645977563659" cy="76.07443839197552" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_23" cx="19.063986430634515" cy="75.35671635752617" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_24" cx="24.852716315038187" cy="81.1064964801254" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_25" cx="22.810954447814417" cy="79.33864008370493" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_26" cx="20.01415116549931" cy="76.47355037909487" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_27" cx="22.206547319451246" cy="78.76671667212123" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_28" cx="21.636830831121618" cy="78.20515262673804" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_29" cx="22.810954447814417" cy="79.33864008370493" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_30" cx="22.810954447814417" cy="79.33864008370493" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_31" cx="19.47476913277182" cy="75.84976364500109" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_32" cx="23.47961702525334" cy="79.94443665979989" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_33" cx="21.636830831121618" cy="78.20515262673804" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_34" cx="23.47961702525334" cy="79.94443665979989" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_35" cx="20.593646712319696" cy="77.11579588210779" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_36" cx="21.099832938929335" cy="77.65466224422578" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_37" cx="23.47961702525334" cy="79.94443665979989" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_38" cx="21.099832938929335" cy="77.65466224422578" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_39" cx="22.206547319451246" cy="78.76671667212123" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_40" cx="19.820961744589944" cy="76.25310743471135" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_41" cx="19.820961744589944" cy="76.25310743471135" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_42" cx="21.099832938929335" cy="77.65466224422578" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_43" cx="17.02563156689674" cy="72.6426815204817" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_44" cx="21.885882982383258" cy="78.45340795616147" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_45" cx="20.3277105760074" cy="76.82452684277612" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_46" cx="22.810954447814417" cy="79.33864008370493" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_47" cx="21.636830831121618" cy="78.20515262673804" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_48" cx="22.206547319451246" cy="78.76671667212123" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_49" cx="21.636830831121618" cy="78.20515262673804" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_50" cx="88.23463429303754" cy="38.24786230179047" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_51" cx="80.6541634766594" cy="24.303263601261726" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_52" cx="85.98591020911357" cy="32.53534236174049" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_53" cx="90" cy="49.99999999999951" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_54" cx="82.62589851983064" cy="26.858030641846575" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_55" cx="90" cy="49.99999999999996" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_56" cx="79.40635328768029" cy="22.884204117892203" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_57" cx="22.60550684023348" cy="79.1468993980407" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_58" cx="90" cy="49.999999999999964" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_59 ss_point_active" cx="41.5213543708261" cy="10.908919581381603" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_60" cx="28.18434934550368" cy="83.52726333181661" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_61" cx="69.06681834595915" cy="14.836717471740556" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_62" cx="52.884399870938296" cy="89.89586742238514" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_63" cx="88.23463429303754" cy="38.24786230179047" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_64" cx="9.999999999999998" cy="49.999999999999936" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_65" cx="85.60048665657256" cy="31.762528963280023" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_66" cx="80.6541634766594" cy="24.303263601261726" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_67" cx="58.47864562917381" cy="89.09108041861842" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_68" cx="80.6541634766594" cy="24.303263601261726" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_69" cx="45.68739306528995" cy="89.76683821259482" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_70" cx="73.74047138696706" cy="17.806988051370553" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_71" cx="90" cy="49.99999999999951" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_72" cx="85.98591020911357" cy="32.53534236174049" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_73" cx="88.23463429303754" cy="61.75213769820951" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_74" cx="90" cy="49.999999999999936" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_75" cx="85.60048665657256" cy="31.762528963280023" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_76" cx="88.60540424105126" cy="39.5299110135099" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_77" cx="80.05540209435742" cy="23.605439860711908" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_78" cx="80.6541634766594" cy="24.303263601261726" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_79" cx="28.18434934550368" cy="83.52726333181661" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_80" cx="37.62479326974072" cy="88.0375374910541" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_81" cx="36.40157828608584" cy="87.61758799937269" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_82" cx="41.52135437082608" cy="89.09108041861839" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_83" cx="84.27892129175723" cy="29.38554984789764" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_84" cx="80.6541634766594" cy="24.303263601261726" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_85" cx="74.89760202838468" cy="18.6933008249644" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_86" cx="84.0761667851152" cy="29.052091817247916" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_87" cx="90" cy="49.99999999999994" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_88" cx="89.99999999999999" cy="49.99999999999984" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_89" cx="90" cy="49.99999999999951" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_90" cx="85.60048665657257" cy="68.23747103671994" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_91" cx="87.69927503117317" cy="36.62970972177631" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_92" cx="58.47864562917382" cy="89.09108041861842" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_93" cx="22.60550684023348" cy="79.1468993980407" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_94" cx="90" cy="49.9999999999999" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_95" cx="79.40635328768032" cy="77.11579588210778" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_96" cx="90" cy="49.9999999999999" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_97" cx="90" cy="49.999999999999936" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_98" cx="14.014089790886425" cy="67.46465763825948" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_99" cx="89.99999999999999" cy="49.99999999999984" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_100" cx="73.81565747356782" cy="17.86256918946859" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_101" cx="75.57280014645823" cy="19.242368545850198" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_102" cx="79.06157243604494" cy="22.515003955894166" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_103" cx="82.79135757518642" cy="27.09308252129361" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_104" cx="76.62103619181889" cy="20.1450099300993" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_105" cx="82.83193759336926" cy="27.15128288360359" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_106" cx="70.49034704478963" cy="15.646751565767737" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_107" cx="85.91276547339726" cy="32.38542432947173" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_108" cx="83.94972736578407" cy="28.847789434933002" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_109" cx="74.546366826971" cy="18.417158525620625" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_110" cx="73.21431448741976" cy="17.42553756576828" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_111" cx="77.93905601150942" cy="21.374676435265584" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_112" cx="75.73606150968355" cy="19.378844927570338" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_113" cx="71.81565065449631" cy="16.472736668183387" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_114" cx="66.52075851269352" cy="13.571102979018622" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_115" cx="70.2135859923245" cy="15.483178864053793" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_116" cx="82.09780652733791" cy="26.13096532882858" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_117" cx="81.9316501539078" cy="25.909136203771343" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_118" cx="81.51797207619313" cy="25.370395126914648" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_119" cx="86.6247629309518" cy="33.91812385784612" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_120" cx="74.18578198279484" cy="18.140182833532826" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_121" cx="70.29306318274064" cy="15.529844986404594" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_122" cx="84.49906098088287" cy="29.75611718475616" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_123" cx="75.44061508133785" cy="19.132944677484943" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_124" cx="77.53341145561964" cy="20.984292984392884" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_125" cx="84.86659366520219" cy="30.395902311361457" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_126" cx="73.74047138696706" cy="17.806988051370553" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_127" cx="75.44061508133785" cy="19.132944677484943" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_128" cx="76.6710249753811" cy="20.189659063294872" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_129" cx="87.46759584864373" cy="35.9935992730932" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_130" cx="83.63989742294652" cy="28.358435791892568" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_131" cx="83.40513022243255" cy="27.997789319654174" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_132" cx="74.8976020283847" cy="18.69330082496441" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_133" cx="87.12732941274405" cy="35.11506094478075" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_134" cx="89.61522868496668" cy="44.465232052037386" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_135" cx="77.28199723867398" cy="20.747775697069027" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_136" cx="71.81565065449631" cy="16.472736668183387" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_137" cx="82.09780652733791" cy="26.13096532882858" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_138" cx="73.74047138696706" cy="17.806988051370553" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_139" cx="74.72314111082528" cy="18.555345547864256" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_140" cx="71.81565065449631" cy="16.472736668183387" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_141" cx="67.85582576285992" cy="14.206572023255603" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_142" cx="75.57280014645823" cy="19.242368545850198" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_143" cx="75.83297723125821" cy="19.460561770567963" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_144" cx="71.3846133173153" cy="16.196179013772706" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_145" cx="69.06681834595916" cy="14.836717471740569" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_146" cx="74.18578198279484" cy="18.140182833532815" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_147" cx="74.49543160713085" cy="18.377637179040928" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_148" cx="71.29712733619911" cy="16.140992819846" r="2" style="fill: black;"/>
+        <circle class="radial_brush ss_point ss_petal_len___petal_w_point_149" cx="78.2519055967526" cy="21.683400095488516" r="2" style="fill: black;"/>
+        <circle class="radial_brush radial_brush_h1 radial_brush_h1___petal_len___petal_w_0" cx="26.10193571686642" cy="17.923801292559382" r="5" style="fill: black;"/>
+        <circle class="radial_brush radial_brush_h2 radial_brush_h2___petal_len___petal_w_0" cx="56.3601147892169" cy="10.508875175959034" r="5" style="fill: black;"/>
+        <path d="M-28.67767713976029,-38.49143844892875A48,48 0 0,1 7.6321377470602805,-47.38934978884915L5.088091831373521,-31.59289985923277A32,32 0 0,0 -19.118451426506862,-25.660958965952496Z" class="radial_brush radial_brush_b radial_brush_b___petal_len___petal_w_0" transform="translate(50,50)"/>
+
+      </g>
+    </g>
+    <g class="background">
+      <path d="M73,124.44444444444446L219,60.000000000000014L365,149.15254237288136L511,153.33333333333334L657,160"/>
+      <path d="M73,133.33333333333331L219,93.33333333333334L365,149.15254237288136L511,153.33333333333334L657,160"/>
+      <path d="M73,142.22222222222223L219,80L365,151.864406779661L511,153.33333333333334L657,160"/>
+      <path d="M73,146.66666666666669L219,86.66666666666669L365,146.4406779661017L511,153.33333333333334L657,160"/>
+      <path d="M73,128.88888888888889L219,53.33333333333334L365,149.15254237288136L511,153.33333333333334L657,160"/>
+      <path d="M73,111.11111111111111L219,33.33333333333336L365,141.01694915254237L511,140L657,160"/>
+      <path d="M73,146.66666666666669L219,66.66666666666669L365,149.15254237288136L511,146.66666666666666L657,160"/>
+      <path d="M73,128.88888888888889L219,66.66666666666669L365,146.4406779661017L511,153.33333333333334L657,160"/>
+      <path d="M73,155.55555555555554L219,100.00000000000001L365,149.15254237288136L511,153.33333333333334L657,160"/>
+      <path d="M73,133.33333333333331L219,86.66666666666669L365,146.4406779661017L511,160L657,160"/>
+      <path d="M73,111.11111111111111L219,46.66666666666668L365,146.4406779661017L511,153.33333333333334L657,160"/>
+      <path d="M73,137.77777777777777L219,66.66666666666669L365,143.72881355932205L511,153.33333333333334L657,160"/>
+      <path d="M73,137.77777777777777L219,93.33333333333334L365,149.15254237288136L511,160L657,160"/>
+      <path d="M73,160L219,93.33333333333334L365,157.28813559322032L511,160L657,160"/>
+      <path d="M73,93.33333333333334L219,26.66666666666668L365,154.57627118644066L511,153.33333333333334L657,160"/>
+      <path d="M73,97.77777777777777L219,0L365,146.4406779661017L511,140L657,160"/>
+      <path d="M73,111.11111111111111L219,33.33333333333336L365,151.864406779661L511,140L657,160"/>
+      <path d="M73,124.44444444444446L219,60.000000000000014L365,149.15254237288136L511,146.66666666666666L657,160"/>
+      <path d="M73,97.77777777777777L219,40.000000000000036L365,141.01694915254237L511,146.66666666666666L657,160"/>
+      <path d="M73,124.44444444444446L219,40.000000000000036L365,146.4406779661017L511,146.66666666666666L657,160"/>
+      <path d="M73,111.11111111111111L219,66.66666666666669L365,141.01694915254237L511,153.33333333333334L657,160"/>
+      <path d="M73,124.44444444444446L219,46.66666666666668L365,146.4406779661017L511,140L657,160"/>
+      <path d="M73,146.66666666666669L219,53.33333333333334L365,160L511,153.33333333333334L657,160"/>
+      <path d="M73,124.44444444444446L219,73.33333333333336L365,141.01694915254237L511,133.33333333333331L657,160"/>
+      <path d="M73,137.77777777777777L219,66.66666666666669L365,135.59322033898303L511,153.33333333333334L657,160"/>
+      <path d="M73,128.88888888888889L219,93.33333333333334L365,143.72881355932205L511,153.33333333333334L657,160"/>
+      <path d="M73,128.88888888888889L219,66.66666666666669L365,143.72881355932205L511,140L657,160"/>
+      <path d="M73,120L219,60.000000000000014L365,146.4406779661017L511,153.33333333333334L657,160"/>
+      <path d="M73,120L219,66.66666666666669L365,149.15254237288136L511,153.33333333333334L657,160"/>
+      <path d="M73,142.22222222222223L219,80L365,143.72881355932205L511,153.33333333333334L657,160"/>
+      <path d="M73,137.77777777777777L219,86.66666666666669L365,143.72881355932205L511,153.33333333333334L657,160"/>
+      <path d="M73,111.11111111111111L219,66.66666666666669L365,146.4406779661017L511,140L657,160"/>
+      <path d="M73,120L219,20.000000000000036L365,146.4406779661017L511,160L657,160"/>
+      <path d="M73,106.66666666666669L219,13.33333333333334L365,149.15254237288136L511,153.33333333333334L657,160"/>
+      <path d="M73,133.33333333333331L219,86.66666666666669L365,146.4406779661017L511,160L657,160"/>
+      <path d="M73,128.88888888888889L219,80L365,154.57627118644066L511,153.33333333333334L657,160"/>
+      <path d="M73,106.66666666666669L219,60.000000000000014L365,151.864406779661L511,153.33333333333334L657,160"/>
+      <path d="M73,133.33333333333331L219,86.66666666666669L365,146.4406779661017L511,160L657,160"/>
+      <path d="M73,155.55555555555554L219,93.33333333333334L365,151.864406779661L511,153.33333333333334L657,160"/>
+      <path d="M73,124.44444444444446L219,66.66666666666669L365,146.4406779661017L511,153.33333333333334L657,160"/>
+      <path d="M73,128.88888888888889L219,60.000000000000014L365,151.864406779661L511,146.66666666666666L657,160"/>
+      <path d="M73,151.11111111111111L219,140.00000000000003L365,151.864406779661L511,146.66666666666666L657,160"/>
+      <path d="M73,155.55555555555554L219,80L365,151.864406779661L511,153.33333333333334L657,160"/>
+      <path d="M73,128.88888888888889L219,60.000000000000014L365,143.72881355932205L511,126.66666666666666L657,160"/>
+      <path d="M73,124.44444444444446L219,40.000000000000036L365,135.59322033898303L511,140L657,160"/>
+      <path d="M73,137.77777777777777L219,93.33333333333334L365,149.15254237288136L511,146.66666666666666L657,160"/>
+      <path d="M73,124.44444444444446L219,40.000000000000036L365,143.72881355932205L511,153.33333333333334L657,160"/>
+      <path d="M73,146.66666666666669L219,80L365,149.15254237288136L511,153.33333333333334L657,160"/>
+      <path d="M73,115.55555555555557L219,46.66666666666668L365,146.4406779661017L511,153.33333333333334L657,160"/>
+      <path d="M73,128.88888888888889L219,73.33333333333336L365,149.15254237288136L511,153.33333333333334L657,160"/>
+      <path d="M73,40.000000000000014L219,80L365,59.66101694915254L511,73.33333333333334L657,80"/>
+      <path d="M73,66.66666666666666L219,80L365,65.08474576271186L511,66.66666666666666L657,80"/>
+      <path d="M73,44.44444444444444L219,86.66666666666669L365,54.23728813559322L511,66.66666666666666L657,80"/>
+      <path d="M73,106.66666666666669L219,140.00000000000003L365,78.64406779661017L511,80L657,80"/>
+      <path d="M73,62.22222222222223L219,106.66666666666669L365,62.372881355932215L511,66.66666666666666L657,80"/>
+      <path d="M73,97.77777777777777L219,106.66666666666669L365,65.08474576271186L511,80L657,80"/>
+      <path d="M73,71.11111111111113L219,73.33333333333336L365,59.66101694915254L511,60L657,80"/>
+      <path d="M73,133.33333333333331L219,133.33333333333334L365,97.6271186440678L511,100L657,80"/>
+      <path d="M73,57.7777777777778L219,100.00000000000001L365,62.372881355932215L511,80L657,80"/>
+      <path d="M73,120L219,113.33333333333331L365,81.35593220338983L511,73.33333333333334L657,80"/>
+      <path d="M73,128.88888888888889L219,160L365,92.20338983050848L511,100L657,80"/>
+      <path d="M73,88.88888888888887L219,93.33333333333334L365,73.22033898305085L511,66.66666666666666L657,80"/>
+      <path d="M73,84.44444444444444L219,146.66666666666666L365,78.64406779661017L511,100L657,80"/>
+      <path d="M73,80.00000000000001L219,100.00000000000001L365,59.66101694915254L511,73.33333333333334L657,80"/>
+      <path d="M73,102.22222222222226L219,100.00000000000001L365,89.49152542372883L511,80L657,80"/>
+      <path d="M73,53.33333333333334L219,86.66666666666669L365,67.79661016949152L511,73.33333333333334L657,80"/>
+      <path d="M73,102.22222222222226L219,93.33333333333334L365,65.08474576271186L511,66.66666666666666L657,80"/>
+      <path d="M73,93.33333333333334L219,113.33333333333331L365,75.93220338983052L511,100L657,80"/>
+      <path d="M73,75.55555555555556L219,146.66666666666666L365,65.08474576271186L511,66.66666666666666L657,80"/>
+      <path d="M73,102.22222222222226L219,126.66666666666669L365,81.35593220338983L511,93.33333333333331L657,80"/>
+      <path d="M73,88.88888888888887L219,80L365,56.949152542372886L511,46.66666666666666L657,80"/>
+      <path d="M73,80.00000000000001L219,106.66666666666669L365,78.64406779661017L511,80L657,80"/>
+      <path d="M73,71.11111111111113L219,126.66666666666669L365,54.23728813559322L511,66.66666666666666L657,80"/>
+      <path d="M73,80.00000000000001L219,106.66666666666669L365,59.66101694915254L511,86.66666666666669L657,80"/>
+      <path d="M73,66.66666666666666L219,100.00000000000001L365,70.5084745762712L511,80L657,80"/>
+      <path d="M73,57.7777777777778L219,93.33333333333334L365,67.79661016949152L511,73.33333333333334L657,80"/>
+      <path d="M73,48.888888888888914L219,106.66666666666669L365,56.949152542372886L511,73.33333333333334L657,80"/>
+      <path d="M73,53.33333333333334L219,93.33333333333334L365,51.525423728813564L511,53.33333333333334L657,80"/>
+      <path d="M73,84.44444444444444L219,100.00000000000001L365,65.08474576271186L511,66.66666666666666L657,80"/>
+      <path d="M73,97.77777777777777L219,120L365,92.20338983050848L511,100L657,80"/>
+      <path d="M73,106.66666666666669L219,133.33333333333334L365,84.0677966101695L511,93.33333333333331L657,80"/>
+      <path d="M73,106.66666666666669L219,133.33333333333334L365,86.77966101694915L511,100L657,80"/>
+      <path d="M73,93.33333333333334L219,113.33333333333331L365,81.35593220338983L511,86.66666666666669L657,80"/>
+      <path d="M73,84.44444444444444L219,113.33333333333331L365,48.81355932203391L511,60L657,80"/>
+      <path d="M73,111.11111111111111L219,93.33333333333334L365,65.08474576271186L511,66.66666666666666L657,80"/>
+      <path d="M73,84.44444444444444L219,66.66666666666669L365,65.08474576271186L511,60L657,80"/>
+      <path d="M73,53.33333333333334L219,86.66666666666669L365,59.66101694915254L511,66.66666666666666L657,80"/>
+      <path d="M73,71.11111111111113L219,140.00000000000003L365,67.79661016949152L511,80L657,80"/>
+      <path d="M73,102.22222222222226L219,93.33333333333334L365,75.93220338983052L511,80L657,80"/>
+      <path d="M73,106.66666666666669L219,126.66666666666669L365,78.64406779661017L511,80L657,80"/>
+      <path d="M73,106.66666666666669L219,120L365,67.79661016949152L511,86.66666666666669L657,80"/>
+      <path d="M73,80.00000000000001L219,93.33333333333334L365,62.372881355932215L511,73.33333333333334L657,80"/>
+      <path d="M73,93.33333333333334L219,120L365,78.64406779661017L511,86.66666666666669L657,80"/>
+      <path d="M73,128.88888888888889L219,140.00000000000003L365,97.6271186440678L511,100L657,80"/>
+      <path d="M73,102.22222222222226L219,113.33333333333331L365,73.22033898305085L511,80L657,80"/>
+      <path d="M73,97.77777777777777L219,93.33333333333334L365,73.22033898305085L511,86.66666666666669L657,80"/>
+      <path d="M73,97.77777777777777L219,100.00000000000001L365,73.22033898305085L511,80L657,80"/>
+      <path d="M73,75.55555555555556L219,100.00000000000001L365,70.5084745762712L511,80L657,80"/>
+      <path d="M73,124.44444444444446L219,126.66666666666669L365,105.76271186440678L511,93.33333333333331L657,80"/>
+      <path d="M73,97.77777777777777L219,106.66666666666669L365,75.93220338983052L511,80L657,80"/>
+      <path d="M73,71.11111111111113L219,73.33333333333336L365,24.406779661016955L511,0L657,0"/>
+      <path d="M73,93.33333333333334L219,113.33333333333331L365,48.81355932203391L511,40L657,0"/>
+      <path d="M73,35.555555555555586L219,93.33333333333334L365,27.11864406779661L511,26.66666666666666L657,0"/>
+      <path d="M73,71.11111111111113L219,100.00000000000001L365,35.254237288135606L511,46.66666666666666L657,0"/>
+      <path d="M73,62.22222222222223L219,93.33333333333334L365,29.83050847457628L511,19.999999999999982L657,0"/>
+      <path d="M73,13.333333333333357L219,93.33333333333334L365,8.135593220338997L511,26.66666666666666L657,0"/>
+      <path d="M73,133.33333333333331L219,126.66666666666669L365,65.08474576271186L511,53.33333333333334L657,0"/>
+      <path d="M73,26.66666666666668L219,100.00000000000001L365,16.271186440677976L511,46.66666666666666L657,0"/>
+      <path d="M73,53.33333333333334L219,126.66666666666669L365,29.83050847457628L511,46.66666666666666L657,0"/>
+      <path d="M73,31.111111111111107L219,53.33333333333334L365,21.6949152542373L511,0L657,0"/>
+      <path d="M73,62.22222222222223L219,80L365,48.81355932203391L511,33.33333333333334L657,0"/>
+      <path d="M73,66.66666666666666L219,113.33333333333331L365,43.38983050847459L511,40L657,0"/>
+      <path d="M73,48.888888888888914L219,93.33333333333334L365,37.96610169491526L511,26.66666666666666L657,0"/>
+      <path d="M73,97.77777777777777L219,126.66666666666669L365,51.525423728813564L511,33.33333333333334L657,0"/>
+      <path d="M73,93.33333333333334L219,106.66666666666669L365,48.81355932203391L511,6.6666666666666785L657,0"/>
+      <path d="M73,66.66666666666666L219,80L365,43.38983050847459L511,13.33333333333334L657,0"/>
+      <path d="M73,62.22222222222223L219,93.33333333333334L365,37.96610169491526L511,46.66666666666666L657,0"/>
+      <path d="M73,8.888888888888893L219,40.000000000000036L365,5.423728813559325L511,19.999999999999982L657,0"/>
+      <path d="M73,8.888888888888893L219,120L365,0L511,13.33333333333334L657,0"/>
+      <path d="M73,84.44444444444444L219,146.66666666666666L365,51.525423728813564L511,66.66666666666666L657,0"/>
+      <path d="M73,44.44444444444444L219,80L365,32.54237288135593L511,13.33333333333334L657,0"/>
+      <path d="M73,102.22222222222226L219,106.66666666666669L365,54.23728813559322L511,33.33333333333334L657,0"/>
+      <path d="M73,8.888888888888893L219,106.66666666666669L365,5.423728813559325L511,33.33333333333334L657,0"/>
+      <path d="M73,71.11111111111113L219,113.33333333333331L365,54.23728813559322L511,46.66666666666666L657,0"/>
+      <path d="M73,53.33333333333334L219,73.33333333333336L365,32.54237288135593L511,26.66666666666666L657,0"/>
+      <path d="M73,31.111111111111107L219,80L365,24.406779661016955L511,46.66666666666666L657,0"/>
+      <path d="M73,75.55555555555556L219,106.66666666666669L365,56.949152542372886L511,46.66666666666666L657,0"/>
+      <path d="M73,80.00000000000001L219,93.33333333333334L365,54.23728813559322L511,46.66666666666666L657,0"/>
+      <path d="M73,66.66666666666666L219,106.66666666666669L365,35.254237288135606L511,26.66666666666666L657,0"/>
+      <path d="M73,31.111111111111107L219,93.33333333333334L365,29.83050847457628L511,60L657,0"/>
+      <path d="M73,22.222222222222214L219,106.66666666666669L365,21.6949152542373L511,40L657,0"/>
+      <path d="M73,0L219,40.000000000000036L365,13.559322033898304L511,33.33333333333334L657,0"/>
+      <path d="M73,66.66666666666666L219,106.66666666666669L365,35.254237288135606L511,19.999999999999982L657,0"/>
+      <path d="M73,71.11111111111113L219,106.66666666666669L365,48.81355932203391L511,66.66666666666666L657,0"/>
+      <path d="M73,80.00000000000001L219,120L365,35.254237288135606L511,73.33333333333334L657,0"/>
+      <path d="M73,8.888888888888893L219,93.33333333333334L365,21.6949152542373L511,13.33333333333334L657,0"/>
+      <path d="M73,71.11111111111113L219,66.66666666666669L365,35.254237288135606L511,6.6666666666666785L657,0"/>
+      <path d="M73,66.66666666666666L219,86.66666666666669L365,37.96610169491526L511,46.66666666666666L657,0"/>
+      <path d="M73,84.44444444444444L219,93.33333333333334L365,56.949152542372886L511,46.66666666666666L657,0"/>
+      <path d="M73,44.44444444444444L219,86.66666666666669L365,40.67796610169491L511,26.66666666666666L657,0"/>
+      <path d="M73,53.33333333333334L219,86.66666666666669L365,35.254237288135606L511,6.6666666666666785L657,0"/>
+      <path d="M73,44.44444444444444L219,86.66666666666669L365,48.81355932203391L511,13.33333333333334L657,0"/>
+      <path d="M73,93.33333333333334L219,113.33333333333331L365,48.81355932203391L511,40L657,0"/>
+      <path d="M73,48.888888888888914L219,80L365,27.11864406779661L511,13.33333333333334L657,0"/>
+      <path d="M73,53.33333333333334L219,73.33333333333336L365,32.54237288135593L511,0L657,0"/>
+      <path d="M73,53.33333333333334L219,93.33333333333334L365,46.10169491525424L511,13.33333333333334L657,0"/>
+      <path d="M73,71.11111111111113L219,126.66666666666669L365,51.525423728813564L511,40L657,0"/>
+      <path d="M73,62.22222222222223L219,93.33333333333334L365,46.10169491525424L511,33.33333333333334L657,0"/>
+      <path d="M73,75.55555555555556L219,66.66666666666669L365,40.67796610169491L511,13.33333333333334L657,0"/>
+      <path d="M73,88.88888888888887L219,93.33333333333334L365,48.81355932203391L511,46.66666666666666L657,0"/>
+    </g>
+    <g class="foreground">
+      <path d="M73,124.44444444444446L219,60.000000000000014L365,149.15254237288136L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,133.33333333333331L219,93.33333333333334L365,149.15254237288136L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,142.22222222222223L219,80L365,151.864406779661L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,146.66666666666669L219,86.66666666666669L365,146.4406779661017L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,128.88888888888889L219,53.33333333333334L365,149.15254237288136L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,111.11111111111111L219,33.33333333333336L365,141.01694915254237L511,140L657,160" style="display: none;"/>
+      <path d="M73,146.66666666666669L219,66.66666666666669L365,149.15254237288136L511,146.66666666666666L657,160" style="display: none;"/>
+      <path d="M73,128.88888888888889L219,66.66666666666669L365,146.4406779661017L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,155.55555555555554L219,100.00000000000001L365,149.15254237288136L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,133.33333333333331L219,86.66666666666669L365,146.4406779661017L511,160L657,160" style="display: none;"/>
+      <path d="M73,111.11111111111111L219,46.66666666666668L365,146.4406779661017L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,137.77777777777777L219,66.66666666666669L365,143.72881355932205L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,137.77777777777777L219,93.33333333333334L365,149.15254237288136L511,160L657,160" style="display: none;"/>
+      <path d="M73,160L219,93.33333333333334L365,157.28813559322032L511,160L657,160" style="display: none;"/>
+      <path d="M73,93.33333333333334L219,26.66666666666668L365,154.57627118644066L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,97.77777777777777L219,0L365,146.4406779661017L511,140L657,160" style="display: none;"/>
+      <path d="M73,111.11111111111111L219,33.33333333333336L365,151.864406779661L511,140L657,160" style="display: none;"/>
+      <path d="M73,124.44444444444446L219,60.000000000000014L365,149.15254237288136L511,146.66666666666666L657,160" style="display: none;"/>
+      <path d="M73,97.77777777777777L219,40.000000000000036L365,141.01694915254237L511,146.66666666666666L657,160" style="display: none;"/>
+      <path d="M73,124.44444444444446L219,40.000000000000036L365,146.4406779661017L511,146.66666666666666L657,160" style="display: none;"/>
+      <path d="M73,111.11111111111111L219,66.66666666666669L365,141.01694915254237L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,124.44444444444446L219,46.66666666666668L365,146.4406779661017L511,140L657,160" style="display: none;"/>
+      <path d="M73,146.66666666666669L219,53.33333333333334L365,160L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,124.44444444444446L219,73.33333333333336L365,141.01694915254237L511,133.33333333333331L657,160" style="display: none;"/>
+      <path d="M73,137.77777777777777L219,66.66666666666669L365,135.59322033898303L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,128.88888888888889L219,93.33333333333334L365,143.72881355932205L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,128.88888888888889L219,66.66666666666669L365,143.72881355932205L511,140L657,160" style="display: none;"/>
+      <path d="M73,120L219,60.000000000000014L365,146.4406779661017L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,120L219,66.66666666666669L365,149.15254237288136L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,142.22222222222223L219,80L365,143.72881355932205L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,137.77777777777777L219,86.66666666666669L365,143.72881355932205L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,111.11111111111111L219,66.66666666666669L365,146.4406779661017L511,140L657,160" style="display: none;"/>
+      <path d="M73,120L219,20.000000000000036L365,146.4406779661017L511,160L657,160" style="display: none;"/>
+      <path d="M73,106.66666666666669L219,13.33333333333334L365,149.15254237288136L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,133.33333333333331L219,86.66666666666669L365,146.4406779661017L511,160L657,160" style="display: none;"/>
+      <path d="M73,128.88888888888889L219,80L365,154.57627118644066L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,106.66666666666669L219,60.000000000000014L365,151.864406779661L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,133.33333333333331L219,86.66666666666669L365,146.4406779661017L511,160L657,160" style="display: none;"/>
+      <path d="M73,155.55555555555554L219,93.33333333333334L365,151.864406779661L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,124.44444444444446L219,66.66666666666669L365,146.4406779661017L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,128.88888888888889L219,60.000000000000014L365,151.864406779661L511,146.66666666666666L657,160" style="display: none;"/>
+      <path d="M73,151.11111111111111L219,140.00000000000003L365,151.864406779661L511,146.66666666666666L657,160" style=""/>
+      <path d="M73,155.55555555555554L219,80L365,151.864406779661L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,128.88888888888889L219,60.000000000000014L365,143.72881355932205L511,126.66666666666666L657,160" style="display: none;"/>
+      <path d="M73,124.44444444444446L219,40.000000000000036L365,135.59322033898303L511,140L657,160" style="display: none;"/>
+      <path d="M73,137.77777777777777L219,93.33333333333334L365,149.15254237288136L511,146.66666666666666L657,160" style="display: none;"/>
+      <path d="M73,124.44444444444446L219,40.000000000000036L365,143.72881355932205L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,146.66666666666669L219,80L365,149.15254237288136L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,115.55555555555557L219,46.66666666666668L365,146.4406779661017L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,128.88888888888889L219,73.33333333333336L365,149.15254237288136L511,153.33333333333334L657,160" style="display: none;"/>
+      <path d="M73,40.000000000000014L219,80L365,59.66101694915254L511,73.33333333333334L657,80" style="display: none;"/>
+      <path d="M73,66.66666666666666L219,80L365,65.08474576271186L511,66.66666666666666L657,80" style="display: none;"/>
+      <path d="M73,44.44444444444444L219,86.66666666666669L365,54.23728813559322L511,66.66666666666666L657,80" style="display: none;"/>
+      <path d="M73,106.66666666666669L219,140.00000000000003L365,78.64406779661017L511,80L657,80" style="display: none;"/>
+      <path d="M73,62.22222222222223L219,106.66666666666669L365,62.372881355932215L511,66.66666666666666L657,80" style="display: none;"/>
+      <path d="M73,97.77777777777777L219,106.66666666666669L365,65.08474576271186L511,80L657,80" style="display: none;"/>
+      <path d="M73,71.11111111111113L219,73.33333333333336L365,59.66101694915254L511,60L657,80" style="display: none;"/>
+      <path d="M73,133.33333333333331L219,133.33333333333334L365,97.6271186440678L511,100L657,80" style="display: none;"/>
+      <path d="M73,57.7777777777778L219,100.00000000000001L365,62.372881355932215L511,80L657,80" style="display: none;"/>
+      <path d="M73,120L219,113.33333333333331L365,81.35593220338983L511,73.33333333333334L657,80" style=""/>
+      <path d="M73,128.88888888888889L219,160L365,92.20338983050848L511,100L657,80" style="display: none;"/>
+      <path d="M73,88.88888888888887L219,93.33333333333334L365,73.22033898305085L511,66.66666666666666L657,80" style="display: none;"/>
+      <path d="M73,84.44444444444444L219,146.66666666666666L365,78.64406779661017L511,100L657,80" style="display: none;"/>
+      <path d="M73,80.00000000000001L219,100.00000000000001L365,59.66101694915254L511,73.33333333333334L657,80" style="display: none;"/>
+      <path d="M73,102.22222222222226L219,100.00000000000001L365,89.49152542372883L511,80L657,80" style="display: none;"/>
+      <path d="M73,53.33333333333334L219,86.66666666666669L365,67.79661016949152L511,73.33333333333334L657,80" style="display: none;"/>
+      <path d="M73,102.22222222222226L219,93.33333333333334L365,65.08474576271186L511,66.66666666666666L657,80" style="display: none;"/>
+      <path d="M73,93.33333333333334L219,113.33333333333331L365,75.93220338983052L511,100L657,80" style="display: none;"/>
+      <path d="M73,75.55555555555556L219,146.66666666666666L365,65.08474576271186L511,66.66666666666666L657,80" style="display: none;"/>
+      <path d="M73,102.22222222222226L219,126.66666666666669L365,81.35593220338983L511,93.33333333333331L657,80" style="display: none;"/>
+      <path d="M73,88.88888888888887L219,80L365,56.949152542372886L511,46.66666666666666L657,80" style="display: none;"/>
+      <path d="M73,80.00000000000001L219,106.66666666666669L365,78.64406779661017L511,80L657,80" style="display: none;"/>
+      <path d="M73,71.11111111111113L219,126.66666666666669L365,54.23728813559322L511,66.66666666666666L657,80" style="display: none;"/>
+      <path d="M73,80.00000000000001L219,106.66666666666669L365,59.66101694915254L511,86.66666666666669L657,80" style="display: none;"/>
+      <path d="M73,66.66666666666666L219,100.00000000000001L365,70.5084745762712L511,80L657,80" style="display: none;"/>
+      <path d="M73,57.7777777777778L219,93.33333333333334L365,67.79661016949152L511,73.33333333333334L657,80" style="display: none;"/>
+      <path d="M73,48.888888888888914L219,106.66666666666669L365,56.949152542372886L511,73.33333333333334L657,80" style="display: none;"/>
+      <path d="M73,53.33333333333334L219,93.33333333333334L365,51.525423728813564L511,53.33333333333334L657,80" style="display: none;"/>
+      <path d="M73,84.44444444444444L219,100.00000000000001L365,65.08474576271186L511,66.66666666666666L657,80" style="display: none;"/>
+      <path d="M73,97.77777777777777L219,120L365,92.20338983050848L511,100L657,80" style="display: none;"/>
+      <path d="M73,106.66666666666669L219,133.33333333333334L365,84.0677966101695L511,93.33333333333331L657,80" style="display: none;"/>
+      <path d="M73,106.66666666666669L219,133.33333333333334L365,86.77966101694915L511,100L657,80" style="display: none;"/>
+      <path d="M73,93.33333333333334L219,113.33333333333331L365,81.35593220338983L511,86.66666666666669L657,80" style="display: none;"/>
+      <path d="M73,84.44444444444444L219,113.33333333333331L365,48.81355932203391L511,60L657,80" style="display: none;"/>
+      <path d="M73,111.11111111111111L219,93.33333333333334L365,65.08474576271186L511,66.66666666666666L657,80" style="display: none;"/>
+      <path d="M73,84.44444444444444L219,66.66666666666669L365,65.08474576271186L511,60L657,80" style="display: none;"/>
+      <path d="M73,53.33333333333334L219,86.66666666666669L365,59.66101694915254L511,66.66666666666666L657,80" style="display: none;"/>
+      <path d="M73,71.11111111111113L219,140.00000000000003L365,67.79661016949152L511,80L657,80" style="display: none;"/>
+      <path d="M73,102.22222222222226L219,93.33333333333334L365,75.93220338983052L511,80L657,80" style="display: none;"/>
+      <path d="M73,106.66666666666669L219,126.66666666666669L365,78.64406779661017L511,80L657,80" style="display: none;"/>
+      <path d="M73,106.66666666666669L219,120L365,67.79661016949152L511,86.66666666666669L657,80" style="display: none;"/>
+      <path d="M73,80.00000000000001L219,93.33333333333334L365,62.372881355932215L511,73.33333333333334L657,80" style="display: none;"/>
+      <path d="M73,93.33333333333334L219,120L365,78.64406779661017L511,86.66666666666669L657,80" style="display: none;"/>
+      <path d="M73,128.88888888888889L219,140.00000000000003L365,97.6271186440678L511,100L657,80" style="display: none;"/>
+      <path d="M73,102.22222222222226L219,113.33333333333331L365,73.22033898305085L511,80L657,80" style="display: none;"/>
+      <path d="M73,97.77777777777777L219,93.33333333333334L365,73.22033898305085L511,86.66666666666669L657,80" style="display: none;"/>
+      <path d="M73,97.77777777777777L219,100.00000000000001L365,73.22033898305085L511,80L657,80" style="display: none;"/>
+      <path d="M73,75.55555555555556L219,100.00000000000001L365,70.5084745762712L511,80L657,80" style="display: none;"/>
+      <path d="M73,124.44444444444446L219,126.66666666666669L365,105.76271186440678L511,93.33333333333331L657,80" style="display: none;"/>
+      <path d="M73,97.77777777777777L219,106.66666666666669L365,75.93220338983052L511,80L657,80" style="display: none;"/>
+      <path d="M73,71.11111111111113L219,73.33333333333336L365,24.406779661016955L511,0L657,0" style="display: none;"/>
+      <path d="M73,93.33333333333334L219,113.33333333333331L365,48.81355932203391L511,40L657,0" style="display: none;"/>
+      <path d="M73,35.555555555555586L219,93.33333333333334L365,27.11864406779661L511,26.66666666666666L657,0" style="display: none;"/>
+      <path d="M73,71.11111111111113L219,100.00000000000001L365,35.254237288135606L511,46.66666666666666L657,0" style="display: none;"/>
+      <path d="M73,62.22222222222223L219,93.33333333333334L365,29.83050847457628L511,19.999999999999982L657,0" style="display: none;"/>
+      <path d="M73,13.333333333333357L219,93.33333333333334L365,8.135593220338997L511,26.66666666666666L657,0" style="display: none;"/>
+      <path d="M73,133.33333333333331L219,126.66666666666669L365,65.08474576271186L511,53.33333333333334L657,0" style="display: none;"/>
+      <path d="M73,26.66666666666668L219,100.00000000000001L365,16.271186440677976L511,46.66666666666666L657,0" style="display: none;"/>
+      <path d="M73,53.33333333333334L219,126.66666666666669L365,29.83050847457628L511,46.66666666666666L657,0" style="display: none;"/>
+      <path d="M73,31.111111111111107L219,53.33333333333334L365,21.6949152542373L511,0L657,0" style="display: none;"/>
+      <path d="M73,62.22222222222223L219,80L365,48.81355932203391L511,33.33333333333334L657,0" style="display: none;"/>
+      <path d="M73,66.66666666666666L219,113.33333333333331L365,43.38983050847459L511,40L657,0" style="display: none;"/>
+      <path d="M73,48.888888888888914L219,93.33333333333334L365,37.96610169491526L511,26.66666666666666L657,0" style="display: none;"/>
+      <path d="M73,97.77777777777777L219,126.66666666666669L365,51.525423728813564L511,33.33333333333334L657,0" style="display: none;"/>
+      <path d="M73,93.33333333333334L219,106.66666666666669L365,48.81355932203391L511,6.6666666666666785L657,0" style="display: none;"/>
+      <path d="M73,66.66666666666666L219,80L365,43.38983050847459L511,13.33333333333334L657,0" style="display: none;"/>
+      <path d="M73,62.22222222222223L219,93.33333333333334L365,37.96610169491526L511,46.66666666666666L657,0" style="display: none;"/>
+      <path d="M73,8.888888888888893L219,40.000000000000036L365,5.423728813559325L511,19.999999999999982L657,0" style="display: none;"/>
+      <path d="M73,8.888888888888893L219,120L365,0L511,13.33333333333334L657,0" style="display: none;"/>
+      <path d="M73,84.44444444444444L219,146.66666666666666L365,51.525423728813564L511,66.66666666666666L657,0" style="display: none;"/>
+      <path d="M73,44.44444444444444L219,80L365,32.54237288135593L511,13.33333333333334L657,0" style="display: none;"/>
+      <path d="M73,102.22222222222226L219,106.66666666666669L365,54.23728813559322L511,33.33333333333334L657,0" style="display: none;"/>
+      <path d="M73,8.888888888888893L219,106.66666666666669L365,5.423728813559325L511,33.33333333333334L657,0" style="display: none;"/>
+      <path d="M73,71.11111111111113L219,113.33333333333331L365,54.23728813559322L511,46.66666666666666L657,0" style="display: none;"/>
+      <path d="M73,53.33333333333334L219,73.33333333333336L365,32.54237288135593L511,26.66666666666666L657,0" style="display: none;"/>
+      <path d="M73,31.111111111111107L219,80L365,24.406779661016955L511,46.66666666666666L657,0" style="display: none;"/>
+      <path d="M73,75.55555555555556L219,106.66666666666669L365,56.949152542372886L511,46.66666666666666L657,0" style="display: none;"/>
+      <path d="M73,80.00000000000001L219,93.33333333333334L365,54.23728813559322L511,46.66666666666666L657,0" style="display: none;"/>
+      <path d="M73,66.66666666666666L219,106.66666666666669L365,35.254237288135606L511,26.66666666666666L657,0" style="display: none;"/>
+      <path d="M73,31.111111111111107L219,93.33333333333334L365,29.83050847457628L511,60L657,0" style="display: none;"/>
+      <path d="M73,22.222222222222214L219,106.66666666666669L365,21.6949152542373L511,40L657,0" style="display: none;"/>
+      <path d="M73,0L219,40.000000000000036L365,13.559322033898304L511,33.33333333333334L657,0" style="display: none;"/>
+      <path d="M73,66.66666666666666L219,106.66666666666669L365,35.254237288135606L511,19.999999999999982L657,0" style="display: none;"/>
+      <path d="M73,71.11111111111113L219,106.66666666666669L365,48.81355932203391L511,66.66666666666666L657,0" style="display: none;"/>
+      <path d="M73,80.00000000000001L219,120L365,35.254237288135606L511,73.33333333333334L657,0" style="display: none;"/>
+      <path d="M73,8.888888888888893L219,93.33333333333334L365,21.6949152542373L511,13.33333333333334L657,0" style="display: none;"/>
+      <path d="M73,71.11111111111113L219,66.66666666666669L365,35.254237288135606L511,6.6666666666666785L657,0" style="display: none;"/>
+      <path d="M73,66.66666666666666L219,86.66666666666669L365,37.96610169491526L511,46.66666666666666L657,0" style="display: none;"/>
+      <path d="M73,84.44444444444444L219,93.33333333333334L365,56.949152542372886L511,46.66666666666666L657,0" style="display: none;"/>
+      <path d="M73,44.44444444444444L219,86.66666666666669L365,40.67796610169491L511,26.66666666666666L657,0" style="display: none;"/>
+      <path d="M73,53.33333333333334L219,86.66666666666669L365,35.254237288135606L511,6.6666666666666785L657,0" style="display: none;"/>
+      <path d="M73,44.44444444444444L219,86.66666666666669L365,48.81355932203391L511,13.33333333333334L657,0" style="display: none;"/>
+      <path d="M73,93.33333333333334L219,113.33333333333331L365,48.81355932203391L511,40L657,0" style="display: none;"/>
+      <path d="M73,48.888888888888914L219,80L365,27.11864406779661L511,13.33333333333334L657,0" style="display: none;"/>
+      <path d="M73,53.33333333333334L219,73.33333333333336L365,32.54237288135593L511,0L657,0" style="display: none;"/>
+      <path d="M73,53.33333333333334L219,93.33333333333334L365,46.10169491525424L511,13.33333333333334L657,0" style="display: none;"/>
+      <path d="M73,71.11111111111113L219,126.66666666666669L365,51.525423728813564L511,40L657,0" style="display: none;"/>
+      <path d="M73,62.22222222222223L219,93.33333333333334L365,46.10169491525424L511,33.33333333333334L657,0" style="display: none;"/>
+      <path d="M73,75.55555555555556L219,66.66666666666669L365,40.67796610169491L511,13.33333333333334L657,0" style="display: none;"/>
+      <path d="M73,88.88888888888887L219,93.33333333333334L365,48.81355932203391L511,46.66666666666666L657,0" style="display: none;"/>
+    </g>
+    <g class="dimension dimension_sepal_len" transform="translate(73)">
+      <g class="axis axis_sepal_len">
+
+
+
+
+
+
+
+        <path class="domain" d="M-6,0H0V160H-6"/>
+        <text y="-9" style="text-anchor: middle;">Sepal-Length</text>
+      </g>
+
+
+
+    </g>
+    <g class="dimension dimension_sepal_w" transform="translate(219)">
+      <g class="axis axis_sepal_w">
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <path class="domain" d="M-6,0H0V160H-6"/>
+        <text y="-9" style="text-anchor: middle;">Sepal-Width</text>
+      </g>
+
+
+
+    </g>
+    <g class="dimension dimension_petal_len" transform="translate(365)">
+      <g class="axis axis_petal_len">
+
+
+
+
+
+
+
+
+
+
+
+
+        <path class="domain" d="M-6,0H0V160H-6"/>
+        <text y="-9" style="text-anchor: middle;">Petal-Length</text>
+      </g>
+
+
+
+    </g>
+    <g class="dimension dimension_petal_w" transform="translate(511)">
+      <g class="axis axis_petal_w">
+
+
+
+
+
+
+
+
+
+
+
+
+        <path class="domain" d="M-6,0H0V160H-6"/>
+        <text y="-9" style="text-anchor: middle;">Petal-Width</text>
+      </g>
+
+
+
+    </g>
+    <g class="dimension dimension_t_set_ver_vir" transform="translate(657)">
+      <g class="axis axis_t_set_ver_vir">
+
+
+
+
+
+
+
+
+
+
+
+        <path class="domain" d="M-6,0H0V160H-6"/>
+        <text y="-9" style="text-anchor: middle;">Class</text>
+      </g>
+
+
+
+    </g>
+  </g>
+</svg>
+
+
+<script type="application/javascript">
+
+
+  $().ready(function () {
+
+
+  });
+
+</script>
+</body>
+</html>
